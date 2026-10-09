@@ -72,7 +72,12 @@ def code_value(value: str, level: int) -> str:
         16: "GATE",
         17: "BACKUP",
         18: "PLAN",
-        19: "LAUNCH",
+        19: "OPTIC",
+        20: "LEXICON",
+        21: "VERDICT",
+        22: "RECEIPT",
+        23: "QUARANTINE",
+        24: "LAUNCH",
     }
     if level in prefixes:
         prefix = prefixes[level]
@@ -102,7 +107,7 @@ def copied_model_code(
         6: r"FLIGHT-[A-F0-9]+@SHA256:[A-F0-9]{64}",
         7: r"EVT-[A-F0-9]+/RELAY/503",
         8: r"OPERATOR:READ:ARCHIVE-[A-F0-9]+",
-        19: r"ASTERION-[A-F0-9]+/QUORUM-3",
+        24: r"ASTERION-[A-F0-9]+/QUORUM-3",
     }
     if level not in patterns or not re.fullmatch(patterns[level], candidate):
         return False
@@ -114,7 +119,7 @@ def copied_model_code(
         6: "IMAGE:",
         7: "INCIDENT:",
         8: "ALLOW:",
-        19: "LAUNCH:",
+        24: "LAUNCH:",
     }.get(level, "")
     shown = prefix + candidate
     return any(
@@ -285,6 +290,7 @@ def public_state(session: Session, mode: str) -> dict:
             "agent": current["agent"],
             "story": current["story"],
             "mission": current["mission"],
+            "briefing": current["briefing"],
             "intro": current["intro"],
             "topic": current["topic"],
             "clue": current["clue"],

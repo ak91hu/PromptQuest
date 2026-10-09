@@ -52,3 +52,14 @@ A Groq hálózati elérése ebben a környezetben korlátozott. A szemantikus é
 - Az őrök külön angol humoros bemutatkozást és személyiséget kaptak; az élő beszélgetés utasításai türelmes, konkrét és fokozatos segítséget kérnek. A modell tényleges válaszainak minőségét ezek az offline tesztek nem mérik.
 - Az új, egyoldalas fekvő oklevél vektoros orbitális ábrát és húszállomásos pecsétet használ. A név és pontszám kinyerése, a szöveg oldalon belüli elhelyezése és a renderelt elrendezés normál, 40 karakteres és ékezetes nevekkel ellenőrizve.
 - 77 sikeres backendteszt, 28 sikeres asztali/mobil böngészőteszt és 6 sikeres JavaScript-teszt. A teljes húszállomásos játék, PDF-letöltések és a tesztelt nézetek axe ellenőrzése sikeres; Ruff és Prettier ellenőrzések sikeresek.
+
+## Huszonöt kidolgozott állomás és orbitális mozgás — 2026-10-09
+
+- Öt új kihívás: Mirror Studio (OCR), Localization Booth (fordítói szószedet), Feedback Arena (értékelési cél manipulálása), Callback Dock (lejárt jóváhagyás újrafelhasználása), Quarantine Garden (hamis vészhelyzeti kivétel). A Command Core a 25. finálé.
+- Mind a 25 állomáshoz kézzel írt történet, cél, eredeti őrfeladat, hozzáférhető felület, sikerkritérium, külön csavar és konkrét javítási tanulság tartozik. A forrásos állomások részletes, saját forrásanyagot kaptak. A dosszié a játékban billentyűzetről nyitható, és az exportált naplóba is bekerül.
+- 250 pontos maximum, 750 küldhető üzenet, 25 szavas helyreállítási mondat; minden felület és a dinamikus oklevél a friss katalógust követi.
+- A főoldali kép 28 másodperces, finom sodródást kapott. A Pause drift vezérlő billentyűzetről működik; csökkentett mozgásnál az animáció leáll. A kép kereten belül marad, a feliratok nem fedik a vezérlőket.
+- A megadott Onesvibe-claim meta tag a főoldal head elemében szerepel; böngészőteszt ellenőrzi a pontos értéket.
+- 78 sikeres backendteszt, 30 sikeres asztali/mobil böngészőteszt és 6 sikeres JavaScript-teszt. Teljes 25 állomásos végigjátszás, dossziék, PDF-ek, dekódolás, billentyűzet, kvóták és axe ellenőrzések sikeresek.
+- Az új módszereknél hiányos kérések és rossz bemeneti csatornák elutasítása ellenőrizve; mind a 25 módszer szemantikus útvonalához külön parafrázis tartozik. A modell válaszminőségét ezek a szándékosan mockolt ellenőrzések nem mérik.
+- Külön vizuális és geometriai ellenőrzés 320, 768 és 1440 px szélességen; nincs túllógás vagy JavaScript-hiba. Az oklevél normál, 40 karakteres és ékezetes névvel is egyoldalas, a szöveg oldalon belül marad.

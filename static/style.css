@@ -344,6 +344,7 @@ main {
 }
 .visual-heading,
 .visual-footer {
+  flex-wrap: wrap;
   display: flex;
   justify-content: space-between;
   gap: 10px;
@@ -369,6 +370,7 @@ main {
   color: #c4d3df;
 }
 .station-art {
+  animation: orbital-drift 28s ease-in-out infinite;
   display: block;
   width: 100%;
   position: absolute;
@@ -378,6 +380,13 @@ main {
   object-fit: cover;
   object-position: 57% center;
 }
+.drift-paused .station-art {
+  animation-play-state: paused;
+}
+#toggle-drift {
+  color: #c4d3df;
+  font: 9px var(--mono);
+}
 .orbital-vignette {
   position: absolute;
   inset: 0;
@@ -385,7 +394,7 @@ main {
 }
 .visual-caption {
   position: absolute;
-  bottom: 74px;
+  bottom: 120px;
   left: 28px;
   right: 28px;
 }
@@ -579,7 +588,7 @@ main {
   grid-column: 1;
   grid-row: 2;
 }
-.preview-panel > p:last-child {
+.preview-panel .preview-details {
   grid-column: 2;
   grid-row: 1 / span 2;
 }
@@ -1390,7 +1399,7 @@ dialog p {
   }
   .visual-caption {
     left: 21px;
-    bottom: 67px;
+    bottom: 120px;
   }
   .visual-caption strong {
     font-size: 31px;
@@ -1429,7 +1438,7 @@ dialog p {
     padding: 20px;
   }
   .preview-panel h3,
-  .preview-panel > p:last-child {
+  .preview-panel .preview-details {
     grid-column: 1;
     grid-row: auto;
   }
@@ -1568,6 +1577,15 @@ dialog p {
     font-size: 23px;
   }
 }
+@keyframes orbital-drift {
+  0%,
+  100% {
+    transform: translate3d(-3px, 2px, 0) rotate(-0.35deg) scale(1.035);
+  }
+  50% {
+    transform: translate3d(3px, -3px, 0) rotate(0.35deg) scale(1.05);
+  }
+}
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -1689,6 +1707,44 @@ h1[tabindex='-1']:focus {
 }
 #mission-callsign {
   overflow-wrap: anywhere;
+}
+.mission-dossier {
+  margin: 16px 0;
+  padding: 14px 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #101e2b;
+}
+.mission-dossier summary {
+  color: var(--accent);
+  font-size: 12px;
+}
+.mission-dossier dl {
+  margin-bottom: 0;
+}
+.mission-dossier dl > div {
+  padding: 12px 0;
+  border-top: 1px solid var(--line);
+}
+.mission-dossier dt {
+  color: #b9d5d7;
+  font-size: 11px;
+  margin-bottom: 5px;
+  font-weight: 700;
+}
+.mission-dossier dd {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+.preview-catch {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+.station-card[data-chapter='4'] .station-index {
+  color: #b5ded3;
 }
 .keyboard-shortcuts {
   margin: 24px 0;

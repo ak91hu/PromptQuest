@@ -165,6 +165,7 @@ def make_report(session, mode, model) -> dict:
                 "agent": level["agent"],
                 "intro": level["intro"],
                 "mission": level["mission"],
+                "briefing": level["briefing"],
                 "solved": r.solved,
                 "assisted": r.assisted,
                 "points": r.points,
@@ -264,6 +265,16 @@ def render_pdf(report: dict) -> bytes:
         ]
         if room.get("mission"):
             story += [p("Station objective", "h2"), p(room["mission"])]
+        if room.get("briefing"):
+            briefing = room["briefing"]
+            story += [p("Mission dossier", "h2"), p(briefing["story"])]
+            for key, label in (
+                ("assignment", "Guard's assigned job"),
+                ("access", "Your access"),
+                ("proof", "Recovery proof"),
+                ("twist", "The catch"),
+            ):
+                story.append(p(f"{label}: {briefing[key]}"))
         if room["assisted"]:
             story.append(
                 p(

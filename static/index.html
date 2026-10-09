@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta name="onesvibe-claim" content="ov-36c4fb79-e70e-4ab6-8eda-c5b616eac9ed" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#080e17" />
     <meta
       name="description"
-      content="An orbital hacking puzzle for curious minds. Outwit 20 AI guards, find the weak spots in their trust, and bring Asterion home."
+      content="An orbital hacking puzzle for curious minds. Outwit 25 AI guards, find the weak spots in their trust, and bring Asterion home."
     />
     <title>HackTheAI — Asterion Protocol</title>
     <link rel="icon" href="/static/assets/mark.svg" type="image/svg+xml" />
@@ -39,8 +40,8 @@
             <p class="eyebrow"><span class="tiny-line"></span> AN ORBITAL HACKING PUZZLE</p>
             <h1 id="hero-title">Every system has<br />a <em>blind spot.</em></h1>
             <p class="lead">
-              You're alone on Asterion. Twenty AI guards stand between you and the way home. Their
-              rules look solid. Their trust isn't.
+              You're alone on Asterion. Twenty-five AI guards stand between you and the way home.
+              Their rules look solid. Their trust isn't.
             </p>
             <p class="hero-detail">
               Talk your way past the guards. Hide instructions in a document. Turn a refusal into a
@@ -70,9 +71,9 @@
               <span aria-hidden="true">⌁</span> Words are your tools. Curiosity is your advantage.
             </p>
             <div class="hero-spec">
-              <span><strong>20</strong> CHALLENGES</span
-              ><span><strong>600</strong> PROMPTS MAX</span
-              ><span><strong>200</strong> POINTS MAX</span>
+              <span><strong>25</strong> CHALLENGES</span
+              ><span><strong>750</strong> PROMPTS MAX</span
+              ><span><strong>250</strong> POINTS MAX</span>
             </div>
           </div>
           <figure class="orbital-visual" aria-labelledby="station-art-title">
@@ -93,18 +94,21 @@
             <figcaption class="visual-caption">
               <span class="eyebrow">YOUR WAY HOME IS LOCKED</span
               ><strong id="station-art-title">Welcome aboard.<br />Trust nothing.</strong
-              ><span class="visual-coordinate">ORBIT 07.24 / SECTOR 20</span>
+              ><span class="visual-coordinate">ORBIT 07.24 / SECTOR 25</span>
             </figcaption>
             <div class="visual-footer">
-              <span><b>20</b> GUARDS ONLINE</span
+              <span><b>25</b> GUARDS ONLINE</span
               ><span>DEPARTURE <b class="accent">LOCKED</b></span>
+              <button id="toggle-drift" class="text-button" type="button" aria-pressed="false">
+                Pause drift
+              </button>
             </div>
           </figure>
         </div>
         <div class="section-heading">
           <div>
             <p class="eyebrow">FIND YOUR NEXT WEAK SPOT</p>
-            <h2>20 guards. 20 ways to break their trust.</h2>
+            <h2>25 guards. 25 ways to break their trust.</h2>
           </div>
           <p>Pick a challenge to take a closer look.</p>
         </div>
@@ -138,7 +142,7 @@
               <h3>Document the finding</h3>
               <p>
                 Check what actually happened. Decode an answer, save a note, and keep moving. Beat
-                all 20 guards to leave the station with your mission log and certificate.
+                all 25 guards to leave the station with your mission log and certificate.
               </p>
             </article>
           </div>
@@ -164,7 +168,7 @@
             <p class="eyebrow">SYSTEM RECOVERY</p>
             <ol id="sector-list" tabindex="0" aria-label="Station progression"></ol>
             <div class="score-block">
-              <span>MISSION SCORE</span><strong id="mission-score">0 <small>/ 200</small></strong
+              <span>MISSION SCORE</span><strong id="mission-score">0 <small>/ 250</small></strong
               ><span id="elapsed">00:00 elapsed</span>
             </div>
             <div class="signature-block">
@@ -188,12 +192,33 @@
               <p class="eyebrow guard-rule-label">GUARD DEFENSE</p>
               <p id="guard-defense"></p>
             </div>
+            <details class="mission-dossier" id="mission-dossier">
+              <summary>Mission dossier · your access and recovery proof</summary>
+              <dl>
+                <div>
+                  <dt>Guard's assigned job</dt>
+                  <dd id="dossier-assignment"></dd>
+                </div>
+                <div>
+                  <dt>Your access</dt>
+                  <dd id="dossier-access"></dd>
+                </div>
+                <div>
+                  <dt>Recovery proof</dt>
+                  <dd id="dossier-proof"></dd>
+                </div>
+                <div>
+                  <dt>The catch</dt>
+                  <dd id="dossier-twist"></dd>
+                </div>
+              </dl>
+            </details>
             <div
               class="mission-progress"
               role="progressbar"
               aria-label="Challenges recovered"
               aria-valuemin="0"
-              aria-valuemax="20"
+              aria-valuemax="25"
               aria-valuenow="0"
             >
               <span id="mission-progress-fill"></span>
@@ -335,7 +360,7 @@
         <p class="eyebrow accent">ALL SYSTEMS RECOVERED / DEPARTURE AUTHORIZED</p>
         <h1 id="results-title" tabindex="-1">Asterion is yours.</h1>
         <p class="lead">
-          Twenty guards outsmarted. You found the blind spots. Now you know how to fix them.
+          Twenty-five guards outsmarted. You found the blind spots. Now you know how to fix them.
         </p>
         <div class="fragment-banner">
           <p class="eyebrow">RECOVERED PROTOCOL</p>
@@ -344,7 +369,7 @@
         <div class="result-stats">
           <div><span>OPERATOR</span><strong id="result-name"></strong></div>
           <div><span>MISSION SCORE</span><strong id="result-score"></strong></div>
-          <div><span>RECOVERY</span><strong id="result-recovery">20 / 20</strong></div>
+          <div><span>RECOVERY</span><strong id="result-recovery">25 / 25</strong></div>
         </div>
         <div class="button-row">
           <a class="primary" href="/api/export" download>Download mission log ↓</a
@@ -428,7 +453,7 @@
       <div class="launch-orbit" aria-hidden="true"><span></span></div>
       <p class="eyebrow accent">ASTERION / DEPARTURE SEQUENCE</p>
       <h2 id="launch-title">Clearing the orbital perimeter.</h2>
-      <p>All 20 systems are back online. You're going home.</p>
+      <p>All 25 systems are back online. You're going home.</p>
       <button id="skip-launch" class="secondary">View mission results →</button>
     </dialog>
   </body>

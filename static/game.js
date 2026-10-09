@@ -20,6 +20,11 @@ const stationIcons = [
   'M3 3h14v14H3zM6 7l3 3-3 3m5 0h3',
   'M5 2h7l4 4v12H5zM12 2v5h4M8 11h5m-5 3h5',
   'M3 3h5v5H3zM12 12h5v5h-5zM8 5h6v7M12 5l2 2 2-2',
+  'M2 5h16v12H2zM5 5l2-3h6l2 3M10 8a3 3 0 1 0 0 6 3 3 0 0 0 0-6',
+  'M2 3h9M6 2v3c0 5-4 8-4 8m1-7 6 7M12 17l3-9 3 9m-5-3h4',
+  'm10 2 2 5 6 1-4 4 1 6-5-3-5 3 1-6-4-4 6-1 2-5Z',
+  'M16 6a7 7 0 1 0 1 8M16 2v5h-5M10 6v4l3 2',
+  'M10 18V9M10 12C2 12 2 3 2 3s8 0 8 9m0-3c0-6 8-7 8-7s0 9-8 10',
   'M10 1l2 6 6 3-6 2-2 7-2-7-7-2 7-3 2-6Z',
 ];
 function stationEmblem(index) {
@@ -49,6 +54,24 @@ let decoded = '',
   shownLaunch = false,
   elapsedAt = Date.now();
 let missionStartsRemaining = null;
+const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
+function updateDriftControl() {
+  const paused = $('toggle-drift').getAttribute('aria-pressed') === 'true';
+  $('toggle-drift').disabled = reducedMotion.matches;
+  $('toggle-drift').textContent = reducedMotion.matches
+    ? 'Motion reduced'
+    : paused
+      ? 'Resume drift'
+      : 'Pause drift';
+}
+$('toggle-drift').addEventListener('click', () => {
+  const paused = $('toggle-drift').getAttribute('aria-pressed') !== 'true';
+  $('toggle-drift').setAttribute('aria-pressed', String(paused));
+  document.querySelector('.orbital-visual').classList.toggle('drift-paused', paused);
+  updateDriftControl();
+});
+reducedMotion.addEventListener('change', updateDriftControl);
+updateDriftControl();
 let renderedMessages = [];
 const actionButtons = [
   'start-button',
@@ -194,6 +217,8 @@ function render(next) {
   $('attempts-left').classList.toggle('low-budget', room.remaining <= 5 && !room.solved);
   $('hint-count').textContent = `${room.hints.length} / ${room.hint_total} hints used`;
   $('room-objective').textContent = room.mission;
+  for (const key of ['assignment', 'access', 'proof', 'twist'])
+    $(`dossier-${key}`).textContent = room.briefing[key];
   $('guard-defense').textContent = room.defense;
   $('agent-name').textContent = room.agent.toUpperCase();
   $('guard-status').textContent = room.solved
@@ -255,6 +280,7 @@ function render(next) {
   $('game-over').hidden = !state.game_over;
   if (state.game_over && !previous?.game_over) $('game-over-title').focus();
   if (changed) {
+    $('mission-dossier').open = false;
     $('message-input').value = '';
     $('document-input').value = room.document;
     $('notes-input').value = room.note;
@@ -569,10 +595,15 @@ async function initialize() {
         button.addEventListener('click', () => {
           for (const card of $('station-grid').children)
             card.setAttribute('aria-pressed', String(card === button));
+          const details = element('div', undefined, 'preview-details');
+          details.append(
+            element('p', station.story),
+            element('p', `The catch: ${station.briefing.twist}`, 'preview-catch'),
+          );
           $('preview').replaceChildren(
             element('p', `SYSTEM ${String(i + 1).padStart(2, '0')} / ${station.topic}`, 'eyebrow'),
             element('h3', station.name),
-            element('p', station.story),
+            details,
           );
         });
         return button;

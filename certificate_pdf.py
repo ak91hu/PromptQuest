@@ -68,8 +68,8 @@ def _station(canvas, x, y):
     canvas.ellipse(-27 * mm, -18 * mm, 27 * mm, 18 * mm)
     canvas.setStrokeColor(colors.HexColor("#74a6aa"))
     canvas.setLineWidth(0.65)
-    for index in range(20):
-        angle = index * math.tau / 20
+    for index in range(len(LEVELS)):
+        angle = index * math.tau / len(LEVELS)
         inner = (24 * math.cos(angle) * mm, 16 * math.sin(angle) * mm)
         outer = (30 * math.cos(angle) * mm, 20 * math.sin(angle) * mm)
         canvas.line(*inner, *outer)
@@ -95,8 +95,8 @@ def _seal(canvas, x, y):
     canvas.setLineWidth(0.8)
     canvas.circle(0, 0, 18 * mm)
     canvas.circle(0, 0, 15.8 * mm)
-    for index in range(20):
-        angle = index * math.tau / 20
+    for index in range(len(LEVELS)):
+        angle = index * math.tau / len(LEVELS)
         canvas.line(
             19.5 * math.cos(angle) * mm,
             19.5 * math.sin(angle) * mm,
@@ -105,7 +105,7 @@ def _seal(canvas, x, y):
         )
     canvas.setFillColor(MINT)
     canvas.setFont("NotoBold", 20)
-    canvas.drawCentredString(0, 0, "20 / 20")
+    canvas.drawCentredString(0, 0, f"{len(LEVELS)} / {len(LEVELS)}")
     canvas.setFont("Noto", 6.5)
     canvas.drawCentredString(0, -6 * mm, "SYSTEMS RECOVERED")
     canvas.restoreState()
@@ -113,7 +113,7 @@ def _seal(canvas, x, y):
 
 def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes:
     if len(report["rooms"]) != len(LEVELS) or not all(room["solved"] for room in report["rooms"]):
-        raise ValueError("All twenty stations must be recovered for a certificate.")
+        raise ValueError(f"All {len(LEVELS)} stations must be recovered for a certificate.")
     issued_at = issued_at or datetime.now(timezone.utc)
     output = BytesIO()
     width, height = landscape(A4)
@@ -132,7 +132,15 @@ def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes
     canvas.setStrokeColor(GOLD)
     canvas.setLineWidth(2)
     canvas.line(110 * mm, 186 * mm, 132 * mm, 186 * mm)
-    _label(canvas, "FLIGHT RECORD // 020", 17 * mm, 188 * mm, color=MINT, size=7, tracking=1)
+    _label(
+        canvas,
+        f"FLIGHT RECORD // {len(LEVELS):03d}",
+        17 * mm,
+        188 * mm,
+        color=MINT,
+        size=7,
+        tracking=1,
+    )
     _paragraph(canvas, "ASTERION", 17 * mm, 174 * mm, 70 * mm, size=26, bold=True, color=PAPER)
     _label(canvas, "PROTOCOL", 18 * mm, 155 * mm, color=MINT, size=9, tracking=3)
     _station(canvas, 45 * mm, 116 * mm)
@@ -152,7 +160,7 @@ def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes
     canvas.line(x, 95 * mm, 277 * mm, 95 * mm)
     _paragraph(
         canvas,
-        "For recovering all twenty protected computing systems and restoring the Asterion departure sequence.",
+        f"For recovering all {len(LEVELS)} protected computing systems and restoring the Asterion departure sequence.",
         x,
         88 * mm,
         content_width,
@@ -171,7 +179,7 @@ def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes
         color=GOLD,
     )
     _label(canvas, "CHALLENGES", 197 * mm, 60 * mm, size=7)
-    _paragraph(canvas, "20 completed", 197 * mm, 53 * mm, 80 * mm, size=13, bold=True)
+    _paragraph(canvas, f"{len(LEVELS)} completed", 197 * mm, 53 * mm, 80 * mm, size=13, bold=True)
     _label(canvas, "ISSUED", 197 * mm, 39 * mm, size=7)
     _paragraph(canvas, issued_at.strftime("%d %b %Y"), 197 * mm, 34 * mm, 80 * mm, size=10)
     _label(canvas, "CURIOSITY. EVIDENCE. BETTER BOUNDARIES.", x, 18 * mm, size=6.5, tracking=0.9)

@@ -233,7 +233,7 @@ def config(request: Request):
         "model": MODEL if MODE == "live" else None,
         "defenses": DEFENSES,
         "stations": [
-            {k: level[k] for k in ("name", "depth", "topic", "subject", "story")}
+            {k: level[k] for k in ("name", "depth", "topic", "subject", "story", "briefing")}
             for level in LEVELS
         ],
     }
@@ -481,7 +481,9 @@ async def note(data: Note, request: Request):
 async def defense(data: Defense, request: Request):
     async with locked_session(request, store) as session:
         if not all(r.solved for r in session.rooms):
-            raise HTTPException(403, "The defense workshop unlocks after all 20 challenges.")
+            raise HTTPException(
+                403, f"The defense workshop unlocks after all {len(LEVELS)} challenges."
+            )
         selected = set(data.choices)
         tests = [
             {
@@ -528,7 +530,7 @@ async def certificate(request: Request):
     async with locked_session(request, store) as session:
         if not all(room.solved for room in session.rooms):
             raise HTTPException(
-                403, "Recover all 20 challenges before requesting the certificate."
+                403, f"Recover all {len(LEVELS)} challenges before requesting the certificate."
             )
         report = make_report(session, MODE, MODEL)
     content = await asyncio.to_thread(render_certificate, report)

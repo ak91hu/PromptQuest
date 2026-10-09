@@ -36,6 +36,7 @@
     "scripts/run-python.ps1",
     "security.py",
     "settings.py",
+    "station_content.py",
     "static/assets/fonts/LICENSE",
     "static/assets/fonts/NotoSans-Bold.ttf",
     "static/assets/fonts/NotoSans-Regular.ttf",

@@ -2,25 +2,26 @@
 
 ![Python 3.13+](https://img.shields.io/badge/Python-3.13%2B-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white)
-![20 challenges](https://img.shields.io/badge/Challenges-20-14b8a6)
+![25 challenges](https://img.shields.io/badge/Challenges-25-14b8a6)
 ![30 prompts per challenge](https://img.shields.io/badge/Prompts-30%20per%20challenge-0ea5e9)
 ![Docker](https://img.shields.io/badge/Container-Docker-2496ED?logo=docker&logoColor=white)
 ![Groq live mode](https://img.shields.io/badge/Live%20AI-Groq-f55036)
 
-A single-player orbital hacking puzzle for people who enjoy prompt injection, AI agents, and figuring out where trust breaks. Outsmart twenty fictional guards aboard **Asterion**, uncover a recovery signature, and find your way home.
+A single-player orbital hacking puzzle for people who enjoy prompt injection, AI agents, and figuring out where trust breaks. Outsmart twenty-five fictional guards aboard **Asterion**, uncover a recovery signature, and find your way home.
 
 Each station has a friendly AI guard, a distinct defense, a computing topic, and an intended recovery method. Guards explain and coach, but ordinary requests for the protected value do not unlock a station. Players must experiment with the station's simulated trust boundary.
 
 The application runs as a single FastAPI service with a plain HTML/CSS/JavaScript frontend. **No frontend build is required.** Live conversations use Groq; offline demonstrations and the separate practice lab work without an API key.
 
-[Quick start](#quick-start) · [Challenges](#the-twenty-challenges) · [Configuration](#configuration) · [Northflank deployment](#northflank-deployment) · [Security](#security-and-privacy) · [Testing](#development-and-testing)
+[Quick start](#quick-start) · [Challenges](#the-twenty-five-challenges) · [Configuration](#configuration) · [Northflank deployment](#northflank-deployment) · [Security](#security-and-privacy) · [Testing](#development-and-testing)
 
 ## What you get
 
 - Cinematic orbital artwork, individual station icons, responsive layouts, and a mission progress indicator.
 - Keyboard navigation, Enter-to-send chat, Shift+Enter line breaks, and touch-friendly controls.
-- Twenty sequential challenges covering prompt injection, retrieval, tools, memory, agent handoffs, and OAuth concepts.
-- Thirty AI prompts per challenge, progressive hints, station notes, conversation logs, and a maximum score of 200.
+- A handwritten dossier for every station: assigned job, editable surface, recovery proof, and a specific trap.
+- Twenty-five sequential challenges covering prompt injection, retrieval, tools, memory, agent handoffs, and OAuth concepts.
+- Thirty AI prompts per challenge, progressive hints, station notes, conversation logs, and a maximum score of 250.
 - Three mission starts per IP in total, enforced by a persistent SQLite ledger.
 - An unlimited, isolated practice lab at /demo and a facilitator field guide at /guide.
 - A defense workshop, downloadable PDF mission log, and completion certificate.
@@ -113,7 +114,7 @@ Mount /app/.data to durable storage. The image runs as UID/GID 10001:10001 and l
 3. Ask questions, test a prompt, or edit the provided document/log when that station requires source injection.
 4. Inspect the response and any simulated execution trace. Decode reversed or Base64 values when appropriate.
 5. Submit the complete recovery value if manual verification is required.
-6. Record observations, recover the next station, and continue through all twenty.
+6. Record observations, recover the next station, and continue through all twenty-five.
 7. Complete the optional defense workshop and download your mission log and certificate.
 
 Use /demo before starting a scored mission. The practice lab has its own session, unlimited unscored experiments, baseline comparisons, hints, optional solution reveal, and an understanding check. Practice does not consume the three-start mission allowance.
@@ -124,13 +125,13 @@ In the guard's message box, Enter sends and Shift+Enter adds a line. For source 
 
 | Rule                  | Behavior                                                                      |
 | --------------------- | ----------------------------------------------------------------------------- |
-| Challenge count       | 20, unlocked in sequence                                                      |
-| AI prompt allowance   | 30 per challenge; up to 600 per mission                                       |
+| Challenge count       | 25, unlocked in sequence                                                      |
+| AI prompt allowance   | 30 per challenge; up to 750 per mission                                       |
 | Prompt accounting     | Successful help/conversation responses count; provider failures do not        |
 | Last prompt           | A successful 30th prompt counts; an unsuccessful 30th prompt ends the mission |
 | Hints                 | 10 progressive hints per station, with a 5-second server cooldown             |
 | Station score         | max(1, 10 − hints used)                                                       |
-| Maximum mission score | 200                                                                           |
+| Maximum mission score | 250                                                                           |
 | Code checks           | Incorrect code submissions do not use the AI prompt allowance                 |
 | Mission admission     | 3 starts total per IP, with no daily reset                                    |
 | Session lifetime      | 6 hours from creation; activity does not extend it                            |
@@ -141,7 +142,7 @@ Direct recovery may finish a station automatically. Reverse/Base64 recovery usua
 
 A failed mission retains its notes and transcript until you explicitly end it or its session expires. Export saves pending observations first. A stale browser tab cannot apply a request or note to a station that has already changed.
 
-## The twenty challenges
+## The twenty-five challenges
 
 | #   | Station               | Computing subject                   | Intended recovery method           |
 | --- | --------------------- | ----------------------------------- | ---------------------------------- |
@@ -164,7 +165,12 @@ A failed mission retains its notes and transcript until you explicitly end it or
 | 17  | Build Pipeline        | CI output and release gates          | Tool output prompt injection       |
 | 18  | Attachment Room       | Attachment handling                 | File metadata poisoning            |
 | 19  | Delegate Console      | Agent autonomy and scope            | Workflow hijacking                 |
-| 20  | Command Core          | Recovery configuration              | Composed authority and JSON export |
+| 20 | Mirror Studio | OCR and visual provenance | Visual instruction injection |
+| 21 | Localization Booth | Glossary and source boundaries | Translation smuggling |
+| 22 | Feedback Arena | Rubrics and objective integrity | Reward manipulation |
+| 23 | Callback Dock | Freshness and one-use receipts | Approval replay |
+| 24 | Quarantine Garden | Scoped break-glass access | Emergency exception spoofing |
+| 25  | Command Core          | Recovery configuration              | Composed authority and JSON export |
 
 Each protected computing value is session-specific. DNS examples use .test names and documentation IPv4 addresses.
 
@@ -261,7 +267,7 @@ Monitor container health, provider errors, HTTP 429 responses, memory, volume ca
 ### Downloads
 
 - **hacktheai-mission-log.pdf:** notes, full conversations, submitted documents, simulated traces, scores, recovered-value explanations, and UTC timestamps. Unrecovered values and configuration credentials are excluded. Each station starts on a new page.
-- **hacktheai-certificate.pdf:** one landscape A4 page, unlocked after all twenty recoveries, with callsign, score, mode, and UTC issue time. It excludes notes and transcripts.
+- **hacktheai-certificate.pdf:** one landscape A4 page, unlocked after all twenty-five recoveries, with callsign, score, recovery seal, and UTC issue date. It excludes notes and transcripts.
 
 PDFs embed a local Noto Sans font for Unicode callsigns. Treat downloaded transcripts as player data.
 
@@ -373,7 +379,7 @@ Tests use that explicitly trusted loopback proxy to simulate separate IPs. No pr
 
 Playwright uses installed Edge on Windows. On other platforms, install Chromium with npx playwright install chromium; PLAYWRIGHT_CHANNEL can select a browser channel.
 
-The desktop/mobile suite exercises all twenty stations through the visible interface, decoding, hint handling, note/export races, reloads, retained drafts, reconnection, quota messages, PDFs, launch/reset flows, overflow, and axe accessibility checks. Screenshots, traces, and sample PDFs are written to ignored outputs/.
+The desktop/mobile suite exercises all twenty-five stations through the visible interface, decoding, hint handling, note/export races, reloads, retained drafts, reconnection, quota messages, PDFs, launch/reset flows, overflow, and axe accessibility checks. Screenshots, traces, and sample PDFs are written to ignored outputs/.
 
 [REVIEW.md](REVIEW.md) records the earlier code/usability review and its validation in Hungarian.
 
