@@ -427,11 +427,9 @@ async function initialize() {
     const config = await api('/api/config');
     missionStartsRemaining = config.mission_starts_remaining;
     refreshButtons();
-    status(config.mode === 'live' ? config.model : 'TRAINING CHANNEL ONLINE');
+    status(config.mode === 'live' ? 'LIVE AI ONLINE' : 'TRAINING CHANNEL ONLINE');
     $('mode-label').textContent =
-      config.mode === 'live'
-        ? 'Live AI / Groq'
-        : 'Deterministic training mode / No live model calls';
+      config.mode === 'live' ? 'Live AI' : 'Deterministic training mode / No live model calls';
     $('station-grid').replaceChildren(
       ...config.stations.map((station, i) => {
         const button = element('button', undefined, 'station-card');

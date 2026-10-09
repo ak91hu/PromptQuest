@@ -151,10 +151,11 @@ async def headers_and_origin(request: Request, call_next):
             request.scope["scheme"] = forwarded_scheme
         if request.method == "POST":
             origin = request.headers.get("origin")
+            expected_origins = settings.public_origins or (str(request.url),)
             if (
                 request.headers.get("sec-fetch-site") == "cross-site"
                 or origin
-                and not same_origin(origin, str(request.url))
+                and not any(same_origin(origin, target) for target in expected_origins)
             ):
                 raise HTTPException(403, "Start this operation from the game page.")
             chunks, length = [], 0

@@ -4,6 +4,7 @@ import ipaddress
 import os
 from dataclasses import dataclass, field
 from typing import Mapping
+from urllib.parse import urlsplit
 
 DEFAULT_MODEL = "openai/gpt-oss-120b"
 SESSION_TTL_SECONDS = 6 * 60 * 60
@@ -27,6 +28,7 @@ class Settings:
     secure_cookies: bool
     api_key: str = field(repr=False)
     master_secret: str = field(repr=False)
+    public_origins: tuple[str, ...] = ()
 
     @classmethod
     def from_environment(cls, environment: Mapping[str, str] | None = None) -> "Settings":
@@ -35,6 +37,34 @@ class Settings:
         model = env.get("GROQ_MODEL", DEFAULT_MODEL).strip()
         api_key = env.get("GROQ_API_KEY", "").strip()
         master = env.get("MASTER_SECRET", "")
+        public_origin = env.get("PUBLIC_ORIGIN", "").strip()
+        origins = (
+            (public_origin,)
+            if public_origin
+            else tuple(
+                "https://" + host.strip()
+                for host in env.get("NF_HOSTS", "").split(",")
+                if host.strip()
+            )
+        )
+        try:
+            for origin in origins:
+                parsed = urlsplit(origin)
+                if (
+                    parsed.scheme not in {"http", "https"}
+                    or not parsed.hostname
+                    or parsed.username is not None
+                    or parsed.password is not None
+                    or parsed.path not in {"", "/"}
+                    or parsed.query
+                    or parsed.fragment
+                    or any(char.isspace() for char in origin)
+                ):
+                    raise ValueError
+                # Accessing port also rejects malformed/out-of-range ports.
+                parsed.port
+        except ValueError:
+            raise ValueError("Configure a valid PUBLIC_ORIGIN or Northflank NF_HOSTS.") from None
         if mode not in {"demo", "live"}:
             raise ValueError("GAME_MODE must be demo or live.")
         if not model:
@@ -77,5 +107,7 @@ class Settings:
             trusted_proxy_cidrs=trusted,
             provider_token_limit=token_limit,
             provider_daily_token_limit=daily_limit,
-            secure_cookies=env.get("SECURE_COOKIES", "").lower() in {"1", "true", "yes"},
+            secure_cookies=env.get("SECURE_COOKIES", "").lower() in {"1", "true", "yes"}
+            or any(urlsplit(origin).scheme == "https" for origin in origins),
+            public_origins=tuple(origin.rstrip("/") for origin in origins),
         )

@@ -278,6 +278,12 @@ Uvicorn's automatic proxy-header processing is disabled. Socket IPs are authorit
 
 Use the actual ingress peer addresses/networks supplied for your deployment. Do not guess a broad private range or enable blanket trust. An empty trust configuration behind a load balancer makes users share the proxy's quota. Northflank supplies X-Forwarded-For, but its presence alone does not establish trust; see [Northflank networking](https://northflank.com/docs/v1/application/network/networking-on-northflank).
 
+For browser origin checks behind HTTPS termination, the application automatically
+uses the HTTPS hostnames Northflank injects in `NF_HOSTS`. On another platform, set
+`PUBLIC_ORIGIN` to the external URL (scheme and host, without a path), for example
+`https://game.example.com`. An explicit `PUBLIC_ORIGIN` overrides automatic host
+discovery. This controls allowed browser origins independently of proxy/IP trust.
+
 The ledger stores keyed IP hashes rather than raw IP addresses. This is IP-based enforcement, not identity verification: shared networks share quotas and changed networks have different allowances. Hosting/provider services may retain their own logs according to their policies.
 
 ## Application structure

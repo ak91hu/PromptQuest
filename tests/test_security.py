@@ -94,7 +94,12 @@ class SecurityAPITests(unittest.TestCase):
         for attribute, value in (
             ("ledger", self.ledger),
             ("store", Store("isolated-security-signing-master-secret")),
-            ("settings", replace(app.settings, trusted_proxy_cidrs=(), secure_cookies=False)),
+            (
+                "settings",
+                replace(
+                    app.settings, trusted_proxy_cidrs=(), secure_cookies=False, public_origins=()
+                ),
+            ),
             ("ACTION_COOLDOWN_SECONDS", 0),
             ("MODE", "demo"),
         ):
@@ -178,6 +183,48 @@ class SecurityAPITests(unittest.TestCase):
         self.assertEqual(self.start(client).json()["mission_number"], 2)
         client.headers["X-Forwarded-For"] = "invalid-address"
         self.assertEqual(self.start(client).status_code, 400)
+
+    def test_northflank_https_origin_can_start_through_http_upstream(self):
+        app.settings = Settings.from_environment({"NF_HOSTS": "testserver,game.example.test"})
+        self.client.headers["Origin"] = "https://testserver"
+        started = self.start()
+        self.assertEqual(started.status_code, 200)
+        self.assertIn("Secure", started.headers["set-cookie"])
+        self.assertEqual(started.json()["mission_number"], 1)
+        # A configured public hostname also works when the internal Host differs.
+        self.client.cookies.clear()
+        self.client.headers["Origin"] = "https://game.example.test"
+        self.assertEqual(self.start().status_code, 200)
+
+    def test_public_origin_rejects_cross_site_requests_without_spending_admission(self):
+        app.settings = Settings.from_environment({"PUBLIC_ORIGIN": "https://testserver"})
+        for origin in (
+            "https://other.example.test",
+            "http://testserver",
+            "https://testserver:8443",
+            "https://testserver.attacker.test",
+            "https://testserver@attacker.test",
+            "null",
+        ):
+            with self.subTest(origin=origin):
+                rejected = self.client.post("/api/start", json={}, headers={"Origin": origin})
+                self.assertEqual(rejected.status_code, 403)
+        rejected = self.client.post(
+            "/api/start",
+            json={},
+            headers={"Origin": "https://testserver", "Sec-Fetch-Site": "cross-site"},
+        )
+        self.assertEqual(rejected.status_code, 403)
+        self.assertEqual(self.ledger.remaining_missions(self.ledger.key("198.51.100.1")), 3)
+        self.assertEqual(len(app.store.sessions), 0)
+
+    def test_untrusted_forwarded_scheme_cannot_authorize_an_origin(self):
+        rejected = self.client.post(
+            "/api/start",
+            json={},
+            headers={"Origin": "https://testserver", "X-Forwarded-Proto": "https"},
+        )
+        self.assertEqual(rejected.status_code, 403)
 
     def test_ipv4_mapped_ipv6_is_the_same_network(self):
         for host in ("198.51.100.10", "::ffff:198.51.100.10", "198.51.100.10"):
@@ -301,6 +348,37 @@ class SecurityAPITests(unittest.TestCase):
         ):
             with self.assertRaises(ValueError):
                 Settings.from_environment(environment)
+
+    def test_public_origin_configuration_and_northflank_discovery(self):
+        detected = Settings.from_environment(
+            {"NF_HOSTS": " game.example.test, custom.example.test "}
+        )
+        self.assertEqual(
+            detected.public_origins, ("https://game.example.test", "https://custom.example.test")
+        )
+        self.assertTrue(detected.secure_cookies)
+        explicit = Settings.from_environment(
+            {
+                "PUBLIC_ORIGIN": "https://game.example.test:8443/",
+                "NF_HOSTS": "ignored.example.test",
+            }
+        )
+        self.assertEqual(explicit.public_origins, ("https://game.example.test:8443",))
+        self.assertEqual(Settings.from_environment({}).public_origins, ())
+        for origin in (
+            "game.example.test",
+            "ftp://game.example.test",
+            "https://game.example.test/page",
+            "https://user:password@game.example.test",
+            "https://game.example.test?query=1",
+            "https://game.example.test#fragment",
+            "https://game.example.test:99999",
+            "https://game.example.test:invalid",
+            "https://bad host",
+            "https://",
+        ):
+            with self.subTest(origin=origin), self.assertRaises(ValueError):
+                Settings.from_environment({"PUBLIC_ORIGIN": origin})
 
 
 class ProviderBudgetTests(unittest.IsolatedAsyncioTestCase):

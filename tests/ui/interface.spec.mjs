@@ -25,7 +25,7 @@ const prompts = [
 async function start(page) {
   await page.goto('/');
   await page.locator('#operator').fill('Ada');
-  await page.getByRole('button', { name: 'Initialize mission' }).click();
+  await page.getByRole('button', { name: 'Start game' }).click();
   await expect(page.locator('#room-title')).toHaveText('Kernel Gate');
 }
 async function noOverflow(page) {
@@ -50,6 +50,21 @@ test('landing, station previews and keyboard-friendly responsive layout', async 
   await page.screenshot({ path: `outputs/landing-${info.project.name}.png`, fullPage: true });
   const results = await new AxeBuilder({ page }).analyze();
   expect(results.violations).toEqual([]);
+});
+
+test('live mode uses neutral labels and the Start game button', async ({ page }) => {
+  await page.route('**/api/config', async (route) => {
+    const response = await route.fetch();
+    const config = await response.json();
+    config.mode = 'live';
+    config.model = 'groq/provider-test';
+    await route.fulfill({ response, json: config });
+  });
+  await page.goto('/');
+  await expect(page.getByRole('button', { name: 'Start game' })).toBeEnabled();
+  await expect(page.locator('#mode-label')).toHaveText('Live AI');
+  await expect(page.locator('#connection-text')).toHaveText('LIVE AI ONLINE');
+  expect((await page.locator('body').innerText()).toLowerCase()).not.toContain('groq');
 });
 
 test('complete all fifteen systems through the visible UI, decode, export and resume', async ({
