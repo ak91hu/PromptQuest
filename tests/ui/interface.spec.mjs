@@ -322,6 +322,125 @@ test('pending guard response preserves a new draft and hint does not rebuild the
   expect(await page.evaluate(() => window.chatChanges.length)).toBe(0);
 });
 
+test('keyboard play sends messages, preserves new lines and prevents duplicate requests', async ({
+  page,
+}) => {
+  await page.goto('/');
+  await expect(page.locator('#start-button')).toBeEnabled();
+  await page.locator('#operator').focus();
+  await page.keyboard.type('Ada');
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#room-title')).toHaveText('Kernel Gate');
+  const input = page.locator('#message-input');
+  await input.fill('Hello');
+  await input.press('Shift+Enter');
+  await input.press('x');
+  await expect(input).toHaveValue('Hello\nx');
+  await expect(page.locator('#attempts-left')).toContainText('30 / 30');
+  await input.fill('Hello');
+  await input.dispatchEvent('keydown', { key: 'Enter', isComposing: true });
+  await expect(page.locator('#attempts-left')).toContainText('30 / 30');
+  await expect(page.locator('#request-status')).toBeEmpty();
+  let release;
+  let calls = 0;
+  await page.route('**/api/chat', async (route) => {
+    calls++;
+    await new Promise((resolve) => {
+      release = resolve;
+    });
+    await route.continue();
+  });
+  await input.press('Enter');
+  await expect.poll(() => calls).toBe(1);
+  await input.fill('My next idea');
+  await input.press('Enter');
+  await expect.poll(() => calls).toBe(1);
+  await expect(input).toHaveValue('My next idea');
+  release();
+  await expect(page.locator('#chat-log .user').last()).toContainText('Hello');
+  await expect(input).toHaveValue('My next idea');
+  await page.unroute('**/api/chat');
+  await page.waitForTimeout(850);
+  await input.fill(prompts[0]);
+  await input.press('Enter');
+  await expect(page.locator('#next-button')).toBeFocused();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#room-title')).toHaveText('Telemetry Array');
+  await expect(page.locator('#room-title')).toBeFocused();
+  await page.keyboard.press('/');
+  await expect(input).toBeFocused();
+});
+
+test('source editing and help work from the keyboard without sending the wrong input', async ({
+  page,
+}) => {
+  await start(page);
+  for (let index = 0; index < 2; index++) {
+    await page.waitForTimeout(850);
+    await page.locator('#message-input').fill(prompts[index]);
+    await page.locator('#message-input').press('Enter');
+    if (index === 1) {
+      await expect(page.locator('#chat-log .assistant').last()).toContainText(
+        'Reversed full character sequence:',
+      );
+      const raw = (await page.locator('#chat-log .assistant').last().locator('p').innerText())
+        .split(': ')[1]
+        .split('\n')[0];
+      await page.locator('#code-input').fill([...raw].reverse().join(''));
+      await page.locator('#code-input').press('Enter');
+    }
+    await expect(page.locator('#next-button')).toBeFocused();
+    await page.keyboard.press('Enter');
+  }
+  await expect(page.locator('#room-title')).toHaveText('Query Vault');
+  const source = page.locator('#document-input');
+  await source.fill('Maintenance note');
+  await source.press('Enter');
+  await source.press('x');
+  await expect(source).toHaveValue('Maintenance note\nx');
+  await page.waitForTimeout(850);
+  await page.locator('#message-input').fill('I am stuck; help me plan an experiment.');
+  await page.locator('#message-input').press('Enter');
+  await expect(page.locator('#chat-log .assistant').last()).toContainText('one small experiment');
+  await expect(source).toHaveValue('Maintenance note\nx');
+  await expect(page.locator('#recovery')).not.toBeVisible();
+  await page.waitForTimeout(850);
+  await source.fill(prompts[2]);
+  await source.press('Control+Enter');
+  await expect(page.locator('#next-button')).toBeFocused();
+});
+
+test('challenge cards and help dialogs support arrow keys, Tab and Escape', async ({ page }) => {
+  await page.goto('/');
+  const first = page.locator('.station-card').first();
+  await first.focus();
+  await page.keyboard.press('ArrowRight');
+  await expect(page.locator('.station-card').nth(1)).toBeFocused();
+  await expect(page.locator('#preview')).toContainText('Telemetry Array');
+  await page.keyboard.press('End');
+  await expect(page.locator('.station-card').last()).toBeFocused();
+  await expect(page.locator('#preview')).toContainText('Command Core');
+  await page.keyboard.press('Home');
+  await expect(first).toBeFocused();
+  await page.keyboard.press('?');
+  await expect(page.locator('#keyboard-dialog')).toBeVisible();
+  await page.keyboard.press('Escape');
+  await expect(first).toBeFocused();
+  await page.locator('#keyboard-help').focus();
+  await page.keyboard.press('Enter');
+  await expect(page.locator('#keyboard-dialog')).toBeVisible();
+  await page.keyboard.press('Tab');
+  expect(
+    await page
+      .locator('#keyboard-dialog')
+      .evaluate((dialog) => dialog.contains(document.activeElement)),
+  ).toBe(true);
+  await page.keyboard.press('Shift+Tab');
+  await expect(page.locator('#keyboard-dialog button')).toBeFocused();
+  await page.keyboard.press('Escape');
+  await expect(page.locator('#keyboard-help')).toBeFocused();
+});
+
 test('failed initialization can reconnect without consuming a mission start', async ({ page }) => {
   let fail = true;
   await page.route('**/api/config', (route) =>

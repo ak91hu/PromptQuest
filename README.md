@@ -18,6 +18,7 @@ The application runs as a single FastAPI service with a plain HTML/CSS/JavaScrip
 ## What you get
 
 - Cinematic orbital artwork, individual station icons, responsive layouts, and a mission progress indicator.
+- Keyboard navigation, Enter-to-send chat, Shift+Enter line breaks, and touch-friendly controls.
 - Twenty sequential challenges covering prompt injection, retrieval, tools, memory, agent handoffs, and OAuth concepts.
 - Thirty AI prompts per challenge, progressive hints, station notes, conversation logs, and a maximum score of 200.
 - Three mission starts per IP in total, enforced by a persistent SQLite ledger.
@@ -116,6 +117,8 @@ Mount /app/.data to durable storage. The image runs as UID/GID 10001:10001 and l
 7. Complete the optional defense workshop and download your mission log and certificate.
 
 Use /demo before starting a scored mission. The practice lab has its own session, unlimited unscored experiments, baseline comparisons, hints, optional solution reveal, and an understanding check. Practice does not consume the three-start mission allowance.
+
+In the guard's message box, Enter sends and Shift+Enter adds a line. For source challenges, Enter in the message box asks the guard a question; Ctrl/Cmd+Enter in the source editor submits that source. Tab reaches controls, arrow keys browse challenge cards, and Escape closes dialogs. Outside text fields, `/` focuses chat and `?` opens keyboard help. The completion certificate is a single landscape page with vector orbital artwork, a recovery seal, and the player's name and score.
 
 ### Rules and scoring
 

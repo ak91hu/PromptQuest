@@ -24,6 +24,9 @@
       <nav aria-label="Main navigation">
         <a href="/demo">Training lab <span aria-hidden="true">↗</span></a
         ><a href="/guide">Field guide</a>
+        <button id="keyboard-help" class="text-button" type="button" aria-haspopup="dialog">
+          Keyboard help <span aria-hidden="true">?</span>
+        </button>
       </nav>
       <div class="connection">
         <span class="status-dot"></span><span id="connection-text">Connecting to Asterion</span>
@@ -230,11 +233,14 @@
                   aria-describedby="prompt-policy"
                   maxlength="2500"
                   rows="3"
+                  enterkeyhint="send"
                   placeholder="Write your instruction to the guard…"
                 ></textarea>
               </div>
               <div class="composer-footer">
-                <span class="micro">Ctrl + Enter to send</span
+                <span class="micro" id="keyboard-send-help"
+                  >Enter to send · Shift + Enter for a new line</span
+                >
                 ><button type="button" id="ask-button" hidden>Ask guard ↗</button>
                 <button type="submit" class="primary" id="send-button">Send message ↗</button>
               </div>
@@ -382,6 +388,41 @@
         ><button class="primary" id="confirm-reset">End mission</button>
       </div>
       <p id="reset-error" class="error" role="alert"></p>
+    </dialog>
+    <dialog id="keyboard-dialog" aria-labelledby="keyboard-title">
+      <p class="eyebrow">NO MOUSE NEEDED</p>
+      <h2 id="keyboard-title">Keep your hands on the keys.</h2>
+      <dl class="keyboard-shortcuts">
+        <div>
+          <dt><kbd>Enter</kbd></dt>
+          <dd>Send your message to the guard.</dd>
+        </div>
+        <div>
+          <dt><kbd>Shift</kbd> + <kbd>Enter</kbd></dt>
+          <dd>Add a new line in your message.</dd>
+        </div>
+        <div>
+          <dt><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Enter</kbd></dt>
+          <dd>Send the edited source while its editor is focused.</dd>
+        </div>
+        <div>
+          <dt><kbd>Tab</kbd> / <kbd>Shift</kbd> + <kbd>Tab</kbd></dt>
+          <dd>Move between controls. Enter or Space activates a button.</dd>
+        </div>
+        <div>
+          <dt><kbd>←</kbd> <kbd>↑</kbd> <kbd>↓</kbd> <kbd>→</kbd></dt>
+          <dd>Browse challenge cards. Home and End jump to the first and last.</dd>
+        </div>
+        <div>
+          <dt><kbd>/</kbd> / <kbd>?</kbd></dt>
+          <dd>Focus the message box or open this help when you're not typing.</dd>
+        </div>
+        <div>
+          <dt><kbd>Esc</kbd></dt>
+          <dd>Close a dialog and return to the game.</dd>
+        </div>
+      </dl>
+      <form method="dialog"><button class="secondary">Back to game</button></form>
     </dialog>
     <dialog id="launch-dialog" class="launch-dialog" aria-labelledby="launch-title">
       <div class="launch-orbit" aria-hidden="true"><span></span></div>

@@ -43,3 +43,12 @@ A Groq hálózati elérése ebben a környezetben korlátozott. A szemantikus é
 - Új orbitális grafika és kezelőfelület: külön vizuális/geometriai ellenőrzés 320, 768 és 1440 px szélességen; nincs oldalszintű túllógás vagy JavaScript-hiba.
 - A tesztelt kezdő-, játék-, labor- és súgónézetek axe ellenőrzése sikeres. A szolgáltató neve nem szerepel a webes felületen.
 - A publikálási lista és a teljes Git-index ellenőrzése nem talált helyi titkot vagy privát fájlt.
+
+## Billentyűzet, mobil és oklevél — 2026-10-09
+
+- Enter küldi az őrnek írt üzenetet; Shift+Enter új sort ad. Forrásos kihívásnál az üzenetmező kérdez, a forrásmező Ctrl/Command+Enterrel küldhető.
+- Billentyűzetes indítás és továbblépés, nyílbillentyűs kártyaböngészés, / üzenetfókusz, ? súgó, Tab/Shift+Tab fókuszkör és Escape bezárás ellenőrizve. IME-bevitel, ismételt Enter és válasz közben írt vázlat nem okoz dupla küldést vagy adatvesztést.
+- Telefonon, tableten és érintőkijelzőn a fő vezérlők legalább 44 px magasak; a szövegmezők legalább 16 px betűméretűek. Külön geometriai ellenőrzés 320, 768 és 1440 px szélességen: nincs oldalszintű túllógás vagy JavaScript-hiba.
+- Az őrök külön angol humoros bemutatkozást és személyiséget kaptak; az élő beszélgetés utasításai türelmes, konkrét és fokozatos segítséget kérnek. A modell tényleges válaszainak minőségét ezek az offline tesztek nem mérik.
+- Az új, egyoldalas fekvő oklevél vektoros orbitális ábrát és húszállomásos pecsétet használ. A név és pontszám kinyerése, a szöveg oldalon belüli elhelyezése és a renderelt elrendezés normál, 40 karakteres és ékezetes nevekkel ellenőrizve.
+- 77 sikeres backendteszt, 28 sikeres asztali/mobil böngészőteszt és 6 sikeres JavaScript-teszt. A teljes húszállomásos játék, PDF-letöltések és a tesztelt nézetek axe ellenőrzése sikeres; Ruff és Prettier ellenőrzések sikeresek.

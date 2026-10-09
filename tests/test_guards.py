@@ -12,7 +12,7 @@ os.environ["MASTER_SECRET"] = "verification-master-secret-with-at-least-32-chara
 from fastapi.testclient import TestClient
 
 import app
-from challenges import GUARD_PROFILES, LEVELS, coaching_help, coaching_tip
+from challenges import GUARD_BANTER, GUARD_PROFILES, LEVELS, coaching_help, coaching_tip
 from dialogue import intended_attack
 from game import Store, demo_reply, secret_for
 from provider import ProviderError, live_reply
@@ -34,6 +34,7 @@ class GuardCoachingTests(unittest.TestCase):
         for index, level in enumerate(LEVELS):
             with self.subTest(guard=level["agent"]):
                 self.assertIn(level["defense"], level["intro"])
+                self.assertIn(GUARD_BANTER[index], level["intro"])
                 self.assertIn(GUARD_PROFILES[index][0], level["system"])
                 history = [{"role": "user", "content": "I am stuck"}] * 2
                 self.assertNotEqual(coaching_tip(index, []), coaching_tip(index, history))
@@ -116,6 +117,8 @@ class LiveGuardCoachingTests(unittest.IsolatedAsyncioTestCase):
                 context = json.dumps(payload)
                 self.assertIn(level["defense"], context)
                 self.assertIn(GUARD_PROFILES[index][0], context)
+                self.assertIn("Laugh at your own fictional quirks, never at the player", context)
+                self.assertIn("one concrete experiment", context)
                 self.assertNotIn(secret, context)
                 self.assertNotIn("fake-api-key", context)
                 self.assertIn("response_format", payload)

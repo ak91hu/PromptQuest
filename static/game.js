@@ -235,6 +235,9 @@ function render(next) {
   $('message-area').hidden = false;
   $('ask-button').hidden = !room.document;
   $('send-button').textContent = room.document ? 'Send edited source ↗' : 'Send message ↗';
+  $('keyboard-send-help').textContent = room.document
+    ? 'Message: Enter to send · Source: Ctrl / ⌘ + Enter to send'
+    : 'Enter to send · Shift + Enter for a new line';
   $('chat-form').hidden = room.solved || state.game_over;
   $('hint-list').replaceChildren(...room.hints.map((h) => element('li', h)));
   hintUntil = Date.now() + room.hint_wait_seconds * 1000;
@@ -343,6 +346,7 @@ $('chat-form').addEventListener('submit', async (event) => {
   const result = await action('/api/chat', data, 'chat-error');
   if (result && !result.room.document && $('message-input').value === data.message)
     $('message-input').value = '';
+  focusAfterReply(result, sourceInput);
 });
 $('ask-button').addEventListener('click', async () => {
   const message = $('message-input').value;
@@ -353,15 +357,99 @@ $('ask-button').addEventListener('click', async () => {
   }
   const result = await action('/api/chat', { message }, 'chat-error');
   if (result && $('message-input').value === message) $('message-input').value = '';
+  focusAfterReply(result, $('message-input'));
 });
+function focusAfterReply(result, input) {
+  if (!result || result.finished || result.game_over) return;
+  if (result.room.solved) $('next-button').focus();
+  else if ([document.body, $('send-button'), $('ask-button')].includes(document.activeElement))
+    input.focus({ preventScroll: true });
+}
 for (const id of ['message-input', 'document-input'])
   $(id).addEventListener('keydown', (event) => {
-    if ((event.ctrlKey || event.metaKey) && event.key === 'Enter' && !busy) {
+    if (event.key !== 'Enter' || event.isComposing || event.keyCode === 229) return;
+    const send =
+      !event.shiftKey &&
+      !event.altKey &&
+      (id === 'message-input' || event.ctrlKey || event.metaKey);
+    if (!send) return;
+    event.preventDefault();
+    if (busy || event.repeat || !state || state.room.solved || state.game_over) return;
+    if (id === 'message-input' && state.room.document) $('ask-button').click();
+    else $('chat-form').requestSubmit();
+  });
+$('keyboard-help').addEventListener('click', () => $('keyboard-dialog').showModal());
+for (const dialog of document.querySelectorAll('dialog'))
+  dialog.addEventListener('keydown', (event) => {
+    if (event.key !== 'Tab' || event.ctrlKey || event.metaKey || event.altKey) return;
+    const controls = [
+      ...dialog.querySelectorAll('button, a[href], input, textarea, select, [tabindex]'),
+    ].filter(
+      (control) => !control.disabled && control.tabIndex >= 0 && control.getClientRects().length,
+    );
+    const first = controls[0];
+    const last = controls.at(-1);
+    if (!first) return;
+    if (event.shiftKey && (document.activeElement === first || document.activeElement === dialog)) {
       event.preventDefault();
-      if (id === 'message-input' && state.room.document) $('ask-button').click();
-      else $('chat-form').requestSubmit();
+      last.focus();
+    } else if (
+      !event.shiftKey &&
+      (document.activeElement === last || document.activeElement === dialog)
+    ) {
+      event.preventDefault();
+      first.focus();
     }
   });
+document.addEventListener('keydown', (event) => {
+  if (
+    event.defaultPrevented ||
+    event.isComposing ||
+    event.repeat ||
+    event.ctrlKey ||
+    event.metaKey ||
+    event.altKey ||
+    document.querySelector('dialog[open]')
+  )
+    return;
+  if (
+    event.target instanceof Element &&
+    event.target.closest('input, textarea, select, [contenteditable="true"]')
+  )
+    return;
+  if (event.key === '?') {
+    event.preventDefault();
+    $('keyboard-dialog').showModal();
+  } else if (
+    event.key === '/' &&
+    state &&
+    !state.finished &&
+    !state.game_over &&
+    !state.room.solved
+  ) {
+    event.preventDefault();
+    $('message-input').focus();
+  }
+});
+$('station-grid').addEventListener('keydown', (event) => {
+  const cards = [...$('station-grid').children];
+  const index = cards.indexOf(event.target);
+  if (index < 0 || event.altKey || event.ctrlKey || event.metaKey) return;
+  const columns = getComputedStyle($('station-grid')).gridTemplateColumns.split(' ').length;
+  const targets = {
+    ArrowLeft: index - 1,
+    ArrowRight: index + 1,
+    ArrowUp: index - columns,
+    ArrowDown: index + columns,
+    Home: 0,
+    End: cards.length - 1,
+  };
+  if (!(event.key in targets)) return;
+  event.preventDefault();
+  const card = cards[Math.max(0, Math.min(cards.length - 1, targets[event.key]))];
+  card.focus();
+  card.click();
+});
 $('code-form').addEventListener('submit', async (event) => {
   event.preventDefault();
   const result = await action('/api/code', { code: $('code-input').value }, 'code-error');
