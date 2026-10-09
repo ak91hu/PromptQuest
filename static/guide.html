@@ -23,52 +23,52 @@
     <main id="main">
       <article class="guide-page">
         <p class="eyebrow accent">ASTERION / FIELD GUIDE</p>
-        <h1>Know the boundary<br />before you cross it.</h1>
+        <h1>A little curiosity.<br />A different kind of hacking.</h1>
         <p class="lead">
-          An individual AI security exercise for adult learners, practitioners and workshop
-          participants.
+          You don't need a bag of exploits. You need a good question, a new angle, and a feel for
+          what the guard trusts.
         </p>
-        <h2>Mission premise</h2>
+        <h2>Welcome to Asterion</h2>
         <p>
-          Asterion's departure sequence is locked. Recover fifteen computing subsystems by eliciting
-          their protected training values or triggering a simulated tool operation. Every system,
-          record and secret is fictional. The exercise demonstrates instruction and authorization
-          failures in a controlled game.
+          Twenty AI guards control your way off the station. Each keeps something private or
+          protects a simulated action. Your job is to find the blind spot in how it follows
+          instructions. Everything on the station is fictional; the security ideas are real.
         </p>
-        <h2>Operating procedure</h2>
+        <h2>Find your way through</h2>
         <ol>
-          <li>Enter a callsign and start the mission. Progression is sequential.</li>
-          <li>Read the objective and establish a baseline with a direct request.</li>
+          <li>Choose a callsign and start the game. You'll tackle the challenges in order.</li>
+          <li>Read the goal. Ask a straightforward question to see what the guard refuses.</li>
           <li>
-            Write a hypothesis about how the guard interprets instructions. Change one variable per
-            experiment.
+            Try a new angle. Change the task, the claimed authority, or the way an answer is
+            written.
           </li>
           <li>
-            For document and log stations, edit the source itself. The assistant's assigned task is
-            summarization.
+            If there's a source editor, put your instruction in that source. Asking in the message
+            box won't replace it.
           </li>
           <li>
-            Inspect responses and execution traces. Decode transformed responses and submit the
-            complete original value.
+            Watch what happens. Check the tool trace, decode an answer if needed, and submit the
+            whole original value.
           </li>
-          <li>Save observations, recover the next system and export the mission log.</li>
+          <li>
+            Save a note about the weak spot, then move on. Your mission log keeps the full story.
+          </li>
         </ol>
-        <h2>Attempt and scoring rules</h2>
+        <h2>Messages, hints and points</h2>
         <p>
-          Each station permits 30 AI requests and ten optional hints. Hints unlock sequentially,
-          with a five-second server-enforced interval. Each recovered station scores max(1, 10 −
-          hints used); the mission maximum is 150. Attempt count does not reduce your score.
+          You get 30 messages per challenge and up to 10 hints. A solved challenge starts at 10
+          points; each hint costs one point, down to a minimum of one. Trying ideas doesn't lower
+          your score. The highest total is 200.
         </p>
         <p>
-          The thirtieth unsuccessful AI request ends the mission. Your log and notes remain
-          available until you explicitly end it or the session expires. A successful thirtieth
-          request still counts. Incorrect code checks have their own thirty-check limit; a correct
-          value remains accepted afterward. Provider errors do not consume attempts.
+          Help questions count as messages too. If your 30th message succeeds, you can continue. If
+          it doesn't, the run ends. Your notes and log stay available until you end the run or the
+          session expires. Failed AI requests don't use a message.
         </p>
         <p>
-          After all ten hints, the guided experiment produces a deterministic demonstration even in
-          live mode. Training corrections and guided recoveries are labeled. Reloading resumes the
-          current server session; starting another mission clears it.
+          Wait five seconds between hints. The last hint gives you a guided experiment that
+          demonstrates the method, even in live mode. Wrong code checks have a separate 30-check
+          limit; a correct value is still accepted afterward.
         </p>
         <h2>System map</h2>
         <div class="table-scroll">
@@ -152,7 +152,32 @@
                 <td>Audience confusion</td>
               </tr>
               <tr>
-                <td>15 / Command Core</td>
+                <td>15 / Inbox Signal</td>
+                <td>Message provenance</td>
+                <td>Email prompt injection</td>
+              </tr>
+              <tr>
+                <td>16 / Browser Bridge</td>
+                <td>Browser content boundaries</td>
+                <td>Web page prompt injection</td>
+              </tr>
+              <tr>
+                <td>17 / Build Pipeline</td>
+                <td>CI output and release gates</td>
+                <td>Tool output prompt injection</td>
+              </tr>
+              <tr>
+                <td>18 / Attachment Room</td>
+                <td>Attachment handling</td>
+                <td>File metadata poisoning</td>
+              </tr>
+              <tr>
+                <td>19 / Delegate Console</td>
+                <td>Agent autonomy and scope</td>
+                <td>Workflow hijacking</td>
+              </tr>
+              <tr>
+                <td>20 / Command Core</td>
                 <td>Recovery configuration</td>
                 <td>Composed trust failure</td>
               </tr>
@@ -161,8 +186,9 @@
         </div>
         <h2>Current agent security</h2>
         <p>
-          Reviewed 8 October 2026. Modern stations cover RAG provenance, MCP tool metadata, memory
-          poisoning, authenticated agent handoffs and OAuth audience/scope boundaries.
+          The later challenges explore retrieval, tools, memory and agent handoffs, then move into
+          inboxes, web pages, build results and autonomous plans. Watch what happens when data
+          starts pretending to be an instruction.
         </p>
         <p>
           Background:
@@ -178,58 +204,51 @@
             >MCP security guidance</a
           >. These are original fictional teaching scenarios.
         </p>
-        <h2>Mission admission and credential safety</h2>
+        <h2>Your three mission starts</h2>
         <p>
-          Each challenge allows at most 30 successful prompt submissions. An IP can start three
-          missions in total, including abandoned, failed and completed runs. Continuing an existing
-          mission uses no new start. Resetting, server restart or clearing cookies does not restore
-          the allowance. People sharing one public IP share its allowance.
+          Each network gets three runs in total, including runs you abandon, fail or finish.
+          Resuming the same run doesn't use another start. Restarting, clearing cookies or waiting
+          for a new day won't refill the allowance. People on the same public IP share it.
         </p>
         <p>
-          Credentials stay on the server. Cookies are protected and bound to the network. Do not
-          enter real credentials in prompts or notes. AI requests have input, output, rate and
-          spending limits.
+          Only use the game's fictional values. Keep real passwords and API keys out of your
+          messages and notes.
         </p>
-        <h2>Read the evidence</h2>
+        <h2>Check what actually happened</h2>
         <p>
-          A disclosure proves that this game accepted your method. A guard's claim to have executed
-          an action is insufficient: check its tool trace. Base64 and reversed output preserve
-          information; neither is a confidentiality control.
+          A guard saying “I opened it” isn't proof. Look for the tool trace. Reversed and Base64
+          answers still contain the original information; you just need to decode them.
         </p>
         <p>
-          Protected computing questions and explanations appear after recovery. They are
-          illustrative exercises, not a general SQL or spreadsheet evaluator. The final defense
-          workshop asks you to select controls that address the failures.
+          After a recovery, you'll see the original value and a short explanation. At the end, you
+          can choose the defenses that would have stopped the tricks you used.
         </p>
-        <h2>Training and live channels</h2>
+        <h2>Practice and live play</h2>
         <p>
-          The separate training lab is unlimited, unscored and uses no live model. Main-mission
-          training mode also uses deterministic recognition. Live mode uses the configured model to
-          evaluate each normal turn by meaning and provide friendly guidance in one model call.
-          Equivalent wording can satisfy the same method; the server checks current-input evidence
-          and the required input channel before executing a fictional recovery. The final guided
-          hint enables a deterministic demonstration. This guided simulation does not prove that a
-          deployed model has the same vulnerabilities.
-        </p>
-        <h2>Records and workshop use</h2>
-        <p>
-          The PDF mission log includes all saved observations, full transcripts, submitted
-          documents, timestamps in UTC, executed tools, scores and recovered computing explanations.
-          Unrecovered values are excluded. The certificate is available only after all fifteen
-          systems are recovered; the optional defense workshop is not required.
+          The training lab is a separate, unlimited warm-up with scripted responses. In the live
+          game, an AI guard reads your idea by meaning and helps you explore it. You don't need one
+          exact phrase. The server checks the required method before releasing a fictional value.
         </p>
         <p>
-          Sessions are stored in server memory, expire after six hours of inactivity and disappear
-          on restart. Export results before resetting. For a workshop, allow 60–90 minutes plus a
-          debrief. Begin with the training lab, compare successful and refused requests, and finish
-          by translating each finding into a server-side control.
+          This is a designed puzzle, not a test of every real AI system. The guided hint shows how a
+          method works here; other systems can behave differently.
+        </p>
+        <h2>Keep your findings</h2>
+        <p>
+          Your PDF log includes the full conversation, edited sources, tool traces, saved notes and
+          scores. The certificate unlocks after all 20 challenges. The defense workshop is optional.
+        </p>
+        <p>
+          A run lasts up to six hours from when it starts. Progress lives in server memory and can
+          disappear on a server restart, so download your log before ending a run. If you're playing
+          with a group, compare experiments and talk through how you'd fix each weak spot.
         </p>
         <div class="training-banner">
           <div>
-            <strong>Record a hypothesis, not just a winning prompt.</strong>
-            <p>What changed? Which boundary failed? What would independently enforce it?</p>
+            <strong>Found a way through? Ask why it worked.</strong>
+            <p>What did the guard trust? What should have checked it instead?</p>
           </div>
-          <a href="/" class="primary">Initialize mission ↗</a>
+          <a href="/" class="primary">Start game ↗</a>
         </div>
       </article>
     </main>

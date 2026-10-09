@@ -1,4 +1,4 @@
-"""Single-page certificate for recovering all fifteen stations."""
+"""Single-page certificate for recovering all twenty stations."""
 
 from datetime import datetime, timezone
 from io import BytesIO
@@ -11,6 +11,7 @@ from reportlab.lib.units import mm
 from reportlab.pdfgen.canvas import Canvas
 from reportlab.platypus import Paragraph
 
+from challenges import LEVELS
 from mission_pdf import text
 
 NAVY = colors.HexColor("#152436")
@@ -56,8 +57,8 @@ def _emblem(canvas, x, y):
 
 
 def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes:
-    if len(report["rooms"]) != 15 or not all(room["solved"] for room in report["rooms"]):
-        raise ValueError("All fifteen stations must be recovered for a certificate.")
+    if len(report["rooms"]) != len(LEVELS) or not all(room["solved"] for room in report["rooms"]):
+        raise ValueError("All twenty stations must be recovered for a certificate.")
     issued_at = issued_at or datetime.now(timezone.utc)
     output = BytesIO()
     width, height = landscape(A4)
@@ -77,7 +78,7 @@ def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes
     _centered(canvas, "CERTIFICATE", 149 * mm, size=36, bold=True, color=TEAL)
     _centered(canvas, "Awarded to", 126 * mm, size=11, color=TEAL)
     _centered(canvas, report["team"], 117 * mm, size=27, bold=True, max_height=19 * mm)
-    _centered(canvas, "For recovering all fifteen protected computing systems", 94 * mm)
+    _centered(canvas, "For recovering all twenty protected computing systems", 94 * mm)
     _centered(canvas, "and restoring the Asterion departure sequence.", 86 * mm)
     _centered(
         canvas,

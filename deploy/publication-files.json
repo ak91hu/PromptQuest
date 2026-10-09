@@ -58,6 +58,7 @@
     "tests/ui/interface.spec.mjs",
     "tutorial.py",
     "tutorial_routes.py",
-    "web_sessions.py"
+    "web_sessions.py",
+    "static/assets/asterion-orbit.webp"
   ]
 }

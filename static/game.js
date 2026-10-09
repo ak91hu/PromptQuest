@@ -1,5 +1,42 @@
 import { api, decode, element, downloadPdf } from './http.mjs';
 const $ = (id) => document.getElementById(id);
+const stationIcons = [
+  'M7 5 2 10l5 5m6-10 5 5-5 5M11 3 9 17',
+  'M3 3h14v14H3zM3 8h14M8 3v14M3 13h14',
+  'M3 5c0-4 14-4 14 0s-14 4-14 0v10c0 4 14 4 14 0V5M3 10c0 4 14 4 14 0',
+  'M5 9h10v8H5zM7 9V6a3 3 0 0 1 6 0v3M10 12v2',
+  'M3 4h5v4H3zM12 12h5v4h-5zM5 8v6h7M12 3h5v5h-5zM8 6h4',
+  'M7 2 5 18M15 2l-2 16M2 7h16M2 13h16',
+  'm10 2 8 4v8l-8 4-8-4V6l8-4Zm-8 4 8 4 8-4M10 10v8',
+  'M2 17h16M4 13V8m4 5V3m4 10V6m4 7V2',
+  'm10 2 7 3v6c0 3-4 6-7 7-3-1-7-4-7-7V5l7-3ZM6 10l3 3 5-6',
+  'M2 10s3-6 8-6 8 6 8 6-3 6-8 6-8-6-8-6ZM10 7a3 3 0 1 0 0 6 3 3 0 0 0 0-6',
+  'M12 3a5 5 0 0 0-5 6L2 14l4 4 5-5a5 5 0 0 0 6-5l-3 3-4-4 2-4Z',
+  'M6 3a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Zm8 0a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3M3 8h3m8 4h3',
+  'M2 5h13m-3-3 3 3-3 3M18 15H5m3-3-3 3 3 3',
+  'M6 3a4 4 0 1 0 0 8 4 4 0 0 0 0-8Zm3 7 8 7m-4-4 2-2m0 4 2-2',
+  'M2 4h16v12H2zM2 4l8 7 8-7',
+  'M10 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16ZM2 10h16M10 2c-5 5-5 11 0 16 5-5 5-11 0-16',
+  'M3 3h14v14H3zM6 7l3 3-3 3m5 0h3',
+  'M5 2h7l4 4v12H5zM12 2v5h4M8 11h5m-5 3h5',
+  'M3 3h5v5H3zM12 12h5v5h-5zM8 5h6v7M12 5l2 2 2-2',
+  'M10 1l2 6 6 3-6 2-2 7-2-7-7-2 7-3 2-6Z',
+];
+function stationEmblem(index) {
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('viewBox', '0 0 20 20');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.classList.add('station-emblem');
+  const path = document.createElementNS(svg.namespaceURI, 'path');
+  path.setAttribute('d', stationIcons[index % stationIcons.length]);
+  path.setAttribute('fill', 'none');
+  path.setAttribute('stroke', 'currentColor');
+  path.setAttribute('stroke-width', '1.25');
+  path.setAttribute('stroke-linecap', 'round');
+  path.setAttribute('stroke-linejoin', 'round');
+  svg.append(path);
+  return svg;
+}
 let state,
   busy = false,
   lastStation = -1,
@@ -42,7 +79,7 @@ function refreshButtons() {
   $('mission-allowance').textContent =
     missionStartsRemaining === null
       ? 'Checking this network’s mission allowance…'
-      : `${missionStartsRemaining} / 3 mission starts remain for this network. Three starts total, shared by this IP, with no daily reset. Continuing uses no new start.`;
+      : `${missionStartsRemaining} / 3 mission starts remain for this network. Three runs total for this network. Picking up an existing run doesn't use a start.`;
   if (state) {
     const stopped = state.room.solved || state.game_over;
     for (const id of ['send-button', 'ask-button', 'code-button', 'guided-button'])
@@ -61,9 +98,7 @@ async function saveNotes() {
   if (state?.current === station && state.mission_number === mission) {
     state.room.note = note;
     notesDirty = $('notes-input').value !== note;
-    $('note-status').textContent = notesDirty
-      ? 'New changes are not saved yet.'
-      : 'Observation saved.';
+    $('note-status').textContent = notesDirty ? 'New changes are not saved yet.' : 'Note saved.';
   }
 }
 async function action(path, data, errorId, { save = false } = {}) {
@@ -142,10 +177,16 @@ function render(next) {
       return li;
     }),
   );
-  if (changed && matchMedia('(max-width: 900px)').matches)
+  if (changed)
     $('sector-list').children[state.current].scrollIntoView({ block: 'nearest', inline: 'center' });
   $('sector-label').textContent =
     `SECTOR ${String(state.current + 1).padStart(2, '0')} / ${state.levels.length} — ${room.topic.toUpperCase()}`;
+  const recovered = state.levels.filter((level) => level.solved).length;
+  const progress = $('mission-progress-fill').parentElement;
+  progress.setAttribute('aria-valuemax', String(state.levels.length));
+  progress.setAttribute('aria-valuenow', String(recovered));
+  $('mission-progress-fill').style.width = `${(recovered / state.levels.length) * 100}%`;
+  $('result-recovery').textContent = `${recovered} / ${state.levels.length}`;
   $('room-title').textContent = room.name;
   $('room-story').textContent = room.story;
   $('room-subject').textContent = room.subject;
@@ -173,7 +214,7 @@ function render(next) {
     block.append(
       element(
         'span',
-        m.role === 'user' ? 'OPERATOR / TRANSMISSION' : room.agent.toUpperCase(),
+        m.role === 'user' ? 'YOU / MESSAGE' : room.agent.toUpperCase(),
         'message-label',
       ),
       element('p', m.content),
@@ -193,7 +234,7 @@ function render(next) {
   $('document-area').hidden = !room.document;
   $('message-area').hidden = false;
   $('ask-button').hidden = !room.document;
-  $('send-button').textContent = room.document ? 'Transmit document ↗' : 'Transmit ↗';
+  $('send-button').textContent = room.document ? 'Send edited source ↗' : 'Send message ↗';
   $('chat-form').hidden = room.solved || state.game_over;
   $('hint-list').replaceChildren(...room.hints.map((h) => element('li', h)));
   hintUntil = Date.now() + room.hint_wait_seconds * 1000;
@@ -206,9 +247,7 @@ function render(next) {
     $('recovery-explanation').textContent = room.discovery.explanation;
     $('code-correction').textContent = room.code_correction;
     $('next-button').textContent =
-      state.current === state.levels.length - 1
-        ? 'Authorize departure →'
-        : 'Proceed to next system →';
+      state.current === state.levels.length - 1 ? 'Head home →' : 'Next challenge →';
   }
   $('game-over').hidden = !state.game_over;
   if (state.game_over && !previous?.game_over) $('game-over-title').focus();
@@ -216,7 +255,7 @@ function render(next) {
     $('message-input').value = '';
     $('document-input').value = room.document;
     $('notes-input').value = room.note;
-    $('note-status').textContent = room.note ? 'Observation saved.' : '';
+    $('note-status').textContent = room.note ? 'Note saved.' : '';
     notesDirty = false;
     $('code-input').value = '';
     $('decode-input').value = '';
@@ -236,7 +275,7 @@ function render(next) {
 function results() {
   $('result-reset').textContent = missionStartsRemaining
     ? 'Start another mission ↗'
-    : 'Return to deployment';
+    : 'Back to mission start';
   if (state.defense_passed) {
     for (const input of $('defense-options').querySelectorAll('input'))
       input.checked = ['outside', 'permissions', 'documents'].includes(input.value);
@@ -343,7 +382,7 @@ $('next-button').addEventListener('click', () =>
 );
 $('notes-input').addEventListener('input', () => {
   notesDirty = true;
-  $('note-status').textContent = 'Unsaved observation.';
+  $('note-status').textContent = 'Note not saved yet.';
 });
 $('save-note').addEventListener('click', () => action(null, null, 'note-status', { save: true }));
 window.addEventListener('beforeunload', (event) => {
@@ -434,12 +473,11 @@ async function initialize() {
       ...config.stations.map((station, i) => {
         const button = element('button', undefined, 'station-card');
         button.type = 'button';
+        button.dataset.chapter = String(Math.floor(i / 5));
         button.setAttribute('aria-pressed', 'false');
-        button.append(
-          element('span', String(i + 1).padStart(2, '0'), 'station-index'),
-          element('strong', station.name),
-          element('small', station.subject),
-        );
+        const heading = element('span', undefined, 'station-index');
+        heading.append(stationEmblem(i), element('span', String(i + 1).padStart(2, '0')));
+        button.append(heading, element('strong', station.name), element('small', station.subject));
         button.addEventListener('click', () => {
           for (const card of $('station-grid').children)
             card.setAttribute('aria-pressed', String(card === button));

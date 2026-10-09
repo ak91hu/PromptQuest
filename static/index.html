@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#080e17" />
     <meta
       name="description"
-      content="An orbital AI security mission. Fifteen systems. Fifteen trust boundaries. Recover Asterion through prompt injection experiments."
+      content="An orbital hacking puzzle for curious minds. Outwit 20 AI guards, find the weak spots in their trust, and bring Asterion home."
     />
     <title>HackTheAI — Asterion Protocol</title>
     <link rel="icon" href="/static/assets/mark.svg" type="image/svg+xml" />
@@ -26,33 +26,31 @@
         ><a href="/guide">Field guide</a>
       </nav>
       <div class="connection">
-        <span class="status-dot"></span><span id="connection-text">Establishing link</span>
+        <span class="status-dot"></span><span id="connection-text">Connecting to Asterion</span>
       </div>
     </header>
     <main id="main">
       <section id="landing" aria-labelledby="hero-title">
         <div class="hero">
           <div class="hero-copy">
-            <p class="eyebrow">
-              <span class="tiny-line"></span> ASTERION PROTOCOL / SECURITY EXERCISE
-            </p>
-            <h1 id="hero-title">The system trusts you.<br /><em>That’s the vulnerability.</em></h1>
+            <p class="eyebrow"><span class="tiny-line"></span> AN ORBITAL HACKING PUZZLE</p>
+            <h1 id="hero-title">Every system has<br />a <em>blind spot.</em></h1>
             <p class="lead">
-              An isolated orbital station. Fifteen AI-controlled systems. A departure sequence
-              locked behind the wrong kind of trust.
+              You're alone on Asterion. Twenty AI guards stand between you and the way home. Their
+              rules look solid. Their trust isn't.
             </p>
             <p class="hero-detail">
-              Think like an adversary. Redirect the guards, recover the protected values, and find
-              where instruction becomes authority.
+              Talk your way past the guards. Hide instructions in a document. Turn a refusal into a
+              clue. This is a puzzle for people who like taking systems apart.
             </p>
             <form id="start-form">
-              <label for="operator">Operator callsign</label>
+              <label for="operator">What should we call you?</label>
               <div class="start-row">
                 <input
                   id="operator"
                   name="operator"
                   maxlength="40"
-                  placeholder="Enter your callsign"
+                  placeholder="Choose a callsign"
                   autocomplete="nickname"
                   required
                 /><button class="primary" type="submit" id="start-button" disabled>
@@ -65,131 +63,53 @@
             <button id="retry-connection" type="button" class="text-button" hidden>
               Reconnect
             </button>
+            <p class="genre-note">
+              <span aria-hidden="true">⌁</span> Words are your tools. Curiosity is your advantage.
+            </p>
             <div class="hero-spec">
-              <span><strong>15</strong> SYSTEMS</span><span><strong>450</strong> PROMPTS MAX</span
-              ><span><strong>150</strong> POINTS MAX</span>
+              <span><strong>20</strong> CHALLENGES</span
+              ><span><strong>600</strong> PROMPTS MAX</span
+              ><span><strong>200</strong> POINTS MAX</span>
             </div>
           </div>
-          <div
-            class="orbital-visual"
-            aria-label="Schematic of the fictional Asterion orbital station"
-          >
-            <div class="visual-heading">
-              <span>ASTERION / ORBITAL ASSET</span><span class="accent">RECOVERY REQUIRED</span>
-            </div>
-            <svg
+          <figure class="orbital-visual" aria-labelledby="station-art-title">
+            <img
               class="station-art"
-              viewBox="0 0 640 580"
-              role="img"
-              aria-labelledby="station-art-title"
-            >
-              <title id="station-art-title">
-                Asterion station, a segmented orbital ring with a central command spine
-              </title>
-              <defs>
-                <radialGradient id="planet">
-                  <stop stop-color="#294659" />
-                  <stop offset=".7" stop-color="#162939" />
-                  <stop offset="1" stop-color="#0a1624" />
-                </radialGradient>
-                <linearGradient id="hull" x2="1" y2="1">
-                  <stop stop-color="#536e7d" />
-                  <stop offset=".5" stop-color="#253847" />
-                  <stop offset="1" stop-color="#0e1a27" />
-                </linearGradient>
-                <pattern id="panel" width="12" height="10" patternUnits="userSpaceOnUse">
-                  <path d="M0 0H12V10" fill="none" stroke="#8ec7d3" stroke-opacity=".23" />
-                </pattern>
-              </defs>
-              <g fill="#adc7df" opacity=".55">
-                <circle cx="64" cy="65" r="1" />
-                <circle cx="586" cy="92" r="1.5" />
-                <circle cx="513" cy="481" r="1" />
-                <circle cx="87" cy="424" r="1" />
-                <circle cx="403" cy="38" r="1" />
-                <circle cx="246" cy="508" r="1.2" />
-                <circle cx="45" cy="284" r="1.2" />
-                <circle cx="602" cy="386" r="1" />
-              </g>
-              <circle cx="384" cy="331" r="190" fill="url(#planet)" opacity=".5" />
-              <g transform="translate(310 276) rotate(-28)">
-                <ellipse
-                  rx="250"
-                  ry="212"
-                  fill="none"
-                  stroke="#83c4d8"
-                  stroke-opacity=".12"
-                  stroke-dasharray="3 8"
-                />
-                <ellipse rx="216" ry="175" fill="none" stroke="#5d889e" stroke-opacity=".18" />
-                <ellipse rx="166" ry="138" fill="none" stroke="#111e2d" stroke-width="35" />
-                <ellipse rx="166" ry="138" fill="none" stroke="url(#hull)" stroke-width="25" />
-                <ellipse
-                  rx="167"
-                  ry="138"
-                  fill="none"
-                  stroke="#82d5d3"
-                  stroke-opacity=".7"
-                  stroke-width="2"
-                />
-                <ellipse rx="150" ry="123" fill="none" stroke="#566f7e" stroke-width="1" />
-                <g stroke="#4a6575" stroke-width="10">
-                  <path d="M0-138V138M-166 0H166M-118-98L118 98M-118 98L118-98" />
-                </g>
-                <g fill="url(#hull)" stroke="#698997" stroke-width="1">
-                  <rect x="-20" y="-200" width="40" height="395" rx="8" />
-                  <rect x="-40" y="-45" width="80" height="90" rx="12" />
-                  <rect x="-190" y="-24" width="55" height="48" rx="5" />
-                  <rect x="135" y="-24" width="55" height="48" rx="5" />
-                  <rect x="-136" y="-121" width="40" height="35" rx="3" />
-                  <rect x="95" y="83" width="40" height="35" rx="3" />
-                </g>
-                <g fill="#172b40" stroke="#405a74">
-                  <path d="M-38-181H-114V-107H-38Z M38-181H114V-107H38Z" />
-                  <path d="M-38 111H-114V185H-38Z M38 111H114V185H38Z" />
-                </g>
-                <g fill="url(#panel)">
-                  <path d="M-38-181H-114V-107H-38Z M38-181H114V-107H38Z" />
-                  <path d="M-38 111H-114V185H-38Z M38 111H114V185H38Z" />
-                </g>
-                <circle r="24" fill="#172d3b" stroke="#8bc7ce" />
-                <circle r="11" fill="#82d5d3" fill-opacity=".3" />
-                <path d="M-8 0H8M0-8V8" stroke="#b3efe8" />
-                <g fill="#82d5d3">
-                  <circle cx="0" cy="-138" r="4" />
-                  <circle cx="166" cy="0" r="4" />
-                  <circle cx="-166" cy="0" r="4" />
-                  <circle cx="118" cy="98" r="4" />
-                </g>
-              </g>
-              <g fill="none" stroke="#7b9ba7" stroke-opacity=".5">
-                <path d="M344 197L472 123H581" />
-                <path d="M214 358L128 443H39" />
-              </g>
-              <g font-family="monospace" font-size="10" fill="#a1b7c5">
-                <text x="484" y="112">COMMAND SPINE</text>
-                <text x="39" y="460">FIFTEEN ISOLATED SECTORS</text>
-              </g>
-            </svg>
-            <div class="visual-footer">
-              <span>LINK 0xA7 / ENCRYPTED</span><span>DEPARTURE: LOCKED</span>
+              src="/static/assets/asterion-orbit.webp"
+              width="1536"
+              height="1024"
+              alt="Asterion's illuminated orbital ring hangs above the blue curve of a planet."
+              fetchpriority="high"
+            />
+            <div class="orbital-vignette" aria-hidden="true"></div>
+            <div class="visual-heading">
+              <span>ASTERION // ORBITAL STATION</span
+              ><span class="asset-status"><i aria-hidden="true"></i> CONNECTION ACTIVE</span>
             </div>
-            <span class="visual-cross cross-one">+</span
-            ><span class="visual-cross cross-two">+</span>
-          </div>
+            <div class="orbit-track" aria-hidden="true"><span></span></div>
+            <figcaption class="visual-caption">
+              <span class="eyebrow">YOUR WAY HOME IS LOCKED</span
+              ><strong id="station-art-title">Welcome aboard.<br />Trust nothing.</strong
+              ><span class="visual-coordinate">ORBIT 07.24 / SECTOR 20</span>
+            </figcaption>
+            <div class="visual-footer">
+              <span><b>20</b> GUARDS ONLINE</span
+              ><span>DEPARTURE <b class="accent">LOCKED</b></span>
+            </div>
+          </figure>
         </div>
         <div class="section-heading">
           <div>
-            <p class="eyebrow">MISSION TOPOLOGY</p>
-            <h2>Fifteen systems. One way out.</h2>
+            <p class="eyebrow">FIND YOUR NEXT WEAK SPOT</p>
+            <h2>20 guards. 20 ways to break their trust.</h2>
           </div>
-          <p>Inspect the sectors before deployment.</p>
+          <p>Pick a challenge to take a closer look.</p>
         </div>
         <div id="station-grid" class="station-grid" aria-label="Station previews"></div>
         <div id="preview" class="preview-panel" aria-live="polite"></div>
         <section class="briefing" aria-labelledby="briefing-title">
           <div>
-            <p class="eyebrow">RULES OF ENGAGEMENT</p>
+            <p class="eyebrow">HOW TO PLAY</p>
             <h2 id="briefing-title">Experiment.<br />Observe. Adapt.</h2>
           </div>
           <div class="briefing-rules">
@@ -197,34 +117,35 @@
               <span class="rule-index">01</span>
               <h3>Recover the value</h3>
               <p>
-                Each guard protects a fictional computing value. Change its task, input source or
-                output format. Direct requests are usually refused.
+                Each guard keeps something private. Asking nicely usually won't work. Try changing
+                the task, hiding an instruction in its source, or asking for a different format.
               </p>
             </article>
             <article>
               <span class="rule-index">02</span>
               <h3>Cross the boundary</h3>
               <p>
-                Complete stations in order. You have 30 prompts per challenge and 10 optional hints.
-                Each hint lowers that station’s score by one, to a minimum of one.
+                Work through the challenges in order. You get 30 messages and up to 10 hints for
+                each. Hints cost a point; trying new ideas doesn't. Your score never drops below
+                one.
               </p>
             </article>
             <article>
               <span class="rule-index">03</span>
               <h3>Document the finding</h3>
               <p>
-                Inspect tool traces, decode transformed output and save observations. Recover all
-                fifteen systems to launch and download your mission log and certificate.
+                Check what actually happened. Decode an answer, save a note, and keep moving. Beat
+                all 20 guards to leave the station with your mission log and certificate.
               </p>
             </article>
           </div>
         </section>
         <div class="training-banner">
           <div>
-            <strong>First encounter with prompt injection?</strong>
-            <p>The training lab is unlimited, unscored and separate from your mission.</p>
+            <strong>New to prompt injection? Start here.</strong>
+            <p>Try a few warm-up puzzles. No score, no limits, no mission starts used.</p>
           </div>
-          <a class="secondary" href="/demo">Enter training lab ↗</a>
+          <a class="secondary" href="/demo">Try the training lab ↗</a>
         </div>
       </section>
       <section id="mission" hidden aria-labelledby="room-title">
@@ -240,7 +161,7 @@
             <p class="eyebrow">SYSTEM RECOVERY</p>
             <ol id="sector-list" tabindex="0" aria-label="Station progression"></ol>
             <div class="score-block">
-              <span>MISSION SCORE</span><strong id="mission-score">0 <small>/ 150</small></strong
+              <span>MISSION SCORE</span><strong id="mission-score">0 <small>/ 200</small></strong
               ><span id="elapsed">00:00 elapsed</span>
             </div>
             <div class="signature-block">
@@ -264,6 +185,16 @@
               <p class="eyebrow guard-rule-label">GUARD DEFENSE</p>
               <p id="guard-defense"></p>
             </div>
+            <div
+              class="mission-progress"
+              role="progressbar"
+              aria-label="Challenges recovered"
+              aria-valuemin="0"
+              aria-valuemax="20"
+              aria-valuenow="0"
+            >
+              <span id="mission-progress-fill"></span>
+            </div>
             <div class="console-heading">
               <span id="agent-name"></span
               ><span id="guard-status" class="accent">CHANNEL OPEN</span>
@@ -279,7 +210,7 @@
             <div id="tool-traces" class="tool-traces" hidden></div>
             <form id="chat-form">
               <div id="document-area" hidden>
-                <label for="document-input">Untrusted source / editable document</label
+                <label for="document-input">Source editor · the guard will read this</label
                 ><textarea
                   id="document-input"
                   aria-describedby="prompt-policy"
@@ -288,8 +219,8 @@
                   spellcheck="false"
                 ></textarea>
                 <p class="micro">
-                  Transmit the document to test your annotation. You can also ask the guard for help
-                  below before editing it.
+                  Edit this source, then send it to the guard. Use the message box below if you'd
+                  like to ask a question first.
                 </p>
               </div>
               <div id="message-area">
@@ -303,9 +234,9 @@
                 ></textarea>
               </div>
               <div class="composer-footer">
-                <span class="micro">Ctrl + Enter to transmit</span
+                <span class="micro">Ctrl + Enter to send</span
                 ><button type="button" id="ask-button" hidden>Ask guard ↗</button>
-                <button type="submit" class="primary" id="send-button">Transmit ↗</button>
+                <button type="submit" class="primary" id="send-button">Send message ↗</button>
               </div>
             </form>
             <p id="prompt-policy" class="micro">
@@ -315,14 +246,14 @@
             <p id="request-status" class="micro" role="status"></p>
             <p id="chat-error" role="alert" class="error"></p>
             <div id="game-over" hidden class="game-over" role="alert">
-              <h2 id="game-over-title" tabindex="-1">Mission terminated.</h2>
+              <h2 id="game-over-title" tabindex="-1">Out of messages.</h2>
               <p>
                 The station’s 30 prompts are exhausted. Your notes and log remain available until
                 you end this mission or the session expires.
               </p>
               <div class="button-row">
                 <a href="/api/export" download>Download this mission log ↓</a>
-                <button id="end-exhausted" class="secondary">Return to deployment</button>
+                <button id="end-exhausted" class="secondary">Back to mission start</button>
               </div>
             </div>
             <div id="recovery" class="recovery" hidden>
@@ -333,7 +264,7 @@
               <p id="recovery-question"></p>
               <p id="recovery-explanation" class="muted"></p>
               <p id="code-correction"></p>
-              <button id="next-button" class="primary">Proceed to next system →</button>
+              <button id="next-button" class="primary">Next challenge →</button>
             </div>
           </div>
           <aside class="tools-sidebar">
@@ -397,7 +328,9 @@
       <section id="results" class="results" hidden aria-labelledby="results-title">
         <p class="eyebrow accent">ALL SYSTEMS RECOVERED / DEPARTURE AUTHORIZED</p>
         <h1 id="results-title" tabindex="-1">Asterion is yours.</h1>
-        <p class="lead">Fifteen trust boundaries tested. A complete record of how they failed.</p>
+        <p class="lead">
+          Twenty guards outsmarted. You found the blind spots. Now you know how to fix them.
+        </p>
         <div class="fragment-banner">
           <p class="eyebrow">RECOVERED PROTOCOL</p>
           <p id="result-fragments"></p>
@@ -405,7 +338,7 @@
         <div class="result-stats">
           <div><span>OPERATOR</span><strong id="result-name"></strong></div>
           <div><span>MISSION SCORE</span><strong id="result-score"></strong></div>
-          <div><span>RECOVERY</span><strong>15 / 15</strong></div>
+          <div><span>RECOVERY</span><strong id="result-recovery">20 / 20</strong></div>
         </div>
         <div class="button-row">
           <a class="primary" href="/api/export" download>Download mission log ↓</a
@@ -418,8 +351,8 @@
         <div id="result-stations" class="result-stations"></div>
         <section class="defense-section">
           <p class="eyebrow">OPTIONAL / DEFENSE WORKSHOP</p>
-          <h2>Now repair the boundary.</h2>
-          <p>Select the controls that address the failures you observed.</p>
+          <h2>Now make the system safer.</h2>
+          <p>Which changes would stop the tricks you just used? Pick the ones that would help.</p>
           <form id="defense-form">
             <div id="defense-options"></div>
             <button id="defense-button" class="primary" type="submit">
@@ -454,7 +387,7 @@
       <div class="launch-orbit" aria-hidden="true"><span></span></div>
       <p class="eyebrow accent">ASTERION / DEPARTURE SEQUENCE</p>
       <h2 id="launch-title">Clearing the orbital perimeter.</h2>
-      <p>All fifteen recovery signatures verified.</p>
+      <p>All 20 systems are back online. You're going home.</p>
       <button id="skip-launch" class="secondary">View mission results →</button>
     </dialog>
   </body>

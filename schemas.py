@@ -2,10 +2,12 @@
 
 from pydantic import BaseModel, Field
 
+from challenges import LEVELS
+
 
 class StationAction(BaseModel):
     # Existing API clients may omit this; browser actions bind to their displayed station.
-    station: int | None = Field(default=None, ge=0, le=14)
+    station: int | None = Field(default=None, ge=0, le=len(LEVELS) - 1)
 
 
 class Start(BaseModel):

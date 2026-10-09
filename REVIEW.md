@@ -33,3 +33,13 @@ Ellenőrzés dátuma: 2026-10-08. A feltárt, alább felsorolt hibák javítva.
 A napi AI-keret alapértelmezése PROVIDER_DAILY_TOKEN_LIMIT=30000000, UTC napokra. Ez a tokenkeret frissül naponta; a három küldetésindítás/IP szabály továbbra is összesített, és nem nullázódik naponta. Az API-kulcs és a .env tartalma nem került a kliensbe vagy a jelentésbe.
 
 A Groq hálózati elérése ebben a környezetben korlátozott. A szemantikus értékelés bekötése és ellenőrzése tesztelt, de a valódi modell nyelvi pontossága és tényleges késleltetése nem mérhető itt. A játékállapot a dokumentált módon egy folyamat memóriájában él, hat óra után lejár, és szerver-újraindításkor elveszik; a kvóta és tokenelszámolás tartós.
+
+## A húsz kihívásos változat ellenőrzése — 2026-10-09
+
+- Öt új, eltérő bemeneti forrást és munkafolyamatot vizsgáló kihívás; a Command Core a huszadik finálé.
+- A bemeneti állomáskorlát a kihívások számából származik; a 20. állomás műveletei és a hibás indexek külön tesztelve.
+- 77 sikeres backendteszt, 22 sikeres asztali/mobil böngészőteszt és 6 sikeres JavaScript-teszt.
+- Teljes húszállomásos végigjátszás, 200 pontos maximum, PDF napló és egyoldalas tanúsítvány ellenőrizve.
+- Új orbitális grafika és kezelőfelület: külön vizuális/geometriai ellenőrzés 320, 768 és 1440 px szélességen; nincs oldalszintű túllógás vagy JavaScript-hiba.
+- A tesztelt kezdő-, játék-, labor- és súgónézetek axe ellenőrzése sikeres. A szolgáltató neve nem szerepel a webes felületen.
+- A publikálási lista és a teljes Git-index ellenőrzése nem talált helyi titkot vagy privát fájlt.

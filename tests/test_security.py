@@ -300,7 +300,7 @@ class SecurityAPITests(unittest.TestCase):
         self.assertEqual(self.client.get("/api/state").json()["room"]["attempts"], 0)
 
     def test_every_challenge_stops_at_30_and_cannot_refill(self):
-        self.assertEqual(len(LEVELS), 15)
+        self.assertEqual(len(LEVELS), 20)
         for index, level in enumerate(LEVELS):
             client = self.client_for(f"203.0.113.{index + 1}")
             self.start(client)
@@ -323,7 +323,7 @@ class SecurityAPITests(unittest.TestCase):
             self.assertEqual(client.post("/api/retry", json={}).status_code, 409)
             self.assertEqual(session.rooms[index].attempts, 30)
 
-    def test_all_fifteen_have_a_successful_thirtieth_prompt(self):
+    def test_all_twenty_have_a_successful_thirtieth_prompt(self):
         for index, level in enumerate(LEVELS):
             client = self.client_for(f"203.0.113.{index + 40}")
             self.start(client)

@@ -2,7 +2,7 @@
   "$schema": "https://api.northflank.com/v1/schemas/template",
   "apiVersion": "v1.2",
   "name": "HackTheAI - Asterion Protocol",
-  "description": "Deploy the 15-station AI security escape game with persistent IP quotas and private Groq credentials.",
+  "description": "Deploy the 20-challenge orbital hacking puzzle with persistent IP quotas and private AI credentials.",
   "options": {
     "autorun": false,
     "runOnUpdate": false,

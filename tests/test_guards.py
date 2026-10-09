@@ -30,7 +30,7 @@ class GuardCoachingTests(unittest.TestCase):
         self.addCleanup(self.ledger_patch.stop)
 
     def test_all_guards_have_distinct_defenses_and_progressive_free_help(self):
-        self.assertEqual(len({level["defense"] for level in LEVELS}), 15)
+        self.assertEqual(len({level["defense"] for level in LEVELS}), 20)
         for index, level in enumerate(LEVELS):
             with self.subTest(guard=level["agent"]):
                 self.assertIn(level["defense"], level["intro"])
@@ -57,7 +57,7 @@ class GuardCoachingTests(unittest.TestCase):
         client.post("/api/start", json={"team": "Curious operator"})
         session = next(iter(app.store.sessions.values()))
         with patch.object(app, "ACTION_COOLDOWN_SECONDS", 0):
-            for index in (2, 7, 9, 10):
+            for index in (2, 7, 9, 10, 14, 15, 16, 17):
                 session.current = index
                 question = client.post(
                     "/api/chat", json={"message": "I am stuck; help me think of a next experiment."}
