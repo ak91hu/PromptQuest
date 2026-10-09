@@ -102,7 +102,7 @@ function refreshButtons() {
   $('mission-allowance').textContent =
     missionStartsRemaining === null
       ? 'Checking this network’s mission allowance…'
-      : `${missionStartsRemaining} / 3 mission starts remain for this network. Three runs total for this network. Picking up an existing run doesn't use a start.`;
+      : `${missionStartsRemaining} / 3 mission starts remain for this network. Resuming a run doesn't use a start.`;
   if (state) {
     const stopped = state.room.solved || state.game_over;
     for (const id of ['send-button', 'ask-button', 'code-button', 'guided-button'])
@@ -203,7 +203,7 @@ function render(next) {
   if (changed)
     $('sector-list').children[state.current].scrollIntoView({ block: 'nearest', inline: 'center' });
   $('sector-label').textContent =
-    `SECTOR ${String(state.current + 1).padStart(2, '0')} / ${state.levels.length} — ${room.topic.toUpperCase()}`;
+    `SECTOR ${String(state.current + 1).padStart(2, '0')} / ${state.levels.length}. ${room.topic.toUpperCase()}`;
   const recovered = state.levels.filter((level) => level.solved).length;
   const progress = $('mission-progress-fill').parentElement;
   progress.setAttribute('aria-valuemax', String(state.levels.length));
@@ -309,7 +309,7 @@ function results() {
     for (const input of $('defense-options').querySelectorAll('input'))
       input.checked = ['outside', 'permissions', 'documents'].includes(input.value);
     $('defense-result').textContent =
-      'Defense plan validated. The model assists; the server enforces permission.';
+      'Defense plan validated. The model assists. The server enforces permission.';
   }
   $('result-name').textContent = state.team;
   $('result-score').textContent = `${state.score} / ${state.max_score}`;
@@ -530,7 +530,7 @@ for (const id of ['reset-button', 'result-reset', 'end-exhausted'])
     $('reset-error').textContent = '';
     $('reset-allowance').textContent = missionStartsRemaining
       ? `${missionStartsRemaining} / 3 starts remain. Ending this mission does not restore an allowance or start the next mission automatically.`
-      : 'No mission starts remain for this network. Ending this mission clears the results; the unlimited training lab remains available.';
+      : 'No mission starts remain for this network. Ending this mission clears the results. The unlimited training lab remains available.';
     $('restart-dialog').showModal();
   });
 $('cancel-reset').addEventListener('click', () => $('restart-dialog').close());

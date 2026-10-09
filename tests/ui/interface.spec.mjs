@@ -44,6 +44,16 @@ async function noOverflow(page) {
   );
 }
 
+test('public copy avoids semicolons and long dashes', async ({ page }) => {
+  for (const path of ['/', '/demo', '/guide']) {
+    await page.goto(path);
+    expect(await page.title()).not.toMatch(/[;\u2012-\u2015]/);
+    expect(await page.locator('body').innerText()).not.toMatch(/[;\u2012-\u2015]/);
+  }
+  const response = await page.request.get('/api/config');
+  expect(JSON.stringify((await response.json()).stations)).not.toMatch(/[;\u2012-\u2015]/);
+});
+
 test('landing, station previews and keyboard-friendly responsive layout', async ({
   page,
 }, info) => {
@@ -172,6 +182,9 @@ test('complete all twenty-five systems through the visible UI, decode, export an
     }
     if (i < 24) {
       await expect(page.locator('#recovery')).toBeVisible();
+      expect(await page.locator('#recovery').innerText()).not.toMatch(/[;\u2012-\u2015]/);
+      for (const text of await page.locator('#chat-log .assistant').allTextContents())
+        expect(text).not.toMatch(/[;\u2012-\u2015]/);
       await expect(page.locator('.mission-progress')).toHaveAttribute(
         'aria-valuenow',
         String(i + 1),

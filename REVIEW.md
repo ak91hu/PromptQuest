@@ -63,3 +63,12 @@ A Groq hálózati elérése ebben a környezetben korlátozott. A szemantikus é
 - 78 sikeres backendteszt, 30 sikeres asztali/mobil böngészőteszt és 6 sikeres JavaScript-teszt. Teljes 25 állomásos végigjátszás, dossziék, PDF-ek, dekódolás, billentyűzet, kvóták és axe ellenőrzések sikeresek.
 - Az új módszereknél hiányos kérések és rossz bemeneti csatornák elutasítása ellenőrizve; mind a 25 módszer szemantikus útvonalához külön parafrázis tartozik. A modell válaszminőségét ezek a szándékosan mockolt ellenőrzések nem mérik.
 - Külön vizuális és geometriai ellenőrzés 320, 768 és 1440 px szélességen; nincs túllógás vagy JavaScript-hiba. Az oklevél normál, 40 karakteres és ékezetes névvel is egyoldalas, a szöveg oldalon belül marad.
+
+## Világosabb angol szövegek és írásjelek: 2026-10-09
+
+- A kezdőlap, a súgó, a gyakorlólabor, mind a 25 állomás története, a tanulságok és az oklevél közvetlenebb angol megfogalmazást kaptak. A célok konkrétak, a vezérlési útmutató pontokba szedett, az őrök bemutatkozása és a javítási tanulság külön bekezdésekben jelenik meg.
+- Az alkalmazás saját megjelenő szövegeiben nincs hosszú gondolatjel vagy pontosvessző. Az élő őrválaszok ugyanezt a megjelenítési szabályt követik. A játékos üzenetei, jegyzetei, forrásai és az értékelés bizonyítékai megmaradnak az eredeti alakjukban.
+- Az őrök utasításai rövid, konkrét választ és hasznos következő kísérletet kérnek, sablonos dicséretek és reklámos fordulatok nélkül. A valódi modell válaszainak nyelvi minőségét az offline tesztek nem mérik.
+- A HTTP-fejlécek és az ellenőrző reguláris kifejezések szükséges technikai írásjelei változatlanok. A PDF letöltési fejléc és a tartalombiztonsági szabály pontos szintaxisa külön regressziós ellenőrzést kapott.
+- 80 sikeres backendteszt, 32 sikeres asztali/mobil böngészőteszt és 6 sikeres JavaScript-teszt. A végigjátszásban mind a 25 állomás őrválasza és tanulsága átment az írásjel-ellenőrzésen. A módosított technikai karakterláncok visszaállítása után a küldetés- és regressziós tesztek ismét sikeresek.
+- 320, 768 és 1440 px szélességen nincs oldalszintű túllógás vagy JavaScript-hiba. Az új oklevélszöveg normál, 40 karakteres és ékezetes nevekkel is egyoldalas, a renderelt elrendezés ellenőrizve. Ruff, Prettier és a publikálás titokellenőrzése sikeres.

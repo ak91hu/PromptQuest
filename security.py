@@ -1,4 +1,4 @@
-"""Persistent admission and provider spending limits; IPs are stored only as keyed hashes."""
+"""Persistent admission and provider spending limits. IPs are stored only as keyed hashes."""
 
 import hashlib
 import hmac
@@ -31,7 +31,7 @@ def persistent_secret(path):
     except FileExistsError:
         value = path.read_text(encoding="ascii").strip()
         if len(value) < 32:
-            raise ValueError("The persisted security key is invalid; restore it before startup.")
+            raise ValueError("The persisted security key is invalid. Restore it before startup.")
         return value
     value = secrets.token_urlsafe(48)
     with os.fdopen(fd, "w", encoding="ascii") as stream:
@@ -150,11 +150,11 @@ class AbuseLedger:
                 calls = calls if previous_window == window else 0
                 if calls >= PROVIDER_CALLS_PER_MINUTE:
                     raise LimitReached(
-                        "The AI request rate for this network is exhausted. Wait a minute; no prompt was consumed."
+                        "The AI request rate for this network is exhausted. Wait a minute. No prompt was consumed."
                     )
                 if tokens + amount > self.token_limit:
                     raise LimitReached(
-                        "The AI request allowance for this network is exhausted. Guided training remains available; no prompt was consumed."
+                        "The AI request allowance for this network is exhausted. Guided training remains available. No prompt was consumed."
                     )
                 db.execute("INSERT OR IGNORE INTO daily_usage(day) VALUES (?)", (day,))
                 total = db.execute("SELECT tokens FROM daily_usage WHERE day=?", (day,)).fetchone()[
@@ -162,7 +162,7 @@ class AbuseLedger:
                 ]
                 if total + amount > self.daily_token_limit:
                     raise LimitReached(
-                        "The daily AI allowance is exhausted. Try again after 00:00 UTC or use guided training; no prompt was consumed."
+                        "The daily AI allowance is exhausted. Try again after 00:00 UTC or use guided training. No prompt was consumed."
                     )
                 db.execute("UPDATE daily_usage SET tokens=tokens+? WHERE day=?", (amount, day))
                 db.execute(

@@ -345,7 +345,7 @@ def render_pdf(report: dict) -> bytes:
             13 * mm,
             "Generated: " + timestamp(report.get("exported_at")) + " UTC",
         )
-        canvas.drawRightString(190 * mm, 13 * mm, f"{document.page}. page")
+        canvas.drawRightString(190 * mm, 13 * mm, f"Page {document.page}")
         canvas.restoreState()
 
     doc.page_callback = page

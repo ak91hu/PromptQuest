@@ -17,6 +17,7 @@
     "deploy/NORTHFLANK.md",
     "deploy/publication-files.json",
     "dialogue.py",
+    "editorial.py",
     "game.py",
     "learning.py",
     "mission_pdf.py",

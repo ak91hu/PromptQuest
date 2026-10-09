@@ -83,7 +83,7 @@ def mission_state(session):
 def request_station(data, session):
     if data is not None and data.station is not None and data.station != session.current:
         raise HTTPException(
-            409, "This station changed in another tab. Reload to continue; no action was applied."
+            409, "This station changed in another tab. Reload to continue. No action was applied."
         )
 
 
@@ -315,7 +315,7 @@ async def chat(data: Chat, request: Request):
                 await asyncio.wait_for(provider_slots.acquire(), timeout=10)
             except TimeoutError:
                 raise HTTPException(
-                    503, "The AI is busy. Retry; no attempt was consumed."
+                    503, "The AI is busy. Retry. No attempt was consumed."
                 ) from None
             try:
                 reply = await live_reply(
@@ -507,7 +507,7 @@ async def defense(data: Defense, request: Request):
         return {
             "passed": passed,
             "tests": tests,
-            "message": "Defense plan validated. The model assists; the server enforces permission."
+            "message": "Defense plan validated. The model assists. The server enforces permission."
             if passed
             else "Select the three effective controls and omit the two ineffective ones.",
         }
@@ -553,5 +553,5 @@ async def reset(request: Request, response: Response):
 
 
 if __name__ == "__main__":
-    print("HackTheAI – " + ("deterministic training simulation" if MODE == "demo" else MODEL))
+    print("HackTheAI. " + ("deterministic training simulation" if MODE == "demo" else MODEL))
     uvicorn.run(app, host="0.0.0.0", port=settings.port, proxy_headers=False, access_log=False)

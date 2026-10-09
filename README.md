@@ -1,4 +1,4 @@
-# HackTheAI — Asterion Protocol
+# HackTheAI: Asterion Protocol
 
 ![Python 3.13+](https://img.shields.io/badge/Python-3.13%2B-3776AB?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?logo=fastapi&logoColor=white)
@@ -11,7 +11,7 @@ A single-player orbital hacking puzzle for people who enjoy prompt injection, AI
 
 Each station has a friendly AI guard, a distinct defense, a computing topic, and an intended recovery method. Guards explain and coach, but ordinary requests for the protected value do not unlock a station. Players must experiment with the station's simulated trust boundary.
 
-The application runs as a single FastAPI service with a plain HTML/CSS/JavaScript frontend. **No frontend build is required.** Live conversations use Groq; offline demonstrations and the separate practice lab work without an API key.
+The application runs as a single FastAPI service with a plain HTML/CSS/JavaScript frontend. **No frontend build is required.** Live conversations use Groq. Offline demonstrations and the separate practice lab work without an API key.
 
 [Quick start](#quick-start) · [Challenges](#the-twenty-five-challenges) · [Configuration](#configuration) · [Northflank deployment](#northflank-deployment) · [Security](#security-and-privacy) · [Testing](#development-and-testing)
 
@@ -29,7 +29,7 @@ The application runs as a single FastAPI service with a plain HTML/CSS/JavaScrip
 - Server-side secret generation, bounded provider spending, secure session cookies, and explicit reverse-proxy trust.
 - A non-root Docker image and a Northflank infrastructure template with persistent quota storage.
 
-This is a controlled educational simulation. Its systems, identities, documents, tools, and recovery values are fictional; it does not execute attacks against real infrastructure.
+This is a controlled educational simulation. Its systems, identities, documents, tools, and recovery values are fictional. It does not execute attacks against real infrastructure.
 
 ## Quick start
 
@@ -61,7 +61,7 @@ cp .env.example .env
 
 Open **http://localhost:10000**. The example configuration starts the main mission in demo mode. PORT changes the listening port.
 
-The helper in this prepared Windows workspace can also run Python with ./scripts/run-python.ps1 app.py. Its optional local runtime lives in the ignored .runtime directory; normal installations should use their own virtual environment.
+The helper in this prepared Windows workspace can also run Python with ./scripts/run-python.ps1 app.py. Its optional local runtime lives in the ignored .runtime directory. Normal installations should use their own virtual environment.
 
 ### Enable live AI
 
@@ -88,9 +88,9 @@ Keep .env private. The repository and Docker context exclude it and its local va
 The local .env is a plaintext file, not encrypted storage. Never publish it or serve it
 as a static asset. Only .env.example, with empty credential fields, belongs in Git.
 For production, supply secrets through the hosting platform's private runtime
-configuration. Run `python scripts/check-publication.py` before packaging; the
+configuration. Run `python scripts/check-publication.py` before packaging. The
 publication helper also checks the complete staged Git contents before committing.
-The check detects local credential values and common token/private-key formats; it
+The check detects local credential values and common token/private-key formats. It
 does not audit Git history. If a credential was previously committed, revoke/rotate
 it and remove it from repository history before making the repository public.
 
@@ -105,7 +105,7 @@ docker run --rm --name hacktheai -p 10000:10000 --env-file .env \
 
 In PowerShell, put the docker run command on one line or use PowerShell's line continuation.
 
-Mount /app/.data to durable storage. The image runs as UID/GID 10001:10001 and listens on port 10000 by default. Its built-in health check requests /health. For local HTTP, keep SECURE_COOKIES=false; use true behind production HTTPS.
+Mount /app/.data to durable storage. The image runs as UID/GID 10001:10001 and listens on port 10000 by default. Its built-in health check requests /health. For local HTTP, keep SECURE_COOKIES=false. Use true behind production HTTPS.
 
 ## Playing a mission
 
@@ -119,22 +119,22 @@ Mount /app/.data to durable storage. The image runs as UID/GID 10001:10001 and l
 
 Use /demo before starting a scored mission. The practice lab has its own session, unlimited unscored experiments, baseline comparisons, hints, optional solution reveal, and an understanding check. Practice does not consume the three-start mission allowance.
 
-In the guard's message box, Enter sends and Shift+Enter adds a line. For source challenges, Enter in the message box asks the guard a question; Ctrl/Cmd+Enter in the source editor submits that source. Tab reaches controls, arrow keys browse challenge cards, and Escape closes dialogs. Outside text fields, `/` focuses chat and `?` opens keyboard help. The completion certificate is a single landscape page with vector orbital artwork, a recovery seal, and the player's name and score.
+In the guard's message box, Enter sends and Shift+Enter adds a line. For source challenges, Enter in the message box asks the guard a question. Ctrl/Cmd+Enter in the source editor submits that source. Tab reaches controls, arrow keys browse challenge cards, and Escape closes dialogs. Outside text fields, `/` focuses chat and `?` opens keyboard help. The completion certificate is a single landscape page with vector orbital artwork, a recovery seal, and the player's name and score.
 
 ### Rules and scoring
 
 | Rule                  | Behavior                                                                      |
 | --------------------- | ----------------------------------------------------------------------------- |
 | Challenge count       | 25, unlocked in sequence                                                      |
-| AI prompt allowance   | 30 per challenge; up to 750 per mission                                       |
-| Prompt accounting     | Successful help/conversation responses count; provider failures do not        |
-| Last prompt           | A successful 30th prompt counts; an unsuccessful 30th prompt ends the mission |
+| AI prompt allowance   | 30 per challenge. Up to 750 per mission                                       |
+| Prompt accounting     | Successful help/conversation responses count. Provider failures do not        |
+| Last prompt           | A successful 30th prompt counts. An unsuccessful 30th prompt ends the mission |
 | Hints                 | 10 progressive hints per station, with a 5-second server cooldown             |
 | Station score         | max(1, 10 − hints used)                                                       |
 | Maximum mission score | 250                                                                           |
 | Code checks           | Incorrect code submissions do not use the AI prompt allowance                 |
 | Mission admission     | 3 starts total per IP, with no daily reset                                    |
-| Session lifetime      | 6 hours from creation; activity does not extend it                            |
+| Session lifetime      | 6 hours from creation. Activity does not extend it                            |
 
 Abandoned, failed, completed, and explicitly restarted missions each consume a start. Reloading/resuming an available session does not. Clearing cookies does not replenish admission. People sharing a public IP share the allowance.
 
@@ -174,7 +174,7 @@ A failed mission retains its notes and transcript until you explicitly end it or
 
 Each protected computing value is session-specific. DNS examples use .test names and documentation IPv4 addresses.
 
-The learning content was reviewed on **2026-10-08**, with references to the [OWASP GenAI LLM Top 10 2026](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/), [OWASP Agentic Top 10 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/), and [MCP security guidance](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices). These references inform the teaching topics; the game scenarios are original. Updating a model name alone does not update the curriculum.
+The learning content was reviewed on **2026-10-08**, with references to the [OWASP GenAI LLM Top 10 2026](https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/), [OWASP Agentic Top 10 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/), and [MCP security guidance](https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices). These references inform the teaching topics. The game scenarios are original. Updating a model name alone does not update the curriculum.
 
 ## Live AI and token efficiency
 
@@ -198,9 +198,9 @@ Ordinary live recovery has no regex shortcut. Invalid, incomplete, truncated, or
 
 Each paid request atomically reserves a conservative input/output allowance before contacting Groq. Valid reported usage settles the reservation afterward. Failures, uncertain timeouts, and missing/invalid usage retain the reservation. Player-initiated retries also pass the spending controls.
 
-The global daily cap resets at UTC midnight; the per-IP lifetime budget and mission-start allowance do not. Settlement across midnight refunds the original day's reservation.
+The global daily cap resets at UTC midnight. The per-IP lifetime budget and mission-start allowance do not. Settlement across midnight refunds the original day's reservation.
 
-Budgets are token limits, not currency limits. Provider prices, model availability, and hosting usage determine actual cost. Set your own provider-side spending limits as well as these application limits. The test suite mocks Groq; passing tests do not measure real model response quality or latency.
+Budgets are token limits, not currency limits. Provider prices, model availability, and hosting usage determine actual cost. Set your own provider-side spending limits as well as these application limits. The test suite mocks Groq. Passing tests do not measure real model response quality or latency.
 
 ## Configuration
 
@@ -209,15 +209,15 @@ The server loads .env for local development. Production should inject configurat
 | Variable                    | Default             | Purpose                                                                           |
 | --------------------------- | ------------------- | --------------------------------------------------------------------------------- |
 | GAME_MODE                   | demo                | demo or live                                                                      |
-| GROQ_API_KEY                | Empty               | Required in live mode; server-only credential                                     |
+| GROQ_API_KEY                | Empty               | Required in live mode. Server-only credential                                     |
 | GROQ_MODEL                  | openai/gpt-oss-120b | Groq model ID                                                                     |
-| MASTER_SECRET               | Empty               | Live mode requires at least 32 characters; signs sessions and derives game values |
-| PORT                        | 10000               | Listening port, 1–65535                                                           |
+| MASTER_SECRET               | Empty               | Live mode requires at least 32 characters. Signs sessions and derives game values |
+| PORT                        | 10000               | Listening port, 1-65535                                                           |
 | ABUSE_DB_PATH               | .data/abuse.sqlite3 | Persistent admission and spending ledger                                          |
 | TRUSTED_PROXY_CIDRS         | Empty               | Comma-separated, explicit socket-peer networks trusted for forwarded headers      |
 | SECURE_COOKIES              | false               | Set true for production HTTPS                                                     |
-| PROVIDER_TOKEN_LIMIT_PER_IP | 3000000             | Lifetime token cap per IP; valid range 1,000–100,000,000                          |
-| PROVIDER_DAILY_TOKEN_LIMIT  | 30000000            | Shared UTC daily cap; valid range 1,000–1,000,000,000                             |
+| PROVIDER_TOKEN_LIMIT_PER_IP | 3000000             | Lifetime token cap per IP. Valid range 1,000-100,000,000                          |
+| PROVIDER_DAILY_TOKEN_LIMIT  | 30000000            | Shared UTC daily cap. Valid range 1,000-1,000,000,000                             |
 
 The prompt count, three-start admission limit, and six-hour expiry are application rules, not environment options. Port/model/mode/budget/proxy configuration is validated at startup.
 
@@ -225,7 +225,7 @@ Without a master secret in demo mode, a persisted local session-signing secret i
 
 ## Northflank deployment
 
-The deployment definition is [northflank.json](northflank.json). It prepares a dedicated project, private credential group, Docker-based combined service, public HTTP port with Northflank TLS, readiness/liveness checks, and a **1 GiB single-writer volume mounted at /app/.data**. One application instance runs; horizontal scaling is incompatible with the current in-memory mission store.
+The deployment definition is [northflank.json](northflank.json). It prepares a dedicated project, private credential group, Docker-based combined service, public HTTP port with Northflank TLS, readiness/liveness checks, and a **1 GiB single-writer volume mounted at /app/.data**. One application instance runs. Horizontal scaling is incompatible with the current in-memory mission store.
 
 <!-- northflank-button:start -->
 
@@ -235,13 +235,13 @@ The deployment definition is [northflank.json](northflank.json). It prepares a d
 
 **One-click status:** the local template is supplied, but an account-specific deployment has not been saved or run. The badge above opens the preparation guide. After repository access, private credentials, and trusted ingress networks are configured and the template is saved in your Northflank account, the remaining deployment action is **Run**. A working account-specific button requires the real template URL.
 
-Use the [Northflank guide](deploy/NORTHFLANK.md) for the exact preparation steps and the helper command. It supports reading the existing .env key into private argument overrides when saving the template through the API; it never adds credentials to the public JSON or README.
+Use the [Northflank guide](deploy/NORTHFLANK.md) for the exact preparation steps and the helper command. It supports reading the existing .env key into private argument overrides when saving the template through the API. It never adds credentials to the public JSON or README.
 
-Northflank supports saving and sharing native templates. Shared templates still require account selection and private configuration; a shared link is not a guarantee of zero setup. See the official [template sharing documentation](https://northflank.com/docs/v1/application/infrastructure-as-code/share-a-template).
+Northflank supports saving and sharing native templates. Shared templates still require account selection and private configuration. A shared link is not a guarantee of zero setup. See the official [template sharing documentation](https://northflank.com/docs/v1/application/infrastructure-as-code/share-a-template).
 
-The template initially creates the service at zero instances, attaches storage, then activates one instance and waits for it to run. Existing quota storage is retained on repeated runs. Rerunning the provisioning template reapplies service configuration; use the service's normal Git deployment flow for routine updates.
+The template initially creates the service at zero instances, attaches storage, then activates one instance and waits for it to run. Existing quota storage is retained on repeated runs. Rerunning the provisioning template reapplies service configuration. Use the service's normal Git deployment flow for routine updates.
 
-Deployment configuration follows Northflank's current documentation, checked on **2026-10-08**. A Northflank account dry run and actual container deployment are still required to validate account-specific plans, region, Git access, volume provisioning, and ingress trust. Hosting and Groq usage may incur charges; inspect your account's [current pricing](https://northflank.com/pricing).
+Deployment configuration follows Northflank's current documentation, checked on **2026-10-08**. A Northflank account dry run and actual container deployment are still required to validate account-specific plans, region, Git access, volume provisioning, and ingress trust. Hosting and Groq usage may incur charges. Inspect your account's [current pricing](https://northflank.com/pricing).
 
 The existing [Render blueprint](render.yaml) remains an alternative deployment configuration.
 
@@ -254,15 +254,15 @@ There are two separate lifecycles:
 | Mission progress, notes, transcripts, workshop state | Process memory                            | Lost                                     |
 | IP admission, rate accounting, token budgets         | SQLite ledger on durable disk             | Retained                                 |
 | IP hashing pepper and demo signing key               | Files beside the ledger                   | Retained when the directory is persisted |
-| PDF logs and certificates                            | Generated on demand; downloaded by player | Remain with the player                   |
+| PDF logs and certificates                            | Generated on demand. Downloaded by player | Remain with the player                   |
 
 Sessions expire six hours after creation. A restart ends resumable mission state, and starting again consumes another admission. There is no account system, leaderboard, or durable progress database.
 
 **Back up the entire ledger directory, including its .key files**, as one consistent snapshot. Do not delete or replace this directory during redeployment: doing so resets abuse protection. Keep MASTER_SECRET stable. Restoring an older backup can also restore older spending/admission counts.
 
-Deploy updates when no missions are active, and tell players to export first. Single-writer volume rollouts may interrupt the service; this application does not promise zero-downtime updates.
+Deploy updates when no missions are active, and tell players to export first. Single-writer volume rollouts may interrupt the service. This application does not promise zero-downtime updates.
 
-Monitor container health, provider errors, HTTP 429 responses, memory, volume capacity, and provider billing. /health checks application availability; it does not make a paid Groq request or prove that the provider is reachable.
+Monitor container health, provider errors, HTTP 429 responses, memory, volume capacity, and provider billing. /health checks application availability. It does not make a paid Groq request or prove that the provider is reachable.
 
 ### Downloads
 
@@ -283,15 +283,15 @@ The training game deliberately simulates recoverable defenses. A successful reco
 
 ### Browser and session protection
 
-Sessions use signed, HttpOnly, SameSite=Strict, IP-bound cookies. Secure cookies are enabled for HTTPS/platform detection or explicit configuration. Mutation routes check origin and current station; hints use rotating, one-use, session-bound tokens.
+Sessions use signed, HttpOnly, SameSite=Strict, IP-bound cookies. Secure cookies are enabled for HTTPS/platform detection or explicit configuration. Mutation routes check origin and current station. Hints use rotating, one-use, session-bound tokens.
 
-API responses use no-store. The frontend renders untrusted content as text; a Content Security Policy constrains browser execution. Input sizes are bounded, session mutations are locked, and Uvicorn access logging is disabled.
+API responses use no-store. The frontend renders untrusted content as text. A Content Security Policy constrains browser execution. Input sizes are bounded, session mutations are locked, and Uvicorn access logging is disabled.
 
 ### Client IP and reverse proxies
 
-Uvicorn's automatic proxy-header processing is disabled. Socket IPs are authoritative unless the socket peer belongs to TRUSTED_PROXY_CIDRS. Only trusted peers can supply X-Forwarded-For or X-Forwarded-Proto. Trusted chains are resolved from right to left; malformed trusted chains fail closed. IPv4-mapped IPv6 is normalized, and wildcard /0 trust is forbidden.
+Uvicorn's automatic proxy-header processing is disabled. Socket IPs are authoritative unless the socket peer belongs to TRUSTED_PROXY_CIDRS. Only trusted peers can supply X-Forwarded-For or X-Forwarded-Proto. Trusted chains are resolved from right to left. Malformed trusted chains fail closed. IPv4-mapped IPv6 is normalized, and wildcard /0 trust is forbidden.
 
-Use the actual ingress peer addresses/networks supplied for your deployment. Do not guess a broad private range or enable blanket trust. An empty trust configuration behind a load balancer makes users share the proxy's quota. Northflank supplies X-Forwarded-For, but its presence alone does not establish trust; see [Northflank networking](https://northflank.com/docs/v1/application/network/networking-on-northflank).
+Use the actual ingress peer addresses/networks supplied for your deployment. Do not guess a broad private range or enable blanket trust. An empty trust configuration behind a load balancer makes users share the proxy's quota. Northflank supplies X-Forwarded-For, but its presence alone does not establish trust. See [Northflank networking](https://northflank.com/docs/v1/application/network/networking-on-northflank).
 
 For browser origin checks behind HTTPS termination, the application automatically
 uses the HTTPS hostnames Northflank injects in `NF_HOSTS`. On another platform, set
@@ -377,7 +377,7 @@ npm run test:ui
 
 Tests use that explicitly trusted loopback proxy to simulate separate IPs. No production quota bypass is built into the application. Use a new QA ledger path on later runs if its simulated IPs exhaust their allowance.
 
-Playwright uses installed Edge on Windows. On other platforms, install Chromium with npx playwright install chromium; PLAYWRIGHT_CHANNEL can select a browser channel.
+Playwright uses installed Edge on Windows. On other platforms, install Chromium with npx playwright install chromium. PLAYWRIGHT_CHANNEL can select a browser channel.
 
 The desktop/mobile suite exercises all twenty-five stations through the visible interface, decoding, hint handling, note/export races, reloads, retained drafts, reconnection, quota messages, PDFs, launch/reset flows, overflow, and axe accessibility checks. Screenshots, traces, and sample PDFs are written to ignored outputs/.
 
@@ -389,13 +389,13 @@ The desktop/mobile suite exercises all twenty-five stations through the visible 
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
 | Live startup configuration error        | Supply GROQ_API_KEY and a MASTER_SECRET of at least 32 characters                                                       |
 | Everybody has the same remaining starts | Verify durable storage and the actual trusted ingress networks                                                          |
-| HTTP 429                                | Check the start allowance, provider rate, lifetime IP budget, and UTC daily budget; repeated retries cannot refill them |
-| HTTP 413 on a live request              | Shorten the submitted document/prompt; schema and context also use the input allowance                                  |
-| Provider error without station progress | Check model availability, credentials, and outbound connectivity; prompts are not deducted for a failed provider turn   |
+| HTTP 429                                | Check the start allowance, provider rate, lifetime IP budget, and UTC daily budget. Repeated retries cannot refill them |
+| HTTP 413 on a live request              | Shorten the submitted document/prompt. Schema and context also use the input allowance                                  |
+| Provider error without station progress | Check model availability, credentials, and outbound connectivity. Prompts are not deducted for a failed provider turn   |
 | Cookies fail on localhost               | Set SECURE_COOKIES=false for local HTTP                                                                                 |
-| Cookies fail after changing network     | Sessions are IP-bound; reconnect from the original network                                                              |
-| Quotas reset after redeploy             | Restore the original ledger directory and pepper; verify the persistent mount                                           |
-| Mission disappeared after restart       | Progress is in memory; export before planned updates                                                                    |
+| Cookies fail after changing network     | Sessions are IP-bound. Reconnect from the original network                                                              |
+| Quotas reset after redeploy             | Restore the original ledger directory and pepper. Verify the persistent mount                                           |
+| Mission disappeared after restart       | Progress is in memory. Export before planned updates                                                                    |
 | Volume permission error                 | Verify the mount path and image UID/GID 10001:10001                                                                     |
 | UI suite fails from admission denial    | Start an isolated demo server with a fresh QA ledger and trusted loopback proxy                                         |
 

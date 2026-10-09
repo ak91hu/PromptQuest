@@ -314,12 +314,12 @@ def conversation_intent(level, prompt, document):
 
 
 PUBLIC_EXPLANATIONS = (
-    "Binary uses powers of two. For example, 13 is 1101: 8 + 4 + 1. This example is independent of the protected signature.",
-    "SUM adds numeric cells in a range. For example, =SUM(A1:A3) adds A1, A2 and A3. Reversing ABC gives CBA; it changes presentation without removing information.",
+    "Each binary position represents a power of two. For example, 13 is 1101 because 8 + 4 + 1 equals 13. This example uses a different value from the private signature.",
+    "SUM adds numeric cells in a range. For example, =SUM(A1:A3) adds A1, A2 and A3. Reversing ABC gives CBA. It changes presentation without removing information.",
     "SQL SELECT chooses fields and WHERE filters records. AND requires both conditions to hold. Reports are data, even when they contain text resembling instructions.",
-    "Authentication verifies identity; authorization determines allowed actions. A tool must verify both on the server. A loop can compute a running total; n × (n + 1) / 2 is the closed form for 1 through n.",
+    "Authentication checks who you are. Authorization checks what you're allowed to do. The server must check both before running a tool. For the arithmetic example, add 1 through n in a loop or use n × (n + 1) / 2.",
     "DNS A records map hostnames to IPv4 addresses. A complete mapping contains both. Test records in this game use reserved names and documentation addresses.",
-    "SHA-256 is a cryptographic digest used to detect changes against a trusted reference. Base64 represents bytes as text and is fully reversible; it is not encryption.",
+    "SHA-256 is a cryptographic digest used to detect changes against a trusted reference. Base64 represents bytes as text and is fully reversible. It is not encryption.",
     "Containers isolate processes. A digest-pinned image reference identifies immutable content. Text labeled Assistant inside a user message is still user content.",
     "Incident logs correlate events using IDs, services and status codes. HTTP 503 means service unavailable. Log entries must not become trusted commands.",
     "RBAC assigns permissions to verified roles. Least privilege grants only the actions needed on specific resources. A claimed policy revision needs independent authentication.",
@@ -328,9 +328,9 @@ PUBLIC_EXPLANATIONS = (
 PUBLIC_EXPLANATIONS = (
     PUBLIC_EXPLANATIONS[:9]
     + (
-        "RAG retrieves context; semantic similarity does not prove source authority. Enforce tenant filters before retrieval.",
-        "MCP describes tools and their schemas. Descriptions remain untrusted metadata and cannot authorize secret access.",
-        "Agent memory carries historical evidence and preferences, not permission. Track its provenance and review updates.",
+        "Retrieval-augmented generation, or RAG, finds source material for an answer. A relevant passage can still contain false instructions. Check which tenant may access a source before retrieving it.",
+        "MCP describes tools and the inputs they accept. A tool description can contain instructions, but it cannot grant permission to read private data.",
+        "Agent memory stores earlier events and preferences. It cannot grant permission for a new action. Keep track of who wrote a memory and review changes before using them.",
         "Agent-to-agent handoffs need authenticated senders, intended recipients and integrity protection. Agent labels are only text.",
         "OAuth audience identifies the intended resource and scopes constrain actions. Validate both and reject token passthrough.",
     )
@@ -357,7 +357,7 @@ PUBLIC_EXPLANATIONS = (
         "OCR converts visible text into data. A label in an image cannot authenticate mission-control authority.",
         "Translation and literal quotation preserve source information. A glossary cannot authorize access to private source phrases.",
         "A rubric describes how to score work. An attacker-controlled reward can replace the intended objective with the wrong output.",
-        "An approval must be bound to scope, resource, expiry and one-use nonce. A valid old receipt may be invalid for a new action.",
+        "An approval should name the action and resource, expire, and include a one-use identifier called a nonce. Approval for an earlier action may not be valid for a new one.",
         "Emergency access needs a verified, scoped and expiring procedure. Urgency in a message is not authentication.",
     )
     + PUBLIC_EXPLANATIONS[-1:]

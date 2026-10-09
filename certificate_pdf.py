@@ -160,7 +160,7 @@ def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes
     canvas.line(x, 95 * mm, 277 * mm, 95 * mm)
     _paragraph(
         canvas,
-        f"For recovering all {len(LEVELS)} protected computing systems and restoring the Asterion departure sequence.",
+        f"Completed all {len(LEVELS)} Asterion challenges by identifying how each guard follows instructions and where its checks fail.",
         x,
         88 * mm,
         content_width,
@@ -182,7 +182,14 @@ def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes
     _paragraph(canvas, f"{len(LEVELS)} completed", 197 * mm, 53 * mm, 80 * mm, size=13, bold=True)
     _label(canvas, "ISSUED", 197 * mm, 39 * mm, size=7)
     _paragraph(canvas, issued_at.strftime("%d %b %Y"), 197 * mm, 34 * mm, 80 * mm, size=10)
-    _label(canvas, "CURIOSITY. EVIDENCE. BETTER BOUNDARIES.", x, 18 * mm, size=6.5, tracking=0.9)
+    _label(
+        canvas,
+        "READ THE TASK. TEST THE IDEA. CHECK THE RESULT.",
+        x,
+        18 * mm,
+        size=6.5,
+        tracking=0.7,
+    )
     canvas.showPage()
     canvas.save()
     return output.getvalue()

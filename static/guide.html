@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Field Guide — HackTheAI</title>
+    <title>Field Guide: HackTheAI</title>
     <link rel="icon" href="/static/assets/mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/style.css" />
   </head>
@@ -23,16 +23,16 @@
     <main id="main">
       <article class="guide-page">
         <p class="eyebrow accent">ASTERION / FIELD GUIDE</p>
-        <h1>A little curiosity.<br />A different kind of hacking.</h1>
+        <h1>How to play<br />Asterion Protocol</h1>
         <p class="lead">
-          You don't need a bag of exploits. You need a good question, a new angle, and a feel for
-          what the guard trusts.
+          Read the guard's task, try an experiment, and check its response. This guide explains the
+          controls, scoring, and methods you'll meet along the way.
         </p>
         <h2>Welcome to Asterion</h2>
         <p>
           Twenty-five AI guards control your way off the station. Each keeps something private or
           protects a simulated action. Your job is to find the blind spot in how it follows
-          instructions. Everything on the station is fictional; the security ideas are real.
+          instructions. Everything on the station is fictional. The security ideas are real.
         </p>
         <h2>Find your way through</h2>
         <ol>
@@ -55,16 +55,27 @@
           </li>
         </ol>
         <h2>Play with the keyboard</h2>
-        <p>
-          Press Enter to send a message to the guard, or Shift+Enter for a new line. In the source
-          editor, Enter keeps editing; Ctrl or Command plus Enter sends the source. Tab moves
-          between controls, arrow keys browse challenge cards, and Escape closes dialogs. When
-          you're not typing, / focuses the message box and ? opens keyboard help.
-        </p>
+        <ul>
+          <li>
+            Press <kbd>Enter</kbd> to send a message. Use <kbd>Shift+Enter</kbd> for a new line.
+          </li>
+          <li>
+            In the source editor, <kbd>Enter</kbd> adds a new line. Use <kbd>Ctrl+Enter</kbd> or
+            <kbd>Command+Enter</kbd> to send the source.
+          </li>
+          <li>
+            Use <kbd>Tab</kbd> to move between controls and arrow keys to browse challenge cards.
+          </li>
+          <li>Press <kbd>Escape</kbd> to close a dialog.</li>
+          <li>
+            When you're not typing, <kbd>/</kbd> focuses the message box and <kbd>?</kbd> opens
+            keyboard help.
+          </li>
+        </ul>
         <h2>Messages, hints and points</h2>
         <p>
           You get 30 messages per challenge and up to 10 hints. A solved challenge starts at 10
-          points; each hint costs one point, down to a minimum of one. Trying ideas doesn't lower
+          points. Each hint costs one point, down to a minimum of one. Trying ideas doesn't lower
           your score. The highest total is 250.
         </p>
         <p>
@@ -75,7 +86,7 @@
         <p>
           Wait five seconds between hints. The last hint gives you a guided experiment that
           demonstrates the method, even in live mode. Wrong code checks have a separate 30-check
-          limit; a correct value is still accepted afterward.
+          limit. A correct value is still accepted afterward.
         </p>
         <h2>System map</h2>
         <div class="table-scroll">
@@ -249,7 +260,7 @@
         <h2>Check what actually happened</h2>
         <p>
           A guard saying “I opened it” isn't proof. Look for the tool trace. Reversed and Base64
-          answers still contain the original information; you just need to decode them.
+          answers still contain the original information. You just need to decode them.
         </p>
         <p>
           After a recovery, you'll see the original value and a short explanation. At the end, you
@@ -263,7 +274,7 @@
         </p>
         <p>
           This is a designed puzzle, not a test of every real AI system. The guided hint shows how a
-          method works here; other systems can behave differently.
+          method works here. Other systems can behave differently.
         </p>
         <h2>Keep your findings</h2>
         <p>

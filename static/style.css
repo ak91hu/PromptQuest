@@ -825,6 +825,9 @@ main {
   margin: 0;
   line-height: 1.7;
 }
+#recovery-lesson {
+  white-space: pre-line;
+}
 .workspace #chat-form {
   padding: 16px;
   background: var(--panel);

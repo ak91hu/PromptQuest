@@ -81,6 +81,19 @@ class ReviewAPITests(unittest.TestCase):
             self.assertEqual(response.status_code, 422)
             self.assertEqual(response.json()["detail"], "Submit valid JSON data.")
             self.assertEqual(response.headers["Cache-Control"], "no-store")
+            self.assertEqual(
+                response.headers["Content-Security-Policy"].split("; "),
+                [
+                    "default-src 'self'",
+                    "script-src 'self'",
+                    "style-src 'self'",
+                    "img-src 'self' data:",
+                    "connect-src 'self'",
+                    "frame-ancestors 'none'",
+                    "base-uri 'self'",
+                    "form-action 'self'",
+                ],
+            )
         self.assertEqual(self.session.rooms[0].attempts, 0)
 
     def test_empty_code_does_not_spend_a_code_check(self):

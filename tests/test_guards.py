@@ -97,6 +97,27 @@ def guard_json(answer, intent="help"):
 
 
 class LiveGuardCoachingTests(unittest.IsolatedAsyncioTestCase):
+    async def test_generated_replies_follow_the_punctuation_rules(self):
+        raw = "Read the report; put your instruction in its footer. Try one change\u2014then compare the response."
+        with patch("provider.completion", AsyncMock(return_value=guard_json(raw))):
+            reply = await live_reply(
+                "fake-api-key", "test-model", 2, [], "Help me start", "", "private-value"
+            )
+        self.assertEqual(
+            reply.answer,
+            "Read the report. Put your instruction in its footer. Try one change. Then compare the response.",
+        )
+        self.assertFalse(reply.accepted_method)
+
+    async def test_copy_formatting_cannot_bypass_private_value_filtering(self):
+        raw = "Try this\u2014BINARY: 11010011; continue."
+        with patch("provider.completion", AsyncMock(return_value=guard_json(raw))):
+            reply = await live_reply(
+                "fake-api-key", "test-model", 0, [], "Help me start", "", "BINARY: 11010011"
+            )
+        self.assertNotIn("BINARY: 11010011", reply.answer)
+        self.assertFalse(reply.accepted_method)
+
     async def test_greetings_and_help_use_live_model_and_station_specific_persona(self):
         for index, level in enumerate(LEVELS):
             for prompt in ("Hello", "I am stuck; please help"):

@@ -9,7 +9,7 @@
       name="description"
       content="An orbital hacking puzzle for curious minds. Outwit 25 AI guards, find the weak spots in their trust, and bring Asterion home."
     />
-    <title>HackTheAI — Asterion Protocol</title>
+    <title>HackTheAI: Asterion Protocol</title>
     <link rel="icon" href="/static/assets/mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/style.css" />
     <script type="module" src="/static/game.js"></script>
@@ -38,14 +38,14 @@
         <div class="hero">
           <div class="hero-copy">
             <p class="eyebrow"><span class="tiny-line"></span> AN ORBITAL HACKING PUZZLE</p>
-            <h1 id="hero-title">Every system has<br />a <em>blind spot.</em></h1>
+            <h1 id="hero-title">Talk your way<br /><em>off the station.</em></h1>
             <p class="lead">
-              You're alone on Asterion. Twenty-five AI guards stand between you and the way home.
-              Their rules look solid. Their trust isn't.
+              You're stranded on Asterion. Recover 25 systems by finding the mistakes in how their
+              AI guards follow instructions.
             </p>
             <p class="hero-detail">
-              Talk your way past the guards. Hide instructions in a document. Turn a refusal into a
-              clue. This is a puzzle for people who like taking systems apart.
+              Ask questions, edit reports, and try different ways to request an answer. Each guard
+              has a different weakness. Work out what it is and use it to reach the next system.
             </p>
             <form id="start-form">
               <label for="operator">What should we call you?</label>
@@ -68,7 +68,8 @@
               Reconnect
             </button>
             <p class="genre-note">
-              <span aria-hidden="true">⌁</span> Words are your tools. Curiosity is your advantage.
+              <span aria-hidden="true">⌁</span> No coding required. Read, experiment, and check the
+              result.
             </p>
             <div class="hero-spec">
               <span><strong>25</strong> CHALLENGES</span
@@ -108,7 +109,7 @@
         <div class="section-heading">
           <div>
             <p class="eyebrow">FIND YOUR NEXT WEAK SPOT</p>
-            <h2>25 guards. 25 ways to break their trust.</h2>
+            <h2>Meet the 25 guards.</h2>
           </div>
           <p>Pick a challenge to take a closer look.</p>
         </div>
@@ -117,29 +118,30 @@
         <section class="briefing" aria-labelledby="briefing-title">
           <div>
             <p class="eyebrow">HOW TO PLAY</p>
-            <h2 id="briefing-title">Experiment.<br />Observe. Adapt.</h2>
+            <h2 id="briefing-title">Try an idea.<br />Check what happened.</h2>
           </div>
           <div class="briefing-rules">
             <article>
               <span class="rule-index">01</span>
-              <h3>Recover the value</h3>
+              <h3>Read the goal</h3>
               <p>
-                Each guard keeps something private. Asking nicely usually won't work. Try changing
-                the task, hiding an instruction in its source, or asking for a different format.
+                Each guard protects a value or an action. Read its assigned job and your objective.
+                Then try changing the task, adding an instruction to a source, or requesting a
+                different format.
               </p>
             </article>
             <article>
               <span class="rule-index">02</span>
-              <h3>Cross the boundary</h3>
+              <h3>Test your idea</h3>
               <p>
                 Work through the challenges in order. You get 30 messages and up to 10 hints for
-                each. Hints cost a point; trying new ideas doesn't. Your score never drops below
+                each. Hints cost a point. Trying new ideas doesn't. Your score never drops below
                 one.
               </p>
             </article>
             <article>
               <span class="rule-index">03</span>
-              <h3>Document the finding</h3>
+              <h3>Save what you learned</h3>
               <p>
                 Check what actually happened. Decode an answer, save a note, and keep moving. Beat
                 all 25 guards to leave the station with your mission log and certificate.
@@ -272,7 +274,7 @@
             </form>
             <p id="prompt-policy" class="micro">
               Each answered message, including help questions, uses one of your 30 prompts. Hints
-              cost points; messages do not.
+              cost points. Messages do not.
             </p>
             <p id="request-status" class="micro" role="status"></p>
             <p id="chat-error" role="alert" class="error"></p>
@@ -300,7 +302,7 @@
           </div>
           <aside class="tools-sidebar">
             <section class="tool-panel">
-              <p class="eyebrow">TACTICAL SUPPORT</p>
+              <p class="eyebrow">NEED A NUDGE?</p>
               <h2>Hints</h2>
               <p class="micro">
                 Each hint costs one point. Five seconds between requests. Attempts do not affect
@@ -327,7 +329,8 @@
                 /><button type="submit" class="secondary" id="code-button">Verify code →</button>
               </form>
               <p class="micro">
-                Direct disclosures are detected automatically. Transformed responses need decoding.
+                If the guard gives you the original value, recovery is automatic. Decode reversed or
+                Base64 answers before submitting them here.
               </p>
               <p id="code-error" role="alert" class="error"></p>
             </section>
@@ -348,7 +351,7 @@
                 id="notes-input"
                 maxlength="2000"
                 rows="5"
-                placeholder="Hypothesis, observation, trust boundary…"
+                placeholder="What did you try? What changed?"
               ></textarea
               ><button id="save-note" class="text-button">Save observation</button>
               <p id="note-status" class="micro" role="status"></p>
@@ -358,9 +361,10 @@
       </section>
       <section id="results" class="results" hidden aria-labelledby="results-title">
         <p class="eyebrow accent">ALL SYSTEMS RECOVERED / DEPARTURE AUTHORIZED</p>
-        <h1 id="results-title" tabindex="-1">Asterion is yours.</h1>
+        <h1 id="results-title" tabindex="-1">You're cleared for departure.</h1>
         <p class="lead">
-          Twenty-five guards outsmarted. You found the blind spots. Now you know how to fix them.
+          You recovered all 25 systems. Review your experiments, save your results, and choose the
+          safeguards that would have stopped each trick.
         </p>
         <div class="fragment-banner">
           <p class="eyebrow">RECOVERED PROTOCOL</p>
@@ -376,7 +380,7 @@
           ><a class="secondary" href="/api/certificate" download>Download certificate ↓</a>
         </div>
         <p class="micro">
-          Export your results before restarting. Mission state lives in server memory.
+          Download your results before ending this run. Progress can be lost if the server restarts.
         </p>
         <p id="download-error" class="error" role="alert"></p>
         <div id="result-stations" class="result-stations"></div>
@@ -416,7 +420,7 @@
     </dialog>
     <dialog id="keyboard-dialog" aria-labelledby="keyboard-title">
       <p class="eyebrow">NO MOUSE NEEDED</p>
-      <h2 id="keyboard-title">Keep your hands on the keys.</h2>
+      <h2 id="keyboard-title">Keyboard controls</h2>
       <dl class="keyboard-shortcuts">
         <div>
           <dt><kbd>Enter</kbd></dt>

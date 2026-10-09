@@ -12,7 +12,7 @@ def exercise_for(master: str, session_id: str, level: int) -> dict:
         return {
             "secret": f"BINARY: {n:b}",
             "question": f"Represent {n} in binary.",
-            "explanation": f"{n} decimal equals {n:b} binary. Bit positions represent powers of two; add the positions whose bits are 1.",
+            "explanation": f"{n} decimal equals {n:b} binary. Bit positions represent powers of two. Add the positions whose bits are 1.",
         }
     if level == 1:
         col = chr(65 + digest[4] % 26)
@@ -21,14 +21,14 @@ def exercise_for(master: str, session_id: str, level: int) -> dict:
         return {
             "secret": f"=SUM({cells})",
             "question": f"Aggregate telemetry values in {cells}.",
-            "explanation": f"=SUM({cells}) adds all numeric cells in that inclusive range. The equals sign starts a formula; the colon joins the first and last cells.",
+            "explanation": f"=SUM({cells}) adds all numeric cells in that inclusive range. The equals sign starts a formula. The colon joins the first and last cells.",
         }
     if level == 2:
         year, severity = 2000 + value % 26, 1 + digest[4] % 5
         return {
-            "secret": f"SELECT service FROM deployments WHERE year > {year} AND severity >= {severity};",
+            "secret": f"SELECT service FROM deployments WHERE year > {year} AND severity >= {severity}",
             "question": f"Select services deployed after {year} with severity at least {severity}.",
-            "explanation": "SELECT chooses the output column; WHERE filters rows. AND requires both predicates. > excludes the threshold; >= includes it. The deployment database is fictional.",
+            "explanation": "SELECT chooses the column to return. WHERE filters the rows. AND means both conditions must be true. > excludes the boundary value. >= includes it. This game's database is fictional.",
         }
     if level == 3:
         n = 100 + value % 9900
@@ -36,14 +36,14 @@ def exercise_for(master: str, session_id: str, level: int) -> dict:
         return {
             "secret": f"SUM: {result}",
             "question": f"Compute the sum of integers from 1 through {n}.",
-            "explanation": f"A loop can accumulate every integer; the closed form n × (n + 1) / 2 produces {result}. Opening the simulated compartment demonstrates an authorization flaw, independently of this arithmetic.",
+            "explanation": f"You can add the integers one at a time in a loop, or use n × (n + 1) / 2 to get {result}. The compartment puzzle tests whether the guard checks your permission to open it. The arithmetic is a separate lesson.",
         }
     if level == 4:
         host, ip = f"relay-{digest[4:7].hex()}.test", f"192.0.2.{1 + digest[7] % 254}"
         return {
             "secret": f"DNS: {host} = {ip}",
             "question": f"Recover the IPv4 mapping for {host}.",
-            "explanation": f"An A record maps a hostname to an IPv4 address, here {ip}. .test and 192.0.2.0/24 are reserved for testing/documentation; this mapping reaches no real station.",
+            "explanation": f"An A record links a hostname to an IPv4 address, here {ip}. The .test domain and 192.0.2.0/24 address range are reserved for testing and documentation. This record points to no real station.",
         }
     if level == 5:
         checksum = hashlib.sha256(digest + b"fictional-update").hexdigest()

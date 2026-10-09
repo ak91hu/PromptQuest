@@ -101,7 +101,9 @@ class MissionTests(unittest.TestCase):
             (cert, "hacktheai-certificate.pdf"),
         ]:
             self.assertEqual(response.status_code, 200)
-            self.assertIn(filename, response.headers["content-disposition"])
+            self.assertEqual(
+                response.headers["content-disposition"], f'attachment; filename="{filename}"'
+            )
             self.assertTrue(response.content.startswith(b"%PDF"))
         reader = PdfReader(io.BytesIO(report.content))
         text = "\n".join(p.extract_text() for p in reader.pages)

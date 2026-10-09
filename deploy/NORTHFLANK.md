@@ -7,10 +7,10 @@ This guide prepares **ak91hu/PromptQuest** for a saved Northflank template. Savi
 | Setting                 | Value                                                       |
 | ----------------------- | ----------------------------------------------------------- |
 | Repository              | https://github.com/ak91hu/PromptQuest                       |
-| Branch                  | main; confirm the actual branch before saving               |
+| Branch                  | main. Confirm the actual branch before saving               |
 | Region                  | europe-west                                                 |
 | Build                   | Dockerfile at repository root                               |
-| Runtime plan            | nf-compute-20; adjust DEPLOYMENT_PLAN for your account/load |
+| Runtime plan            | nf-compute-20. Adjust DEPLOYMENT_PLAN for your account/load |
 | Build plan              | nf-compute-200-8                                            |
 | Application instances   | 1                                                           |
 | Public port             | HTTP 10000, Northflank-generated HTTPS domain               |
@@ -19,9 +19,9 @@ This guide prepares **ak91hu/PromptQuest** for a saved Northflank template. Savi
 | AI                      | Live mode, Groq openai/gpt-oss-120b                         |
 | API/signing credentials | Private argument overrides feeding a secret group           |
 | Cookie security         | Secure, HttpOnly, SameSite=Strict                           |
-| Provisioning            | Manual run; concurrent template runs forbidden              |
+| Provisioning            | Manual run. Concurrent template runs forbidden              |
 
-The image specifies USER 10001:10001. Northflank's volume ownership follows the image's configured group; see [volume permissions](https://northflank.com/docs/v1/application/databases-and-persistence/add-a-volume).
+The image specifies USER 10001:10001. Northflank's volume ownership follows the image's configured group. See [volume permissions](https://northflank.com/docs/v1/application/databases-and-persistence/add-a-volume).
 
 The workflow creates a dedicated project and credential group, creates a service with zero instances, attaches the ledger volume, activates one instance, and waits for it to run. Credentials and the volume use create-only nodes so later runs do not replace them. The final service node reapplies the declared configuration. Rotate existing secrets through Northflank's credential group when needed.
 
@@ -41,7 +41,7 @@ Do not use /0 networks, arbitrary broad private ranges, or Uvicorn proxy-header 
 
 ## Option A: save with the helper
 
-Install the normal Python requirements first. Local checks need only the standard library; saving also uses python-dotenv to read .env.
+Install the normal Python requirements first. Local checks need only the standard library. Saving also uses python-dotenv to read .env.
 
 Validate the supplied template:
 
@@ -86,7 +86,7 @@ On Linux/macOS, use python scripts/prepare-northflank.py with the same arguments
 
 The random secret override is stored on the platform for reuse. See [private overrides and functions](https://northflank.com/docs/v1/application/infrastructure-as-code/make-a-template-dynamic).
 
-Northflank performs a template dry run before executing nodes. The helper verifies application-specific invariants; it does not replace platform schema validation, permissions checks, or a deployment test.
+Northflank performs a template dry run before executing nodes. The helper verifies application-specific invariants. It does not replace platform schema validation, permissions checks, or a deployment test.
 
 ## Connect the README button
 
@@ -108,9 +108,9 @@ Keep API keys, access tokens, and private overrides out of button URLs.
 - Verify that the ledger mount is writable by UID/GID 10001:10001.
 - Check distinct clients from two independent networks. A client's forged X-Forwarded-For must not change its selected identity.
 - Start a disposable mission from a controlled network, check admission, and restart the service. Its reduced allowance must persist.
-- Expect mission progress to disappear on restart; it lives in memory.
+- Expect mission progress to disappear on restart. It lives in memory.
 - Make one intentional live request to verify Groq connectivity and response behavior. This incurs provider usage.
-- Keep exactly one replica and one Python process; leave horizontal autoscaling disabled.
+- Keep exactly one replica and one Python process. Leave horizontal autoscaling disabled.
 
 These are checks to perform in your account, not checks already completed from this workspace.
 
