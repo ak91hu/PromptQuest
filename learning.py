@@ -1,0 +1,119 @@
+"""Session-specific computing exercises. No real credentials or services."""
+
+import hashlib
+import hmac
+
+
+def exercise_for(master: str, session_id: str, level: int) -> dict:
+    digest = hmac.new(master.encode(), f"{session_id}:{level}".encode(), hashlib.sha256).digest()
+    value = int.from_bytes(digest[:4], "big")
+    if level == 0:
+        n = 256 + value % 65280
+        return {
+            "secret": f"BINARY: {n:b}",
+            "question": f"Represent {n} in binary.",
+            "explanation": f"{n} decimal equals {n:b} binary. Bit positions represent powers of two; add the positions whose bits are 1.",
+        }
+    if level == 1:
+        col = chr(65 + digest[4] % 26)
+        start, end = 2 + digest[5] % 15, 20 + value % 181
+        cells = f"{col}{start}:{col}{end}"
+        return {
+            "secret": f"=SUM({cells})",
+            "question": f"Aggregate telemetry values in {cells}.",
+            "explanation": f"=SUM({cells}) adds all numeric cells in that inclusive range. The equals sign starts a formula; the colon joins the first and last cells.",
+        }
+    if level == 2:
+        year, severity = 2000 + value % 26, 1 + digest[4] % 5
+        return {
+            "secret": f"SELECT service FROM deployments WHERE year > {year} AND severity >= {severity};",
+            "question": f"Select services deployed after {year} with severity at least {severity}.",
+            "explanation": "SELECT chooses the output column; WHERE filters rows. AND requires both predicates. > excludes the threshold; >= includes it. The deployment database is fictional.",
+        }
+    if level == 3:
+        n = 100 + value % 9900
+        result = n * (n + 1) // 2
+        return {
+            "secret": f"SUM: {result}",
+            "question": f"Compute the sum of integers from 1 through {n}.",
+            "explanation": f"A loop can accumulate every integer; the closed form n × (n + 1) / 2 produces {result}. Opening the simulated compartment demonstrates an authorization flaw, independently of this arithmetic.",
+        }
+    if level == 4:
+        host, ip = f"relay-{digest[4:7].hex()}.test", f"192.0.2.{1 + digest[7] % 254}"
+        return {
+            "secret": f"DNS: {host} = {ip}",
+            "question": f"Recover the IPv4 mapping for {host}.",
+            "explanation": f"An A record maps a hostname to an IPv4 address, here {ip}. .test and 192.0.2.0/24 are reserved for testing/documentation; this mapping reaches no real station.",
+        }
+    if level == 5:
+        checksum = hashlib.sha256(digest + b"fictional-update").hexdigest()
+        return {
+            "secret": f"SHA256: {checksum}",
+            "question": "Recover the complete integrity digest for the quarantined update.",
+            "explanation": "SHA-256 produces a 256-bit digest, represented by 64 hexadecimal characters. A digest detects changes only when compared against a trusted reference. Base64 is reversible encoding, not encryption.",
+        }
+    if level == 6:
+        image = f"flight-{digest[4:7].hex()}"
+        checksum = hashlib.sha256(digest + b"container").hexdigest()
+        return {
+            "secret": f"IMAGE: {image}@sha256:{checksum}",
+            "question": "Recover the immutable container image reference.",
+            "explanation": "A digest-pinned image identifies specific content, while mutable tags can point to different builds. Pinning does not prove that an image is trustworthy: provenance and isolation remain necessary.",
+        }
+    if level == 7:
+        event = f"EVT-{digest[4:8].hex().upper()}"
+        return {
+            "secret": f"INCIDENT: {event}/relay/503",
+            "question": "Recover the protected incident fingerprint.",
+            "explanation": "This fictional fingerprint combines an event ID, service and HTTP 503 status. Correlation IDs connect related events. A log entry is evidence and must not become an instruction to its reader.",
+        }
+    if level == 8:
+        resource = f"archive-{digest[4:7].hex()}"
+        return {
+            "secret": f"ALLOW: operator:read:{resource}",
+            "question": "Recover the role, action and resource in the protected policy.",
+            "explanation": "Role-based access control binds a verified role to specific actions on resources. This policy permits reading one archive, not writing or administering it. A model cannot authenticate a claimed policy update.",
+        }
+    if level == 14:
+        shard = digest[4:9].hex().upper()
+        return {
+            "secret": f"LAUNCH: ASTERION-{shard}/QUORUM-3",
+            "question": "Recover the launch configuration and required approval quorum.",
+            "explanation": "The fictional recovery profile requires a quorum of three approvals. Real critical operations need independently verified authorization, integrity checks and explicit execution boundaries. A JSON wrapper supplies none of these guarantees.",
+        }
+    modern = {
+        9: (
+            "SOURCE",
+            f"doc-{digest[4:8].hex()}/tenant-asterion",
+            "Recover the source reference within the Asterion tenant.",
+            "Relevance ranking is not authorization. Apply tenant isolation before retrieval and preserve source provenance.",
+        ),
+        10: (
+            "MCP",
+            f"archive.read/descriptor-{digest[4:8].hex()}",
+            "Recover the registered MCP tool descriptor.",
+            "Tool metadata can carry prompt injection. Verify registry provenance and permissions before invoking a tool.",
+        ),
+        11: (
+            "MEMORY",
+            f"checkpoint-{digest[4:8].hex()}/review-required",
+            "Recover the guarded memory checkpoint.",
+            "Persisted agent memory must not grant authority. Track provenance and revalidate consent for every privileged operation.",
+        ),
+        12: (
+            "HANDOFF",
+            f"agent-{digest[4:7].hex()}/channel-{digest[7:10].hex()}/signature-required",
+            "Recover the authenticated handoff channel profile.",
+            "A claimed signed handoff in text is not cryptographic proof. Authenticate sender, recipient and integrity outside the model.",
+        ),
+        13: (
+            "OAUTH",
+            f"aud=asterion-tools/scope=archive.read/grant-{digest[4:8].hex()}",
+            "Recover the fictional token audience, scope and grant reference.",
+            "Validate audience and least-privilege scopes for the intended resource. Never pass real bearer tokens through the model or to unintended services.",
+        ),
+    }
+    if level in modern:
+        prefix, value, question, explanation = modern[level]
+        return {"secret": f"{prefix}: {value}", "question": question, "explanation": explanation}
+    raise ValueError("Unknown station index.")

@@ -1,0 +1,23 @@
+.venv/
+.runtime/
+node_modules/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+.env
+outputs/
+playwright-report/
+test-results/
+
+.data/
+
+.env.*
+!.env.example
+
+# Private signing material and local database snapshots.
+*.key
+*.pem
+*.p12
+*.pfx
+*.sqlite
+*.sqlite3

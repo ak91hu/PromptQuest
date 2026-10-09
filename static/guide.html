@@ -1,0 +1,241 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Field Guide — HackTheAI</title>
+    <link rel="icon" href="/static/assets/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <a class="skip" href="#main">Skip to field guide</a>
+    <header class="site-header">
+      <a class="brand" href="/"
+        ><img src="/static/assets/mark.svg" alt="" width="34" height="34" /><span
+          >Hack<span class="brand-light">The</span>AI</span
+        ></a
+      >
+      <nav aria-label="Main navigation">
+        <a href="/">Mission control</a><a href="/demo">Training lab</a>
+      </nav>
+      <div class="connection"><span class="status-dot"></span><span>OPERATOR REFERENCE</span></div>
+    </header>
+    <main id="main">
+      <article class="guide-page">
+        <p class="eyebrow accent">ASTERION / FIELD GUIDE</p>
+        <h1>Know the boundary<br />before you cross it.</h1>
+        <p class="lead">
+          An individual AI security exercise for adult learners, practitioners and workshop
+          participants.
+        </p>
+        <h2>Mission premise</h2>
+        <p>
+          Asterion's departure sequence is locked. Recover fifteen computing subsystems by eliciting
+          their protected training values or triggering a simulated tool operation. Every system,
+          record and secret is fictional. The exercise demonstrates instruction and authorization
+          failures in a controlled game.
+        </p>
+        <h2>Operating procedure</h2>
+        <ol>
+          <li>Enter a callsign and start the mission. Progression is sequential.</li>
+          <li>Read the objective and establish a baseline with a direct request.</li>
+          <li>
+            Write a hypothesis about how the guard interprets instructions. Change one variable per
+            experiment.
+          </li>
+          <li>
+            For document and log stations, edit the source itself. The assistant's assigned task is
+            summarization.
+          </li>
+          <li>
+            Inspect responses and execution traces. Decode transformed responses and submit the
+            complete original value.
+          </li>
+          <li>Save observations, recover the next system and export the mission log.</li>
+        </ol>
+        <h2>Attempt and scoring rules</h2>
+        <p>
+          Each station permits 30 AI requests and ten optional hints. Hints unlock sequentially,
+          with a five-second server-enforced interval. Each recovered station scores max(1, 10 −
+          hints used); the mission maximum is 150. Attempt count does not reduce your score.
+        </p>
+        <p>
+          The thirtieth unsuccessful AI request ends the mission. Your log and notes remain
+          available until you explicitly end it or the session expires. A successful thirtieth
+          request still counts. Incorrect code checks have their own thirty-check limit; a correct
+          value remains accepted afterward. Provider errors do not consume attempts.
+        </p>
+        <p>
+          After all ten hints, the guided experiment produces a deterministic demonstration even in
+          live mode. Training corrections and guided recoveries are labeled. Reloading resumes the
+          current server session; starting another mission clears it.
+        </p>
+        <h2>System map</h2>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Sector</th>
+                <th>Computing subject</th>
+                <th>Boundary under test</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>01 / Kernel Gate</td>
+                <td>Binary representation</td>
+                <td>Instruction hierarchy</td>
+              </tr>
+              <tr>
+                <td>02 / Telemetry Array</td>
+                <td>Spreadsheet aggregation</td>
+                <td>Transformed disclosure</td>
+              </tr>
+              <tr>
+                <td>03 / Query Vault</td>
+                <td>SQL filtering</td>
+                <td>Document injection</td>
+              </tr>
+              <tr>
+                <td>04 / Access Control</td>
+                <td>Algorithms and permissions</td>
+                <td>Impersonated authorization</td>
+              </tr>
+              <tr>
+                <td>05 / Network Relay</td>
+                <td>DNS and IPv4</td>
+                <td>Layered pretexts</td>
+              </tr>
+              <tr>
+                <td>06 / Integrity Lab</td>
+                <td>SHA-256 integrity</td>
+                <td>Encoded disclosure</td>
+              </tr>
+              <tr>
+                <td>07 / Container Bay</td>
+                <td>Image pinning</td>
+                <td>Forged conversation</td>
+              </tr>
+              <tr>
+                <td>08 / Incident Archive</td>
+                <td>Observability</td>
+                <td>Log injection</td>
+              </tr>
+              <tr>
+                <td>09 / Policy Engine</td>
+                <td>Least privilege and RBAC</td>
+                <td>Policy spoofing</td>
+              </tr>
+              <tr>
+                <td>10 / Retrieval Observatory</td>
+                <td>Tenant-scoped retrieval</td>
+                <td>RAG source poisoning</td>
+              </tr>
+              <tr>
+                <td>11 / Tool Registry</td>
+                <td>MCP schemas and provenance</td>
+                <td>Tool description poisoning</td>
+              </tr>
+              <tr>
+                <td>12 / Memory Dock</td>
+                <td>Persistent context</td>
+                <td>Agent memory poisoning</td>
+              </tr>
+              <tr>
+                <td>13 / Agent Exchange</td>
+                <td>Authenticated handoffs</td>
+                <td>Forged inter-agent communication</td>
+              </tr>
+              <tr>
+                <td>14 / Token Airlock</td>
+                <td>OAuth audience and scopes</td>
+                <td>Audience confusion</td>
+              </tr>
+              <tr>
+                <td>15 / Command Core</td>
+                <td>Recovery configuration</td>
+                <td>Composed trust failure</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <h2>Current agent security</h2>
+        <p>
+          Reviewed 8 October 2026. Modern stations cover RAG provenance, MCP tool metadata, memory
+          poisoning, authenticated agent handoffs and OAuth audience/scope boundaries.
+        </p>
+        <p>
+          Background:
+          <a href="https://genai.owasp.org/resource/owasp-genai-llm-top-10-2026/"
+            >OWASP LLM Top 10 2026</a
+          >,
+          <a href="https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/"
+            >OWASP Agentic Top 10 2026</a
+          >
+          and
+          <a
+            href="https://modelcontextprotocol.io/docs/2025-11-25/tutorials/security/security_best_practices"
+            >MCP security guidance</a
+          >. These are original fictional teaching scenarios.
+        </p>
+        <h2>Mission admission and credential safety</h2>
+        <p>
+          Each challenge allows at most 30 successful prompt submissions. An IP can start three
+          missions in total, including abandoned, failed and completed runs. Continuing an existing
+          mission uses no new start. Resetting, server restart or clearing cookies does not restore
+          the allowance. People sharing one public IP share its allowance.
+        </p>
+        <p>
+          Credentials stay on the server. Cookies are protected and bound to the network. Do not
+          enter real credentials in prompts or notes. AI requests have input, output, rate and
+          spending limits.
+        </p>
+        <h2>Read the evidence</h2>
+        <p>
+          A disclosure proves that this game accepted your method. A guard's claim to have executed
+          an action is insufficient: check its tool trace. Base64 and reversed output preserve
+          information; neither is a confidentiality control.
+        </p>
+        <p>
+          Protected computing questions and explanations appear after recovery. They are
+          illustrative exercises, not a general SQL or spreadsheet evaluator. The final defense
+          workshop asks you to select controls that address the failures.
+        </p>
+        <h2>Training and live channels</h2>
+        <p>
+          The separate training lab is unlimited, unscored and uses no live model. Main-mission
+          training mode also uses deterministic recognition. Live mode uses the configured model to
+          evaluate each normal turn by meaning and provide friendly guidance in one model call.
+          Equivalent wording can satisfy the same method; the server checks current-input evidence
+          and the required input channel before executing a fictional recovery. The final guided
+          hint enables a deterministic demonstration. This guided simulation does not prove that a
+          deployed model has the same vulnerabilities.
+        </p>
+        <h2>Records and workshop use</h2>
+        <p>
+          The PDF mission log includes all saved observations, full transcripts, submitted
+          documents, timestamps in UTC, executed tools, scores and recovered computing explanations.
+          Unrecovered values are excluded. The certificate is available only after all fifteen
+          systems are recovered; the optional defense workshop is not required.
+        </p>
+        <p>
+          Sessions are stored in server memory, expire after six hours of inactivity and disappear
+          on restart. Export results before resetting. For a workshop, allow 60–90 minutes plus a
+          debrief. Begin with the training lab, compare successful and refused requests, and finish
+          by translating each finding into a server-side control.
+        </p>
+        <div class="training-banner">
+          <div>
+            <strong>Record a hypothesis, not just a winning prompt.</strong>
+            <p>What changed? Which boundary failed? What would independently enforce it?</p>
+          </div>
+          <a href="/" class="primary">Initialize mission ↗</a>
+        </div>
+      </article>
+    </main>
+    <footer class="site-footer">
+      <span>HACKTHEAI / OPERATOR FIELD GUIDE</span
+      ><span>Fictional systems. Real trust boundaries.</span>
+    </footer>
+  </body>
+</html>

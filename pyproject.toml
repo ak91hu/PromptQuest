@@ -1,0 +1,11 @@
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+extend-exclude = ["outputs", ".venv", ".runtime", "node_modules"]
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I"]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests configure deterministic mode before importing the application.
+"tests/*.py" = ["E402"]

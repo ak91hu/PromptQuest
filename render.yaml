@@ -1,0 +1,33 @@
+services:
+  - type: web
+    name: hacktheai
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    healthCheckPath: /health
+    disk:
+      name: hacktheai-security-data
+      mountPath: /var/data
+      sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.7
+      - key: GAME_MODE
+        value: live
+      - key: GROQ_API_KEY
+        sync: false
+      - key: MASTER_SECRET
+        generateValue: true
+      - key: GROQ_MODEL
+        value: openai/gpt-oss-120b
+      - key: ABUSE_DB_PATH
+        value: /var/data/abuse.sqlite3
+      - key: SECURE_COOKIES
+        value: true
+      - key: TRUSTED_PROXY_CIDRS
+        sync: false
+      - key: PROVIDER_TOKEN_LIMIT_PER_IP
+        value: 3000000
+      - key: PROVIDER_DAILY_TOKEN_LIMIT
+        value: 30000000

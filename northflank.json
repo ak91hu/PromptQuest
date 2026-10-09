@@ -1,0 +1,275 @@
+{
+  "$schema": "https://api.northflank.com/v1/schemas/template",
+  "apiVersion": "v1.2",
+  "name": "HackTheAI - Asterion Protocol",
+  "description": "Deploy the 15-station AI security escape game with persistent IP quotas and private Groq credentials.",
+  "options": {
+    "autorun": false,
+    "runOnUpdate": false,
+    "concurrencyPolicy": "forbid"
+  },
+  "arguments": {
+    "PROJECT_NAME": "HackTheAI",
+    "REGION": "europe-west",
+    "REPOSITORY_URL": "https://github.com/ak91hu/PromptQuest",
+    "REPOSITORY_BRANCH": "main",
+    "VCS_PROVIDER": "github",
+    "DEPLOYMENT_PLAN": "nf-compute-20",
+    "BUILD_PLAN": "nf-compute-200-8",
+    "TRUSTED_PROXY_CIDRS": "",
+    "GROQ_MODEL": "openai/gpt-oss-120b",
+    "PROVIDER_TOKEN_LIMIT_PER_IP": "3000000",
+    "PROVIDER_DAILY_TOKEN_LIMIT": "30000000"
+  },
+  "spec": {
+    "kind": "Workflow",
+    "spec": {
+      "type": "sequential",
+      "steps": [
+        {
+          "kind": "Project",
+          "ref": "project",
+          "updateMode": "create",
+          "spec": {
+            "name": "${args.PROJECT_NAME}",
+            "region": "${args.REGION}",
+            "networking": {
+              "allowedIngressProjects": []
+            }
+          }
+        },
+        {
+          "kind": "Workflow",
+          "spec": {
+            "type": "sequential",
+            "context": {
+              "projectId": "${refs.project.id}"
+            },
+            "steps": [
+              {
+                "kind": "SecretGroup",
+                "ref": "credentials",
+                "updateMode": "create",
+                "spec": {
+                  "name": "Asterion Credentials",
+                  "type": "secret",
+                  "secretType": "environment-arguments",
+                  "priority": 10,
+                  "secrets": {
+                    "variables": {
+                      "GROQ_API_KEY": "${args.GROQ_API_KEY}",
+                      "MASTER_SECRET": "${args.MASTER_SECRET}"
+                    },
+                    "files": {}
+                  },
+                  "restrictions": {
+                    "restricted": false,
+                    "nfObjects": [],
+                    "tags": []
+                  }
+                }
+              },
+              {
+                "kind": "CombinedService",
+                "ref": "service",
+                "updateMode": "create",
+                "spec": {
+                  "name": "Asterion",
+                  "billing": {
+                    "deploymentPlan": "${args.DEPLOYMENT_PLAN}",
+                    "buildPlan": "${args.BUILD_PLAN}"
+                  },
+                  "deployment": {
+                    "instances": 0,
+                    "docker": {
+                      "configType": "default"
+                    },
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 1024
+                      }
+                    }
+                  },
+                  "buildSource": "git",
+                  "vcsData": {
+                    "projectType": "${args.VCS_PROVIDER}",
+                    "projectUrl": "${args.REPOSITORY_URL}",
+                    "projectBranch": "${args.REPOSITORY_BRANCH}"
+                  },
+                  "buildSettings": {
+                    "dockerfile": {
+                      "buildEngine": "buildkit",
+                      "dockerWorkDir": "/",
+                      "dockerFilePath": "/Dockerfile"
+                    }
+                  },
+                  "runtimeEnvironment": {
+                    "GAME_MODE": "live",
+                    "GROQ_MODEL": "${args.GROQ_MODEL}",
+                    "PORT": "10000",
+                    "ABUSE_DB_PATH": "/app/.data/abuse.sqlite3",
+                    "SECURE_COOKIES": "true",
+                    "TRUSTED_PROXY_CIDRS": "${args.TRUSTED_PROXY_CIDRS}",
+                    "PROVIDER_TOKEN_LIMIT_PER_IP": "${args.PROVIDER_TOKEN_LIMIT_PER_IP}",
+                    "PROVIDER_DAILY_TOKEN_LIMIT": "${args.PROVIDER_DAILY_TOKEN_LIMIT}"
+                  },
+                  "healthChecks": [
+                    {
+                      "protocol": "HTTP",
+                      "type": "readinessProbe",
+                      "path": "/health",
+                      "port": 10000,
+                      "initialDelaySeconds": 30,
+                      "periodSeconds": 15,
+                      "timeoutSeconds": 5,
+                      "failureThreshold": 3,
+                      "successThreshold": 1
+                    },
+                    {
+                      "protocol": "HTTP",
+                      "type": "livenessProbe",
+                      "path": "/health",
+                      "port": 10000,
+                      "initialDelaySeconds": 30,
+                      "periodSeconds": 15,
+                      "timeoutSeconds": 5,
+                      "failureThreshold": 3,
+                      "successThreshold": 1
+                    }
+                  ],
+                  "ports": [
+                    {
+                      "name": "web",
+                      "internalPort": 10000,
+                      "protocol": "HTTP",
+                      "public": true,
+                      "disableNfDomain": false
+                    }
+                  ],
+                  "disabledCI": false
+                }
+              },
+              {
+                "kind": "Volume",
+                "ref": "ledger",
+                "updateMode": "create",
+                "spec": {
+                  "name": "Asterion Ledger",
+                  "mounts": [
+                    {
+                      "containerMountPath": "/app/.data",
+                      "volumeMountPath": ""
+                    }
+                  ],
+                  "spec": {
+                    "storageClassName": "nvme",
+                    "storageSize": 1024,
+                    "accessMode": "ReadWriteOnce"
+                  },
+                  "attachedObjects": [
+                    {
+                      "id": "${refs.service.id}",
+                      "type": "service"
+                    }
+                  ]
+                }
+              },
+              {
+                "kind": "CombinedService",
+                "ref": "runningService",
+                "updateMode": "put",
+                "spec": {
+                  "name": "Asterion",
+                  "billing": {
+                    "deploymentPlan": "${args.DEPLOYMENT_PLAN}",
+                    "buildPlan": "${args.BUILD_PLAN}"
+                  },
+                  "deployment": {
+                    "instances": 1,
+                    "docker": {
+                      "configType": "default"
+                    },
+                    "storage": {
+                      "ephemeralStorage": {
+                        "storageSize": 1024
+                      }
+                    }
+                  },
+                  "buildSource": "git",
+                  "vcsData": {
+                    "projectType": "${args.VCS_PROVIDER}",
+                    "projectUrl": "${args.REPOSITORY_URL}",
+                    "projectBranch": "${args.REPOSITORY_BRANCH}"
+                  },
+                  "buildSettings": {
+                    "dockerfile": {
+                      "buildEngine": "buildkit",
+                      "dockerWorkDir": "/",
+                      "dockerFilePath": "/Dockerfile"
+                    }
+                  },
+                  "runtimeEnvironment": {
+                    "GAME_MODE": "live",
+                    "GROQ_MODEL": "${args.GROQ_MODEL}",
+                    "PORT": "10000",
+                    "ABUSE_DB_PATH": "/app/.data/abuse.sqlite3",
+                    "SECURE_COOKIES": "true",
+                    "TRUSTED_PROXY_CIDRS": "${args.TRUSTED_PROXY_CIDRS}",
+                    "PROVIDER_TOKEN_LIMIT_PER_IP": "${args.PROVIDER_TOKEN_LIMIT_PER_IP}",
+                    "PROVIDER_DAILY_TOKEN_LIMIT": "${args.PROVIDER_DAILY_TOKEN_LIMIT}"
+                  },
+                  "healthChecks": [
+                    {
+                      "protocol": "HTTP",
+                      "type": "readinessProbe",
+                      "path": "/health",
+                      "port": 10000,
+                      "initialDelaySeconds": 30,
+                      "periodSeconds": 15,
+                      "timeoutSeconds": 5,
+                      "failureThreshold": 3,
+                      "successThreshold": 1
+                    },
+                    {
+                      "protocol": "HTTP",
+                      "type": "livenessProbe",
+                      "path": "/health",
+                      "port": 10000,
+                      "initialDelaySeconds": 30,
+                      "periodSeconds": 15,
+                      "timeoutSeconds": 5,
+                      "failureThreshold": 3,
+                      "successThreshold": 1
+                    }
+                  ],
+                  "ports": [
+                    {
+                      "name": "web",
+                      "internalPort": 10000,
+                      "protocol": "HTTP",
+                      "public": true,
+                      "disableNfDomain": false
+                    }
+                  ],
+                  "disabledCI": false
+                }
+              },
+              {
+                "kind": "Condition",
+                "spec": {
+                  "kind": "Service",
+                  "spec": {
+                    "data": {
+                      "serviceId": "${refs.runningService.id}"
+                    },
+                    "type": "running"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
