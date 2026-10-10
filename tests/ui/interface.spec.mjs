@@ -208,7 +208,7 @@ test('complete all twenty-five systems through the visible UI, decode, export an
   await expect(page.locator('.result-station')).toHaveCount(25);
   for (const name of ['Download mission log', 'Download certificate']) {
     const downloadPromise = page.waitForEvent('download');
-    await page.getByRole('link', { name }).click();
+    await page.getByRole('button', { name }).click();
     const download = await downloadPromise;
     expect(download.suggestedFilename()).toMatch(/^hacktheai-.*\.pdf$/);
     expect(await download.failure()).toBeNull();
@@ -289,7 +289,7 @@ test('exhaustion preserves notes and log until explicitly returning to deploymen
   await expect(page.locator('#game-over-title')).toBeFocused();
   await page.locator('#notes-input').fill('Observe why the boundary resisted all thirty prompts.');
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Download this mission log' }).click();
+  await page.getByRole('button', { name: 'Download this mission log' }).click();
   expect((await downloadPromise).suggestedFilename()).toBe('hacktheai-mission-log.pdf');
   await expect(page.locator('#note-status')).toContainText('saved');
   await page.locator('#end-exhausted').click();
@@ -337,7 +337,7 @@ test('notes edited during save remain unsaved and export saves the latest versio
   await expect(page.locator('#note-status')).toContainText('not saved');
   await expect(page.locator('#notes-input')).toHaveValue('Latest observation typed during save');
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('link', { name: 'Export log' }).click();
+  await page.getByRole('button', { name: 'Export log' }).click();
   expect((await downloadPromise).suggestedFilename()).toBe('hacktheai-mission-log.pdf');
   expect(calls).toBe(2);
   await expect(page.locator('#note-status')).toContainText('saved');

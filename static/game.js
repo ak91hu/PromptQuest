@@ -73,6 +73,7 @@ $('toggle-drift').addEventListener('click', () => {
 reducedMotion.addEventListener('change', updateDriftControl);
 updateDriftControl();
 let renderedMessages = [];
+const downloadButtons = document.querySelectorAll('button[data-download]');
 const actionButtons = [
   'start-button',
   'send-button',
@@ -98,6 +99,9 @@ function refreshButtons() {
   for (const id of actionButtons) $(id).disabled = busy;
   $('start-button').disabled =
     busy || initializing || missionStartsRemaining === null || missionStartsRemaining === 0;
+  for (const button of downloadButtons)
+    button.disabled =
+      busy || !state || (button.dataset.download === '/api/certificate' && !state.finished);
   $('notes-input').disabled = changingStation;
   $('mission-allowance').textContent =
     missionStartsRemaining === null
@@ -635,17 +639,16 @@ async function initialize() {
   }
 }
 $('retry-connection').addEventListener('click', initialize);
-for (const link of document.querySelectorAll('a[download]')) {
-  link.addEventListener('click', async (event) => {
-    event.preventDefault();
-    if (busy) return;
-    const path = new URL(link.href).pathname;
+for (const button of downloadButtons) {
+  button.addEventListener('click', async () => {
+    if (busy || !state) return;
+    const path = button.dataset.download;
     const errorTarget = state?.finished ? $('download-error') : $('chat-error');
     errorTarget.textContent = '';
     busy = true;
     refreshButtons();
     $('request-status').textContent = 'Preparing your download…';
-    link.setAttribute('aria-busy', 'true');
+    button.setAttribute('aria-busy', 'true');
     try {
       await saveNotes();
       const blob = await downloadPdf(path);
@@ -661,7 +664,7 @@ for (const link of document.querySelectorAll('a[download]')) {
     } catch (error) {
       errorTarget.textContent = error.message;
     } finally {
-      link.removeAttribute('aria-busy');
+      button.removeAttribute('aria-busy');
       busy = false;
       $('request-status').textContent = '';
       refreshButtons();

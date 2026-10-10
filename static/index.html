@@ -9,6 +9,27 @@
       name="description"
       content="An orbital hacking puzzle for curious minds. Outwit 25 AI guards, find the weak spots in their trust, and bring Asterion home."
     />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="HackTheAI" />
+    <meta property="og:title" content="HackTheAI: Asterion Protocol" />
+    <meta
+      property="og:description"
+      content="An orbital hacking puzzle for curious minds. Outwit 25 AI guards, find the weak spots in their trust, and bring Asterion home."
+    />
+    <meta property="og:url" content="__PUBLIC_ORIGIN__/" />
+    <meta property="og:image" content="__PUBLIC_ORIGIN__/static/assets/asterion-social.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="800" />
+    <meta property="og:image:alt" content="Asterion orbital station above a planet" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HackTheAI: Asterion Protocol" />
+    <meta
+      name="twitter:description"
+      content="An orbital hacking puzzle for curious minds. Outwit 25 AI guards, find the weak spots in their trust, and bring Asterion home."
+    />
+    <meta name="twitter:image" content="__PUBLIC_ORIGIN__/static/assets/asterion-social.jpg" />
+    <meta name="twitter:image:alt" content="Asterion orbital station above a planet" />
     <title>HackTheAI: Asterion Protocol</title>
     <link rel="icon" href="/static/assets/mark.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="/static/style.css" />
@@ -161,7 +182,7 @@
         <div class="mission-topline">
           <span class="eyebrow" id="mission-callsign"></span>
           <div class="mission-actions">
-            <a class="text-link" href="/api/export" download>Export log ↓</a
+            <button class="text-link" type="button" data-download="/api/export">Export log ↓</button
             ><button id="reset-button" class="text-button">Restart mission</button>
           </div>
         </div>
@@ -285,7 +306,9 @@
                 you end this mission or the session expires.
               </p>
               <div class="button-row">
-                <a href="/api/export" download>Download this mission log ↓</a>
+                <button class="text-link" type="button" data-download="/api/export">
+                  Download this mission log ↓
+                </button>
                 <button id="end-exhausted" class="secondary">Back to mission start</button>
               </div>
             </div>
@@ -376,8 +399,11 @@
           <div><span>RECOVERY</span><strong id="result-recovery">25 / 25</strong></div>
         </div>
         <div class="button-row">
-          <a class="primary" href="/api/export" download>Download mission log ↓</a
-          ><a class="secondary" href="/api/certificate" download>Download certificate ↓</a>
+          <button class="primary" type="button" data-download="/api/export">
+            Download mission log ↓</button
+          ><button class="secondary" type="button" data-download="/api/certificate">
+            Download certificate ↓
+          </button>
         </div>
         <p class="micro">
           Download your results before ending this run. Progress can be lost if the server restarts.

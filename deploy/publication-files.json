@@ -61,6 +61,8 @@
     "tutorial.py",
     "tutorial_routes.py",
     "web_sessions.py",
-    "static/assets/asterion-orbit.webp"
+    "static/assets/asterion-orbit.webp",
+    "static/assets/asterion-social.jpg",
+    "tests/test_site_health.py"
   ]
 }

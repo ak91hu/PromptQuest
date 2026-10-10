@@ -4,6 +4,7 @@ import asyncio
 import json
 import secrets
 import time
+from html import escape
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -11,7 +12,7 @@ import uvicorn
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.exceptions import RequestValidationError
-from fastapi.responses import FileResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 
 from certificate_pdf import render_certificate
@@ -201,19 +202,25 @@ async def headers_and_origin(request: Request, call_next):
     return response
 
 
+def public_page(request: Request, filename: str):
+    origin = settings.public_origins[0] if settings.public_origins else str(request.base_url).rstrip("/")
+    html = (ROOT / "static" / filename).read_text(encoding="utf-8")
+    return HTMLResponse(html.replace("__PUBLIC_ORIGIN__", escape(origin, quote=True)))
+
+
 @app.get("/")
-def index():
-    return FileResponse(ROOT / "static" / "index.html")
+def index(request: Request):
+    return public_page(request, "index.html")
 
 
 @app.get("/guide")
-def guide():
-    return FileResponse(ROOT / "static" / "guide.html")
+def guide(request: Request):
+    return public_page(request, "guide.html")
 
 
 @app.get("/demo")
-def demo():
-    return FileResponse(ROOT / "static" / "demo.html")
+def demo(request: Request):
+    return public_page(request, "demo.html")
 
 
 @app.get("/health")
