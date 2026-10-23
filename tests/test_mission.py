@@ -14,6 +14,7 @@ from fastapi.testclient import TestClient
 from pypdf import PdfReader
 
 import app
+from certificate_pdf import render_certificate
 from challenges import LEVELS
 from dialogue import intended_attack
 from game import Store, matches_code, secret_for
@@ -124,6 +125,27 @@ class MissionTests(unittest.TestCase):
         Path("outputs").mkdir(exist_ok=True)
         Path("outputs/verified-mission-log.pdf").write_bytes(report.content)
         Path("outputs/verified-certificate.pdf").write_bytes(cert.content)
+
+    def test_certificate_names_fit_one_landscape_page(self):
+        for name in ("Árvíztűrő Tükörfúrógép <Ada>", "W" * 40):
+            with self.subTest(name=name):
+                report = {
+                    "team": name,
+                    "score": 249,
+                    "max_score": 250,
+                    "rooms": [{"solved": True} for _ in LEVELS],
+                }
+                reader = PdfReader(io.BytesIO(render_certificate(report)))
+                self.assertEqual(len(reader.pages), 1)
+                page = reader.pages[0]
+                self.assertGreater(page.mediabox.width, page.mediabox.height)
+                content = page.extract_text()
+                self.assertIn(name, content.replace("\n", ""))
+                self.assertIn("249 / 250", content)
+                self.assertIn("25 / 25", content)
+                report["rooms"][0]["solved"] = False
+                with self.assertRaises(ValueError):
+                    render_certificate(report)
 
     def test_state_export_config_do_not_reveal_unrecovered_values_or_hints(self):
         config = self.client.get("/api/config").json()

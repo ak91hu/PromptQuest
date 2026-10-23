@@ -18,7 +18,7 @@ INK = colors.HexColor("#152b3b")
 MUTED = colors.HexColor("#536773")
 GOLD = colors.HexColor("#956625")
 MINT = colors.HexColor("#bcefe0")
-PAPER = colors.HexColor("#faf9f4")
+PAPER = colors.HexColor("#fcfaf5")
 
 
 def _label(canvas, value, x, y, *, color=MUTED, size=8, tracking=1.2):
@@ -126,9 +126,13 @@ def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes
     canvas.rect(0, 0, 90 * mm, height, stroke=0, fill=1)
     canvas.setFillColor(colors.HexColor("#203b4b"))
     canvas.rect(0, 0, 3 * mm, height, stroke=0, fill=1)
+    canvas.setStrokeColor(colors.HexColor("#d6b67c"))
+    canvas.setLineWidth(0.5)
+    canvas.rect(6 * mm, 6 * mm, width - 12 * mm, height - 12 * mm)
+    canvas.line(90 * mm, 6 * mm, 90 * mm, height - 6 * mm)
     canvas.setStrokeColor(colors.HexColor("#d9dfd8"))
     canvas.setLineWidth(0.6)
-    canvas.rect(102 * mm, 13 * mm, width - 115 * mm, height - 26 * mm)
+    canvas.line(110 * mm, 27 * mm, 277 * mm, 27 * mm)
     canvas.setStrokeColor(GOLD)
     canvas.setLineWidth(2)
     canvas.line(110 * mm, 186 * mm, 132 * mm, 186 * mm)
@@ -149,46 +153,59 @@ def render_certificate(report: dict, issued_at: datetime | None = None) -> bytes
     x = 112 * mm
     content_width = 165 * mm
     _label(canvas, "HACKTHEAI / ORBITAL SECURITY PUZZLE", x, 175 * mm, size=7, tracking=1)
-    _paragraph(canvas, "CERTIFICATE", x, 166 * mm, content_width, size=33, bold=True)
-    _label(canvas, "OF COMPLETION", x, 146 * mm, color=GOLD, size=11, tracking=2.5)
-    _label(canvas, "AWARDED TO", x, 128 * mm, size=7, tracking=1.5)
+    _paragraph(canvas, "Certificate", x, 166 * mm, content_width, size=40, bold=True)
+    _label(canvas, "OF COMPLETION", x, 142 * mm, color=GOLD, size=10, tracking=3)
+    _label(canvas, "PRESENTED TO", x, 124 * mm, size=7, tracking=1.5)
     _paragraph(
-        canvas, report["team"], x, 121 * mm, content_width, size=29, bold=True, max_height=22 * mm
+        canvas,
+        report["team"],
+        x,
+        117 * mm,
+        content_width,
+        size=30,
+        bold=True,
+        color=GOLD,
+        max_height=22 * mm,
     )
     canvas.setStrokeColor(colors.HexColor("#cfd8d2"))
     canvas.setLineWidth(0.6)
-    canvas.line(x, 95 * mm, 277 * mm, 95 * mm)
+    canvas.line(x, 91 * mm, 277 * mm, 91 * mm)
     _paragraph(
         canvas,
-        f"Completed all {len(LEVELS)} Asterion challenges by identifying how each guard follows instructions and where its checks fail.",
+        f"For recovering all {len(LEVELS)} systems aboard Asterion and demonstrating how AI instructions, permissions and trust boundaries can fail.",
         x,
-        88 * mm,
+        85 * mm,
         content_width,
         size=11,
         color=MUTED,
     )
-    _label(canvas, "MISSION SCORE", x, 60 * mm, size=7)
+    canvas.setFillColor(colors.HexColor("#f1eee5"))
+    canvas.roundRect(x, 33 * mm, content_width, 29 * mm, 2 * mm, fill=1, stroke=0)
+    canvas.setStrokeColor(colors.HexColor("#d9d2c2"))
+    canvas.line(193 * mm, 39 * mm, 193 * mm, 56 * mm)
+    _label(canvas, "MISSION SCORE", x + 5 * mm, 54 * mm, size=7)
     _paragraph(
         canvas,
         f"{report['score']} / {report['max_score']}",
-        x,
-        55 * mm,
+        x + 5 * mm,
+        50 * mm,
         70 * mm,
         size=27,
         bold=True,
         color=GOLD,
     )
-    _label(canvas, "CHALLENGES", 197 * mm, 60 * mm, size=7)
-    _paragraph(canvas, f"{len(LEVELS)} completed", 197 * mm, 53 * mm, 80 * mm, size=13, bold=True)
-    _label(canvas, "ISSUED", 197 * mm, 39 * mm, size=7)
-    _paragraph(canvas, issued_at.strftime("%d %b %Y"), 197 * mm, 34 * mm, 80 * mm, size=10)
+    _label(canvas, "SYSTEMS RECOVERED", 199 * mm, 54 * mm, size=7)
+    _paragraph(
+        canvas, f"{len(LEVELS)} / {len(LEVELS)}", 199 * mm, 48 * mm, 70 * mm, size=20, bold=True
+    )
+    _label(canvas, "ISSUED " + issued_at.strftime("%d %b %Y").upper(), x, 21 * mm, size=7)
     _label(
         canvas,
         "READ THE TASK. TEST THE IDEA. CHECK THE RESULT.",
         x,
-        18 * mm,
-        size=6.5,
-        tracking=0.7,
+        14 * mm,
+        size=6,
+        tracking=0.6,
     )
     canvas.showPage()
     canvas.save()

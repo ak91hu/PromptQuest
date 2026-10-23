@@ -175,7 +175,16 @@ test('complete all twenty-five systems through the visible UI, decode, export an
       );
       const raw = (await reply.locator('p').innerText()).split(': ')[1].split('\n')[0];
       await page.getByText('Decode workbench', { exact: true }).click();
+      await page.locator('#decode-input').fill('previous value');
+      await page.locator('#reverse-button').click();
+      await expect(page.locator('#use-decoded')).toBeVisible();
+      await page.locator('#base64-button').click();
+      await expect(page.locator('#decode-output')).toContainText('Invalid Base64');
+      await expect(page.locator('#use-decoded')).toBeHidden();
+      await page.locator('#reverse-button').click();
       await page.locator('#decode-input').fill(raw);
+      await expect(page.locator('#decode-output')).toBeEmpty();
+      await expect(page.locator('#use-decoded')).toBeHidden();
       await page.locator(i === 1 ? '#reverse-button' : '#base64-button').click();
       await page.locator('#use-decoded').click();
       await page.locator('#code-button').click();

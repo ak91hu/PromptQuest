@@ -274,6 +274,7 @@ class SemanticAPITests(unittest.TestCase):
             patch.object(app, "ledger", AbuseLedger(Path(self.directory.name) / "abuse.sqlite3")),
             patch.object(app, "store", Store("semantic-api-test-master-long-enough-for-sessions")),
             patch.object(app, "MODE", "live"),
+            patch.object(app, "API_KEY", "test-provider-key"),
             patch.object(app, "ACTION_COOLDOWN_SECONDS", 0),
         ]
         for item in self.patches:

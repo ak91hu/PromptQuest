@@ -510,11 +510,18 @@ window.addEventListener('beforeunload', (event) => {
   }
 });
 
+$('decode-input').addEventListener('input', () => {
+  decoded = '';
+  $('decode-output').textContent = '';
+  $('use-decoded').hidden = true;
+});
 for (const [id, method] of [
   ['reverse-button', 'reverse'],
   ['base64-button', 'base64'],
 ])
   $(id).addEventListener('click', () => {
+    decoded = '';
+    $('use-decoded').hidden = true;
     try {
       decoded = decode($('decode-input').value, method);
       $('decode-output').textContent = decoded;
