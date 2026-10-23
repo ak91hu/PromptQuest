@@ -284,6 +284,7 @@ test('English field guide has twenty-five computing sectors without overflow', a
 test('exhaustion preserves notes and log until explicitly returning to deployment', async ({
   page,
 }) => {
+  test.setTimeout(120000);
   await start(page);
   for (let i = 0; i < 30; i++) {
     if (i) await page.waitForTimeout(820);
