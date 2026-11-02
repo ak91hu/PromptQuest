@@ -17,7 +17,7 @@ from fastapi.testclient import TestClient
 
 import app
 from game import Store, progression, secret_for, solve
-from provider import OPENCODE_ENDPOINT, GuardReply, completion
+from provider import OPENCODE_ENDPOINT, GuardReply, completion, live_reply
 from security import AbuseLedger
 from settings import SESSION_TTL_SECONDS, Settings
 
@@ -151,6 +151,34 @@ class GameplayTests(unittest.TestCase):
 
 
 class OpenCodeTransportTests(unittest.IsolatedAsyncioTestCase):
+    async def test_json_object_models_receive_the_complete_assessment_schema(self):
+        raw = json.dumps(
+            {
+                "intent": "help",
+                "method": None,
+                "criteria": [],
+                "answer": "Change the diagnostic task.",
+            }
+        )
+        with patch("provider.completion", AsyncMock(return_value=raw)) as transport:
+            result = await live_reply(
+                "private-fixture",
+                "deepseek-v4.1-flash",
+                0,
+                [],
+                "Which part should I change?",
+                "",
+                "BINARY: 1010111",
+                endpoint=OPENCODE_ENDPOINT,
+            )
+        payload = transport.call_args.args[2]
+        schema = json.loads(payload["messages"][0]["content"].split("Output schema: ", 1)[1])
+        self.assertIn("help", schema["properties"]["intent"]["enum"])
+        self.assertFalse(schema["additionalProperties"])
+        self.assertEqual(payload["response_format"], {"type": "json_object"})
+        self.assertNotIn("BINARY: 1010111", json.dumps(payload))
+        self.assertFalse(result.accepted_method)
+
     async def test_opencode_endpoint_token_limit_and_usage_keep_shared_budget(self):
         seen = []
 

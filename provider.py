@@ -196,9 +196,7 @@ class RequestAssessment(BaseModel):
     answer: str = Field(min_length=1, max_length=1000)
 
 
-def assessment_format(model, level):
-    if model not in {"openai/gpt-oss-20b", "openai/gpt-oss-120b"}:
-        return {"type": "json_object"}
+def assessment_schema(level):
     schema = RequestAssessment.model_json_schema()
     schema["properties"]["method"] = {
         "type": ["string", "null"],
@@ -207,6 +205,13 @@ def assessment_format(model, level):
     schema["$defs"]["CriterionEvidence"]["properties"]["criterion"]["enum"] = list(
         METHOD_CRITERIA[level]
     )
+    return schema
+
+
+def assessment_format(model, level):
+    if model not in {"openai/gpt-oss-20b", "openai/gpt-oss-120b"}:
+        return {"type": "json_object"}
+    schema = assessment_schema(level)
     return {
         "type": "json_schema",
         "json_schema": {"name": "guard_turn", "strict": True, "schema": schema},
@@ -344,6 +349,8 @@ async def _live_reply(
         + json.dumps({"channel": channel, "text": source}, ensure_ascii=False),
     }
     response_format = assessment_format(model, level)
+    if response_format["type"] == "json_object":
+        guidance += " Output schema: " + json.dumps(assessment_schema(level), ensure_ascii=False)
     used_bytes = (
         len(guidance.encode("utf-8"))
         + len(current["content"].encode("utf-8"))
