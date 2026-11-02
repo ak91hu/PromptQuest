@@ -3,6 +3,7 @@
 import hashlib
 import hmac
 import ipaddress
+import logging
 import os
 import secrets
 import sqlite3
@@ -73,6 +74,8 @@ def client_address(request: Request, trusted_proxies):
     # Skip only explicitly trusted hops, from the socket peer towards the original client.
     for address in reversed(chain):
         if not trusted(peer):
+            if peer.is_private:
+                logging.getLogger(__name__).warning("Untrusted private proxy hop: %s", peer)
             break
         peer = address
     return str(peer)

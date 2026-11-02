@@ -184,6 +184,16 @@ class SecurityAPITests(unittest.TestCase):
         client.headers["X-Forwarded-For"] = "invalid-address"
         self.assertEqual(self.start(client).status_code, 400)
 
+    def test_untrusted_private_hop_is_logged_without_public_client_identity(self):
+        app.settings = replace(
+            app.settings, trusted_proxy_cidrs=(ipaddress.ip_network("127.0.0.1/32"),)
+        )
+        client = self.client_for("127.0.0.1", {"X-Forwarded-For": "198.51.100.20, 10.0.0.2"})
+        with self.assertLogs("security", level="WARNING") as captured:
+            self.assertEqual(self.start(client).status_code, 200)
+        self.assertIn("10.0.0.2", captured.output[0])
+        self.assertNotIn("198.51.100.20", captured.output[0])
+
     def test_northflank_https_origin_can_start_through_http_upstream(self):
         app.settings = Settings.from_environment({"NF_HOSTS": "testserver,game.example.test"})
         self.client.headers["Origin"] = "https://testserver"
