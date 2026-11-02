@@ -590,4 +590,5 @@ async def reset(request: Request, response: Response):
 
 if __name__ == "__main__":
     print("HackTheAI. " + ("deterministic training simulation" if MODE == "demo" else MODEL))
+    print(f"Loaded {len(store.sessions)} saved missions from {store.path}.", flush=True)
     uvicorn.run(app, host="0.0.0.0", port=settings.port, proxy_headers=False, access_log=False)
