@@ -193,6 +193,11 @@ class SecurityAPITests(unittest.TestCase):
             self.assertEqual(self.start(client).status_code, 200)
         self.assertIn("10.0.0.2", captured.output[0])
         self.assertNotIn("198.51.100.20", captured.output[0])
+        other = self.client_for("10.0.0.3", {"X-Forwarded-For": "198.51.100.20"})
+        with self.assertLogs("security", level="WARNING") as captured:
+            self.assertEqual(self.start(other).status_code, 200)
+        self.assertIn("10.0.0.3", captured.output[0])
+        self.assertNotIn("198.51.100.20", captured.output[0])
 
     def test_northflank_https_origin_can_start_through_http_upstream(self):
         app.settings = Settings.from_environment({"NF_HOSTS": "testserver,game.example.test"})

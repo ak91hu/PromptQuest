@@ -64,6 +64,8 @@ def client_address(request: Request, trusted_proxies):
 
     forwarded = request.headers.get("x-forwarded-for")
     if not trusted(peer) or not forwarded:
+        if forwarded and trusted_proxies and peer.is_private:
+            logging.getLogger(__name__).warning("Untrusted private proxy hop: %s", peer)
         return str(peer)
     if len(forwarded) > 512:
         raise HTTPException(400, "The forwarded address chain is invalid.")
