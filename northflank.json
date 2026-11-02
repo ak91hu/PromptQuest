@@ -20,7 +20,7 @@
     "GROQ_MODEL": "openai/gpt-oss-120b",
     "PROVIDER_TOKEN_LIMIT_PER_IP": "3000000",
     "PROVIDER_DAILY_TOKEN_LIMIT": "30000000",
-    "OC_MODEL": "glm-5.3-flash"
+    "OC_MODEL": "deepseek-v4.1-flash"
   },
   "spec": {
     "kind": "Workflow",

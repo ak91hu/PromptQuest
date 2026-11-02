@@ -20,7 +20,7 @@ services:
       - key: OC_API_KEY
         sync: false
       - key: OC_MODEL
-        value: glm-5.3-flash
+        value: deepseek-v4.1-flash
       - key: MASTER_SECRET
         generateValue: true
       - key: GROQ_MODEL

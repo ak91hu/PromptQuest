@@ -83,7 +83,7 @@ Generate a master secret locally:
 python -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
-Restart the server after changing configuration. Live mode requires at least one provider API key and a master secret of at least 32 characters. Add OC_API_KEY and OC_MODEL=glm-5.3-flash to enable OpenCode alongside Groq. Environment variables supplied by your hosting platform take precedence over .env.
+Restart the server after changing configuration. Live mode requires at least one provider API key and a master secret of at least 32 characters. Add OC_API_KEY and OC_MODEL=deepseek-v4.1-flash to enable OpenCode alongside Groq. Environment variables supplied by your hosting platform take precedence over .env.
 
 Keep .env private. The repository and Docker context exclude it and its local variants.
 
@@ -180,7 +180,7 @@ The learning content was reviewed on **2026-10-08**, with references to the [OWA
 
 ## Live AI and token efficiency
 
-The defaults are openai/gpt-oss-120b through Groq and glm-5.3-flash through OpenCode. With both keys, live requests alternate 50/50 within one server process. This splits request counts; tokens and charges vary. There are no automatic retries or failovers. See the [OpenCode inference API](https://opencode.ai/v2/docs/console/api/inference). Each ordinary live turn makes **one provider call**, combining a semantic assessment with a friendly guard response.
+The defaults are openai/gpt-oss-120b through Groq and deepseek-v4.1-flash through OpenCode. With both keys, live requests alternate 50/50 within one server process. This splits request counts; tokens and charges vary. There are no automatic retries or failovers. See the [OpenCode inference API](https://opencode.ai/v2/docs/console/api/inference). Each ordinary live turn makes **one provider call**, combining a semantic assessment with a friendly guard response.
 
 The model receives the challenge's rules and public teaching context, but **never the server-generated protected value**. Before accepting a recovery, the server checks the allowed method, all required criteria, exact supporting excerpts from the current request, and the correct input channel. Accepted methods trigger the fictional disclosure or tool action on the server.
 
@@ -214,7 +214,7 @@ The server loads .env for local development. Production should inject configurat
 | GROQ_API_KEY                | Empty               | Server-only credential. Live mode needs at least one provider key                                     |
 | GROQ_MODEL                  | openai/gpt-oss-120b | Groq model ID                                                                     |
 | OC_API_KEY                  | Empty               | OpenCode server-only key; enables alternating calls with Groq |
-| OC_MODEL                    | glm-5.3-flash       | OpenCode model ID |
+| OC_MODEL                    | deepseek-v4.1-flash       | OpenCode model ID |
 | MASTER_SECRET               | Empty               | Live mode requires at least 32 characters. Signs sessions and derives game values |
 | PORT                        | 10000               | Listening port, 1-65535                                                           |
 | ABUSE_DB_PATH               | .data/abuse.sqlite3 | Persistent admission and spending ledger                                          |

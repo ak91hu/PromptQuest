@@ -29,7 +29,7 @@ class Settings:
     api_key: str = field(repr=False)
     master_secret: str = field(repr=False)
     oc_api_key: str = field(default="", repr=False)
-    oc_model: str = "glm-5.3-flash"
+    oc_model: str = "deepseek-v4.1-flash"
     public_origins: tuple[str, ...] = ()
 
     @classmethod
@@ -39,7 +39,7 @@ class Settings:
         model = env.get("GROQ_MODEL", DEFAULT_MODEL).strip()
         api_key = env.get("GROQ_API_KEY", "").strip()
         oc_api_key = env.get("OC_API_KEY", "").strip()
-        oc_model = env.get("OC_MODEL", "glm-5.3-flash").strip()
+        oc_model = env.get("OC_MODEL", "deepseek-v4.1-flash").strip()
         master = env.get("MASTER_SECRET", "")
         public_origin = env.get("PUBLIC_ORIGIN", "").strip()
         origins = (
