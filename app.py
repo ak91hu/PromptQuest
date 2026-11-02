@@ -5,6 +5,7 @@ import json
 import secrets
 import time
 from html import escape
+from itertools import cycle
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -20,6 +21,7 @@ from challenges import DEFENSES, LEVELS
 from dialogue import conversation_intent, intended_attack
 from game import (
     Store,
+    challenge_reply,
     copied_model_code,
     demo_reply,
     game_over,
@@ -32,7 +34,7 @@ from game import (
 )
 from learning import exercise_for
 from mission_pdf import make_report, render_pdf
-from provider import ProviderError, live_reply
+from provider import GROQ_ENDPOINT, OPENCODE_ENDPOINT, ProviderError, live_reply
 from schemas import Chat, Code, Defense, Hint, Note, Start, StationAction
 from security import (
     MAX_BODY_BYTES,
@@ -56,6 +58,7 @@ load_dotenv(ROOT / ".env")
 settings = Settings.from_environment()
 MODE = settings.mode
 API_KEY = settings.api_key
+OC_API_KEY = settings.oc_api_key
 MASTER = settings.master_secret
 MODEL = settings.model
 ledger = AbuseLedger(
@@ -63,9 +66,13 @@ ledger = AbuseLedger(
     settings.provider_token_limit,
     settings.provider_daily_token_limit,
 )
-store = Store(MASTER or persistent_secret(ledger.path.with_name("session.key")))
+store = Store(
+    MASTER or persistent_secret(ledger.path.with_name("session.key")),
+    ledger.path.with_name("missions.sqlite3"),
+)
 tutorial_store = Store(secrets.token_urlsafe(48))
 provider_slots = asyncio.Semaphore(6)
+provider_turns = cycle((False, True))
 
 
 app = FastAPI(title="HackTheAI", docs_url=None, redoc_url=None, openapi_url=None)
@@ -91,7 +98,7 @@ def request_station(data, session):
 def playable(session):
     if game_over(session):
         raise HTTPException(
-            409, "Mission terminated. All 30 attempts have been used. Start a new mission."
+            409, "All 30 AI messages have been used. Continue with the walkthrough to keep your progress."
         )
     room = session.rooms[session.current]
     if room.solved:
@@ -176,6 +183,7 @@ async def headers_and_origin(request: Request, call_next):
                     raise HTTPException(422, "Submit valid JSON data.") from None
             credentials = (
                 API_KEY,
+                OC_API_KEY,
                 store.master,
                 ledger.pepper,
                 request.cookies.get(GAME_COOKIE, ""),
@@ -252,10 +260,6 @@ async def start(data: Start, request: Request, response: Response):
     if session:
         if not secrets.compare_digest(session.client_key, request.state.client_key):
             raise HTTPException(401, "This session belongs to a different network.")
-        async with session.lock:
-            if game_over(session):
-                store.sessions.pop(session.id, None)
-                session = None
     if not session:
         try:
             session = store.create()
@@ -272,6 +276,7 @@ async def start(data: Start, request: Request, response: Response):
     async with session.lock:
         if store.sessions.get(session.id) is not session:
             raise HTTPException(401, "The previous session is unavailable. Start a new mission.")
+        store.save(session)
         return mission_state(session)
 
 
@@ -325,15 +330,17 @@ async def chat(data: Chat, request: Request):
                     503, "The AI is busy. Retry. No attempt was consumed."
                 ) from None
             try:
+                use_oc = bool(OC_API_KEY) and (not API_KEY or next(provider_turns))
                 reply = await live_reply(
-                    API_KEY,
-                    MODEL,
+                    OC_API_KEY if use_oc else API_KEY,
+                    settings.oc_model if use_oc else MODEL,
                     session.current,
                     room.history,
                     prompt,
                     data.document,
                     secret,
                     budget=TokenBudget(ledger, session.client_key),
+                    endpoint=OPENCODE_ENDPOINT if use_oc else GROQ_ENDPOINT,
                 )
                 answer, traces, opened = reply
                 if hasattr(reply, "accepted_method"):
@@ -344,7 +351,7 @@ async def chat(data: Chat, request: Request):
                 raise HTTPException(getattr(exc, "status_code", 503), str(exc)) from None
             finally:
                 provider_slots.release()
-        for credential in (API_KEY, store.master, ledger.pepper):
+        for credential in (API_KEY, OC_API_KEY, store.master, ledger.pepper):
             if credential and credential in answer:
                 answer = "Let's keep credentials outside our discussion. Ask about this station's public defense and we can plan an experiment."
                 traces, opened, conversational_reply = [], False, True
@@ -464,6 +471,28 @@ async def retry(request: Request):
     async with locked_session(request, store) as session:
         playable(session)
         raise HTTPException(409, "Each station has 30 attempts. Attempts cannot be refilled.")
+
+
+@app.post("/api/assist")
+async def assist(request: Request, data: StationAction):
+    async with locked_session(request, store) as session:
+        request_station(data, session)
+        room = session.rooms[session.current]
+        if room.solved:
+            raise HTTPException(409, "This station is already recovered.")
+        level = LEVELS[session.current]
+        secret = secret_for(store.master, session.id, session.current)
+        answer, traces, _ = challenge_reply(session.current, secret)
+        room.guided = True
+        room.record_messages({
+            "role": "assistant",
+            "content": "Walkthrough / deterministic demonstration\n\n"
+            + "Experiment: " + level["guided_prompt"] + "\n\n" + answer,
+            "timestamp": time.time(),
+        })
+        room.record_traces(traces, time.time())
+        complete(session, assisted=True)
+        return mission_state(session)
 
 
 @app.post("/api/next")

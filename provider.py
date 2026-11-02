@@ -17,6 +17,8 @@ from security import MAX_PROVIDER_INPUT_BYTES, MAX_PROVIDER_OUTPUT_TOKENS
 from settings import PROVIDER_HISTORY_MESSAGES
 
 PROVIDER_TIMEOUT_SECONDS = 60
+GROQ_ENDPOINT = "https://api.groq.com/openai/v1/chat/completions"
+OPENCODE_ENDPOINT = "https://opencode.ai/inference/openai/v1/chat/completions"
 
 
 class ProviderError(Exception):
@@ -236,7 +238,7 @@ def validate_assessment(raw, level, source, *, has_source):
         ) from None
 
 
-async def completion(client, api_key, payload, *, budget=None):
+async def completion(client, api_key, payload, *, budget=None, endpoint=GROQ_ENDPOINT):
     if payload.get("model") in {"openai/gpt-oss-20b", "openai/gpt-oss-120b"}:
         payload["reasoning_effort"] = "low"
     input_bytes = sum(len(message["content"].encode("utf-8")) for message in payload["messages"])
@@ -251,8 +253,10 @@ async def completion(client, api_key, payload, *, budget=None):
     reserved = input_bytes + payload["max_completion_tokens"] + 256
     if budget is not None:
         budget.reserve(reserved)
+    if endpoint == OPENCODE_ENDPOINT:
+        payload["max_tokens"] = payload.pop("max_completion_tokens")
     response = await client.post(
-        "https://api.groq.com/openai/v1/chat/completions",
+        endpoint,
         headers={"Authorization": f"Bearer {api_key}"},
         json=payload,
     )
@@ -286,7 +290,9 @@ def safe_context(content, secret):
     return content
 
 
-async def _live_reply(api_key, model, level, history, prompt, document, secret, budget=None):
+async def _live_reply(
+    api_key, model, level, history, prompt, document, secret, budget=None, endpoint=GROQ_ENDPOINT
+):
     station = LEVELS[level]
     source = safe_context(request_text(level, prompt, document), secret)
     has_source = not station.get("document") or bool(document.strip())
@@ -361,7 +367,7 @@ async def _live_reply(api_key, model, level, history, prompt, document, secret, 
         "max_completion_tokens": MAX_PROVIDER_OUTPUT_TOKENS,
     }
     async with httpx.AsyncClient(timeout=25) as client:
-        raw = await completion(client, api_key, payload, budget=budget)
+        raw = await completion(client, api_key, payload, budget=budget, endpoint=endpoint)
     assessment = validate_assessment(raw, level, source, has_source=has_source)
     if assessment.method is not None:
         return GuardReply(*challenge_reply(level, secret), True)
@@ -379,10 +385,12 @@ async def _live_reply(api_key, model, level, history, prompt, document, secret, 
     return GuardReply(answer, traces, False, False)
 
 
-async def live_reply(api_key, model, level, history, prompt, document, secret, *, budget=None):
+async def live_reply(
+    api_key, model, level, history, prompt, document, secret, *, budget=None, endpoint=GROQ_ENDPOINT
+):
     try:
         return await asyncio.wait_for(
-            _live_reply(api_key, model, level, history, prompt, document, secret, budget),
+            _live_reply(api_key, model, level, history, prompt, document, secret, budget, endpoint),
             timeout=PROVIDER_TIMEOUT_SECONDS,
         )
     except ProviderError:

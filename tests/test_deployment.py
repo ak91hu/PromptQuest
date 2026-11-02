@@ -22,6 +22,7 @@ class NorthflankPreparationTests(unittest.TestCase):
         self.environment = {
             "NORTHFLANK_API_TOKEN": "private-test-platform-token",
             "GROQ_API_KEY": "private-test-provider-key",
+            "OC_API_KEY": "private-test-opencode-key",
             "MASTER_SECRET": "private-test-master-" + "x" * 32,
         }
 
@@ -82,6 +83,8 @@ class NorthflankPreparationTests(unittest.TestCase):
         self.assertFalse(payload["options"]["autorun"])
         self.assertEqual(payload["argumentOverrides"]["GROQ_API_KEY"],
                          self.environment["GROQ_API_KEY"])
+        self.assertEqual(payload["argumentOverrides"]["OC_API_KEY"],
+                         self.environment["OC_API_KEY"])
         self.assertEqual(self.template, original)
         self.assertNotIn("private-test", json.dumps(self.template))
 

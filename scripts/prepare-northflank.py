@@ -13,7 +13,7 @@ from urllib.request import Request, urlopen
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "northflank.json"
-SECRET_ARGUMENTS = {"GROQ_API_KEY", "MASTER_SECRET"}
+SECRET_ARGUMENTS = {"GROQ_API_KEY", "OC_API_KEY", "MASTER_SECRET"}
 
 
 def validate_proxies(value):
@@ -91,9 +91,10 @@ def save_template(template, environment, team_id=None):
     """Save configuration only; keep credentials in memory until the HTTPS request."""
     token = environment.get("NORTHFLANK_API_TOKEN", "").strip()
     key = environment.get("GROQ_API_KEY", "").strip()
+    oc_key = environment.get("OC_API_KEY", "").strip()
     master = environment.get("MASTER_SECRET", "").strip()
-    if not token or not key:
-        raise ValueError("Saving requires NORTHFLANK_API_TOKEN and GROQ_API_KEY.")
+    if not token or not (key or oc_key):
+        raise ValueError("Saving requires NORTHFLANK_API_TOKEN and GROQ_API_KEY or OC_API_KEY.")
     if master and len(master) < 32:
         raise ValueError("MASTER_SECRET must have at least 32 characters.")
     if team_id and not re.fullmatch(r"[a-zA-Z0-9-]+", team_id):
@@ -102,6 +103,7 @@ def save_template(template, environment, team_id=None):
     payload.pop("$schema", None)
     payload["argumentOverrides"] = {
         "GROQ_API_KEY": key,
+        "OC_API_KEY": oc_key,
         "MASTER_SECRET": master or "$" + "{fn.randomSecret(64)}",
     }
     payload["options"]["runOnCreation"] = False

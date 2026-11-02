@@ -748,7 +748,7 @@ main {
   background: linear-gradient(135deg, #1b343c, #13242e);
   border-left: 2px solid var(--accent);
   padding: 17px 19px;
-  margin: 23px 0;
+  margin: 16px 0;
   border-radius: 0 12px 12px 0;
 }
 .mission-progress {
@@ -1807,5 +1807,444 @@ kbd {
   dialog {
     max-height: calc(100dvh - 32px);
     overflow: auto;
+  }
+}
+.warmup-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  margin: 8px 0;
+}
+.mission-hud {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--panel);
+  padding: 12px 18px;
+  margin-bottom: 18px;
+}
+.mission-hud > div:first-child {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+}
+#player-rank {
+  color: var(--accent);
+  font-weight: 700;
+}
+#player-xp {
+  font: 20px var(--mono);
+}
+#hud-score {
+  color: var(--muted);
+  font-size: 12px;
+}
+.chapter-status {
+  min-width: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+.chapter-status progress {
+  display: block;
+  width: 100%;
+  height: 7px;
+  margin-top: 7px;
+  accent-color: var(--accent);
+}
+#mission-map-toggle,
+.mobile-tabs {
+  display: none;
+}
+.achievement-status {
+  color: var(--accent);
+  font-size: 13px;
+  margin: 0 0 12px;
+}
+.achievement-status:empty {
+  display: none;
+}
+.badge-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 12px 0;
+}
+.badge-list:empty {
+  display: none;
+}
+.earned-badge {
+  display: inline-block;
+  border: 1px solid #608c83;
+  border-radius: 30px;
+  padding: 5px 11px;
+  background: #17332f;
+  color: var(--accent);
+  font-size: 12px;
+}
+.chapter-milestone {
+  padding: 14px;
+  border-left: 3px solid var(--amber);
+  background: #302a20;
+  color: #f5d6a6;
+}
+#room-story {
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 13px;
+}
+#guard-defense {
+  font-size: 13px;
+}
+#verify-panel summary {
+  margin-bottom: 12px;
+}
+.walkthrough-choice {
+  margin-top: 16px;
+  font-size: 13px;
+}
+.walkthrough-choice p {
+  margin: 10px 0;
+}
+.question-panel {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 12px 16px;
+}
+.question-panel summary {
+  color: var(--accent);
+  font-size: 13px;
+}
+.question-panel #message-area {
+  margin-top: 12px;
+}
+.save-status {
+  padding-bottom: 18px;
+}
+#recovery {
+  scroll-margin-top: 64px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .recovery {
+    animation: recovery-arrival 280ms ease-out;
+  }
+  @keyframes recovery-arrival {
+    from {
+      opacity: 0.3;
+      transform: translateY(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+}
+@media (max-width: 900px) {
+  body[data-view='mission'] .site-header {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    gap: 12px;
+  }
+  body[data-view='mission'] .site-header .connection {
+    display: none;
+  }
+  .mission-topline {
+    padding: 12px 0;
+  }
+  .mission-hud {
+    flex-wrap: wrap;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    gap: 6px 12px;
+  }
+  .mission-hud > div:first-child {
+    flex: 1;
+    gap: 8px;
+  }
+  .chapter-status {
+    flex-basis: 100%;
+    order: 2;
+  }
+  #mission-map-toggle {
+    display: inline-flex;
+    font-size: 11px;
+  }
+  #player-rank,
+  #hud-score {
+    font-size: 11px;
+  }
+  #player-xp {
+    font-size: 15px;
+  }
+  .mobile-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    background: var(--bg);
+    padding: 7px 0;
+    margin-bottom: 8px;
+  }
+  .mobile-tabs button {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--panel);
+    padding: 10px;
+    font-size: 13px;
+  }
+  .mobile-tabs button[aria-pressed='true'] {
+    border-color: var(--accent);
+    color: var(--accent);
+    background: #17332f;
+  }
+  .mission-layout {
+    display: block;
+    padding-bottom: 10px;
+  }
+  .sector-sidebar {
+    display: none;
+    padding: 12px;
+    margin-bottom: 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .sector-sidebar.map-open {
+    display: block;
+  }
+  .tools-sidebar {
+    display: none;
+  }
+  .mission-layout[data-panel='tools'] .workspace {
+    display: none;
+  }
+  .mission-layout[data-panel='tools'] .tools-sidebar {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    align-items: start;
+  }
+  .room-header h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  .room-header .eyebrow {
+    margin-bottom: 5px;
+    font-size: 9px;
+  }
+  .room-tags {
+    gap: 5px;
+  }
+  .room-tags span {
+    padding: 3px 6px;
+  }
+  .objective {
+    margin: 12px 0;
+    padding: 10px 12px;
+  }
+  .mission-dossier {
+    margin: 8px 0;
+    padding: 6px 12px;
+  }
+  .mission-dossier summary {
+    display: list-item;
+    min-height: 36px;
+    padding-top: 8px;
+  }
+  .mission-progress {
+    margin-bottom: 8px;
+  }
+  .console-heading {
+    padding: 10px 12px;
+  }
+  .chat-log {
+    min-height: 110px;
+    max-height: 155px;
+    padding: 12px;
+  }
+  .message p {
+    font-size: 13px;
+    line-height: 1.55;
+  }
+  .message-label {
+    margin-bottom: 5px;
+  }
+  .workspace #chat-form {
+    padding: 10px 12px;
+  }
+  #message-input {
+    height: 74px;
+    min-height: 74px;
+  }
+  #document-input {
+    height: 160px;
+    min-height: 120px;
+  }
+  .composer-footer {
+    margin-top: 8px;
+  }
+  .composer-footer .micro {
+    display: none;
+  }
+  #send-button {
+    width: 100%;
+  }
+  #prompt-policy {
+    font-size: 11px;
+    line-height: 1.45;
+    margin-top: 8px;
+  }
+  .tool-panel {
+    min-width: 0;
+  }
+  .lab-layout,
+  .lab-comparison,
+  .lab-card {
+    min-width: 0;
+  }
+  .lab-answer,
+  .lab-explanation,
+  .preview-panel,
+  .earned-badge {
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 650px) {
+  .mission-layout[data-panel='tools'] .tools-sidebar {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .mission-hud > div:first-child {
+    gap: 6px;
+  }
+  #hud-score {
+    flex-basis: 100%;
+  }
+  .chapter-status {
+    font-size: 11px;
+  }
+  .mission-topline {
+    gap: 3px;
+  }
+  body[data-view='mission'] .site-header {
+    gap: 4px;
+  }
+  body[data-view='mission'] .site-header nav {
+    gap: 10px;
+  }
+  .room-header h1 {
+    font-size: 25px;
+  }
+  .lab-steps {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .lab-step {
+    width: 100%;
+    min-width: 0;
+    font-size: 12px;
+    padding: 9px;
+  }
+  .button-row > button,
+  .button-row > a {
+    max-width: 100%;
+    white-space: normal;
+  }
+  .guide-page h1,
+  .results h1 {
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 650px) {
+  body[data-view='mission'] .site-header {
+    flex-wrap: nowrap;
+    padding: 8px 14px;
+  }
+  body[data-view='mission'] .site-header .brand {
+    font-size: 16px;
+    gap: 6px;
+  }
+  body[data-view='mission'] .site-header .brand img {
+    width: 26px;
+    height: 26px;
+  }
+  body[data-view='mission'] .site-header nav {
+    gap: 8px;
+    font-size: 10px;
+  }
+  body[data-view='mission'] #keyboard-help {
+    font-size: 10px;
+  }
+  .mission-topline {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2px 8px;
+  }
+  #hud-score {
+    flex-basis: auto;
+    font-size: 10px;
+  }
+  #room-subject {
+    display: none;
+  }
+  .mission-dossier summary {
+    min-height: 44px;
+  }
+}
+.tools-title {
+  display: none;
+}
+@media (max-width: 900px) {
+  .tools-title {
+    display: block;
+    grid-column: 1 / -1;
+    font-size: 26px;
+    margin: 0 0 12px;
+  }
+  .mission-topline {
+    padding: 8px 0;
+  }
+  .mission-hud {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    padding: 8px 12px;
+  }
+  .mission-hud > div:first-child {
+    grid-column: 1;
+  }
+  .chapter-status {
+    grid-column: 1;
+    order: initial;
+  }
+  #mission-map-toggle {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+  .mobile-tabs {
+    padding: 4px 0;
+  }
+  .chat-log {
+    max-height: 130px;
+  }
+  #message-input {
+    min-height: 68px;
+    height: 68px;
+  }
+  .room-header h1 {
+    margin-bottom: 4px;
+  }
+  .sector-sidebar .mission-actions {
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
   }
 }

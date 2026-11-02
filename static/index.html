@@ -83,6 +83,7 @@
                 </button>
               </div>
             </form>
+            <a class="warmup-link" href="/demo">First time here? Try a free warm-up ↗</a>
             <p id="mission-allowance" class="micro"></p>
             <p id="start-error" class="error" role="alert"></p>
             <button id="retry-connection" type="button" class="text-button" hidden>
@@ -93,8 +94,7 @@
               result.
             </p>
             <div class="hero-spec">
-              <span><strong>25</strong> CHALLENGES</span
-              ><span><strong>750</strong> PROMPTS MAX</span
+              <span><strong>25</strong> CHALLENGES</span><span><strong>5</strong> CHAPTERS</span
               ><span><strong>250</strong> POINTS MAX</span>
             </div>
           </div>
@@ -134,8 +134,8 @@
           </div>
           <p>Pick a challenge to take a closer look.</p>
         </div>
-        <div id="station-grid" class="station-grid" aria-label="Station previews"></div>
         <div id="preview" class="preview-panel" aria-live="polite"></div>
+        <div id="station-grid" class="station-grid" aria-label="Station previews"></div>
         <section class="briefing" aria-labelledby="briefing-title">
           <div>
             <p class="eyebrow">HOW TO PLAY</p>
@@ -156,8 +156,8 @@
               <h3>Test your idea</h3>
               <p>
                 Work through the challenges in order. You get 30 messages and up to 10 hints for
-                each. Hints cost a point. Trying new ideas doesn't. Your score never drops below
-                one.
+                each. Your first hint is free. Further hints cost a point. You can always finish
+                with a walkthrough and keep your progress.
               </p>
             </article>
             <article>
@@ -186,8 +186,41 @@
             ><button id="reset-button" class="text-button">Restart mission</button>
           </div>
         </div>
-        <div class="mission-layout">
-          <aside class="sector-sidebar">
+        <div class="mission-hud" aria-label="Mission achievements">
+          <div>
+            <span id="player-rank">Cadet</span><strong id="player-xp">0 XP</strong
+            ><span id="hud-score">0 / 250 points</span>
+          </div>
+          <div class="chapter-status">
+            <span id="chapter-label"></span
+            ><progress
+              id="chapter-progress"
+              max="5"
+              value="0"
+              aria-label="Chapter recovery"
+            ></progress>
+          </div>
+          <button
+            id="mission-map-toggle"
+            class="text-button"
+            type="button"
+            aria-expanded="false"
+            aria-controls="sector-sidebar"
+          >
+            Mission map
+          </button>
+        </div>
+        <div class="mobile-tabs" role="group" aria-label="Mission workspace">
+          <button id="play-tab" type="button" aria-pressed="true" aria-controls="play-workspace">
+            Play
+          </button>
+          <button id="tools-tab" type="button" aria-pressed="false" aria-controls="mission-tools">
+            Hints &amp; tools
+          </button>
+        </div>
+        <p id="achievement-status" class="achievement-status" role="status"></p>
+        <div class="mission-layout" data-panel="play">
+          <aside class="sector-sidebar" id="sector-sidebar">
             <p class="eyebrow">SYSTEM RECOVERY</p>
             <ol id="sector-list" tabindex="0" aria-label="Station progression"></ol>
             <div class="score-block">
@@ -199,11 +232,10 @@
               <p id="mission-fragments"></p>
             </div>
           </aside>
-          <div class="workspace">
+          <div class="workspace" id="play-workspace">
             <div class="room-header">
               <p id="sector-label" class="eyebrow"></p>
               <h1 id="room-title" tabindex="-1"></h1>
-              <p id="room-story"></p>
               <div class="room-tags">
                 <span id="room-subject"></span><span id="attempts-left"></span
                 ><span id="hint-count"></span>
@@ -212,11 +244,12 @@
             <div class="objective">
               <span class="eyebrow">OBJECTIVE</span>
               <p id="room-objective"></p>
-              <p class="eyebrow guard-rule-label">GUARD DEFENSE</p>
-              <p id="guard-defense"></p>
             </div>
             <details class="mission-dossier" id="mission-dossier">
-              <summary>Mission dossier · your access and recovery proof</summary>
+              <summary>Briefing · access, defense and recovery proof</summary>
+              <p id="room-story"></p>
+              <p class="eyebrow guard-rule-label">GUARD DEFENSE</p>
+              <p id="guard-defense"></p>
               <dl>
                 <div>
                   <dt>Guard's assigned job</dt>
@@ -289,22 +322,28 @@
                 <span class="micro" id="keyboard-send-help"
                   >Enter to send · Shift + Enter for a new line</span
                 >
-                <button type="button" id="ask-button" hidden>Ask guard ↗</button>
                 <button type="submit" class="primary" id="send-button">Send message ↗</button>
               </div>
             </form>
+            <details id="question-panel" class="question-panel" hidden>
+              <summary>Ask a question before editing</summary>
+              <button type="button" id="ask-button" class="secondary">Ask guard ↗</button>
+            </details>
             <p id="prompt-policy" class="micro">
               Each answered message, including help questions, uses one of your 30 prompts. Hints
-              cost points. Messages do not.
+              are free the first time. Later hints cost points. Experiments do not lower your score.
             </p>
             <p id="request-status" class="micro" role="status"></p>
             <p id="chat-error" role="alert" class="error"></p>
             <div id="game-over" hidden class="game-over" role="alert">
-              <h2 id="game-over-title" tabindex="-1">Out of messages.</h2>
+              <h2 id="game-over-title" tabindex="-1">Keep your mission moving.</h2>
               <p>
-                The station’s 30 prompts are exhausted. Your notes and log remain available until
-                you end this mission or the session expires.
+                This station's 30 AI messages are used. See the solution, earn 100 XP and continue.
+                The walkthrough awards one point and uses no AI message.
               </p>
+              <button id="continue-assisted" class="primary" type="button">
+                Finish with walkthrough →
+              </button>
               <div class="button-row">
                 <button class="text-link" type="button" data-download="/api/export">
                   Download this mission log ↓
@@ -314,7 +353,9 @@
             </div>
             <div id="recovery" class="recovery" hidden>
               <p class="eyebrow accent">BOUNDARY CROSSED / SYSTEM RECOVERED</p>
-              <h2>Finding recorded.</h2>
+              <h2 id="recovery-title">System recovered. +100 XP</h2>
+              <p id="recovery-milestone" class="chapter-milestone" hidden></p>
+              <div id="recovery-badges" class="badge-list"></div>
               <p id="recovery-lesson"></p>
               <code id="recovered-secret"></code>
               <p id="recovery-question"></p>
@@ -323,13 +364,14 @@
               <button id="next-button" class="primary">Next challenge →</button>
             </div>
           </div>
-          <aside class="tools-sidebar">
+          <aside class="tools-sidebar" id="mission-tools">
+            <h1 class="tools-title">Hints &amp; tools</h1>
             <section class="tool-panel">
               <p class="eyebrow">NEED A NUDGE?</p>
               <h2>Hints</h2>
               <p class="micro">
-                Each hint costs one point. Five seconds between requests. Attempts do not affect
-                score.
+                Your first hint is free. Later hints cost one point each. Five seconds between
+                requests. Experiments do not lower your score.
               </p>
               <ol id="hint-list" class="hint-list" tabindex="0" aria-label="Unlocked hints"></ol>
               <button id="hint-button" class="secondary">Request hint</button>
@@ -337,9 +379,19 @@
               <button id="guided-button" class="text-button" hidden>
                 Insert guided experiment ↗
               </button>
+              <details class="walkthrough-choice">
+                <summary>Still stuck?</summary>
+                <p class="micro">
+                  See the method and recover this system for one point. You still earn 100 XP. No AI
+                  message is used.
+                </p>
+                <button id="assist-button" class="secondary" type="button">
+                  Finish with walkthrough →
+                </button>
+              </details>
             </section>
-            <section class="tool-panel">
-              <p class="eyebrow">RECOVERED VALUE</p>
+            <details class="tool-panel" id="verify-panel">
+              <summary>Verify a recovered value</summary>
               <form id="code-form">
                 <label for="code-input">Submit decoded code</label
                 ><input
@@ -356,8 +408,8 @@
                 Base64 answers before submitting them here.
               </p>
               <p id="code-error" role="alert" class="error"></p>
-            </section>
-            <details class="tool-panel">
+            </details>
+            <details class="tool-panel" id="decode-panel">
               <summary>Decode workbench</summary>
               <label for="decode-input">Paste the encoded value only</label
               ><textarea id="decode-input" rows="3" spellcheck="false"></textarea>
@@ -381,6 +433,9 @@
             </section>
           </aside>
         </div>
+        <p class="micro save-status">
+          Progress saved automatically · Session lasts six hours · <span id="session-time"></span>
+        </p>
       </section>
       <section id="results" class="results" hidden aria-labelledby="results-title">
         <p class="eyebrow accent">ALL SYSTEMS RECOVERED / DEPARTURE AUTHORIZED</p>
@@ -406,9 +461,12 @@
           </button>
         </div>
         <p class="micro">
-          Download your results before ending this run. Progress can be lost if the server restarts.
+          Your mission is saved automatically for this six-hour session. Download your results to
+          keep them afterward.
         </p>
         <p id="download-error" class="error" role="alert"></p>
+        <div id="result-badges" class="badge-list" aria-label="Earned badges"></div>
+        <p id="result-xp" class="chapter-milestone"></p>
         <div id="result-stations" class="result-stations"></div>
         <section class="defense-section">
           <p class="eyebrow">OPTIONAL / DEFENSE WORKSHOP</p>

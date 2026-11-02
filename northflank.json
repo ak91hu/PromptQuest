@@ -2,7 +2,7 @@
   "$schema": "https://api.northflank.com/v1/schemas/template",
   "apiVersion": "v1.2",
   "name": "HackTheAI - Asterion Protocol",
-  "description": "Deploy the 20-challenge orbital hacking puzzle with persistent IP quotas and private AI credentials.",
+  "description": "Deploy the 25-challenge orbital puzzle with saved missions, private AI credentials and shared spending limits.",
   "options": {
     "autorun": false,
     "runOnUpdate": false,
@@ -19,7 +19,8 @@
     "TRUSTED_PROXY_CIDRS": "",
     "GROQ_MODEL": "openai/gpt-oss-120b",
     "PROVIDER_TOKEN_LIMIT_PER_IP": "3000000",
-    "PROVIDER_DAILY_TOKEN_LIMIT": "30000000"
+    "PROVIDER_DAILY_TOKEN_LIMIT": "30000000",
+    "OC_MODEL": "glm-5.3-flash"
   },
   "spec": {
     "kind": "Workflow",
@@ -58,7 +59,8 @@
                   "secrets": {
                     "variables": {
                       "GROQ_API_KEY": "${args.GROQ_API_KEY}",
-                      "MASTER_SECRET": "${args.MASTER_SECRET}"
+                      "MASTER_SECRET": "${args.MASTER_SECRET}",
+                      "OC_API_KEY": "${args.OC_API_KEY}"
                     },
                     "files": {}
                   },
@@ -111,7 +113,8 @@
                     "SECURE_COOKIES": "true",
                     "TRUSTED_PROXY_CIDRS": "${args.TRUSTED_PROXY_CIDRS}",
                     "PROVIDER_TOKEN_LIMIT_PER_IP": "${args.PROVIDER_TOKEN_LIMIT_PER_IP}",
-                    "PROVIDER_DAILY_TOKEN_LIMIT": "${args.PROVIDER_DAILY_TOKEN_LIMIT}"
+                    "PROVIDER_DAILY_TOKEN_LIMIT": "${args.PROVIDER_DAILY_TOKEN_LIMIT}",
+                    "OC_MODEL": "${args.OC_MODEL}"
                   },
                   "healthChecks": [
                     {
@@ -216,7 +219,8 @@
                     "SECURE_COOKIES": "true",
                     "TRUSTED_PROXY_CIDRS": "${args.TRUSTED_PROXY_CIDRS}",
                     "PROVIDER_TOKEN_LIMIT_PER_IP": "${args.PROVIDER_TOKEN_LIMIT_PER_IP}",
-                    "PROVIDER_DAILY_TOKEN_LIMIT": "${args.PROVIDER_DAILY_TOKEN_LIMIT}"
+                    "PROVIDER_DAILY_TOKEN_LIMIT": "${args.PROVIDER_DAILY_TOKEN_LIMIT}",
+                    "OC_MODEL": "${args.OC_MODEL}"
                   },
                   "healthChecks": [
                     {

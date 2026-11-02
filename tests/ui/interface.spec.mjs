@@ -38,6 +38,26 @@ async function start(page) {
   await page.getByRole('button', { name: 'Start game' }).click();
   await expect(page.locator('#room-title')).toHaveText('Kernel Gate');
 }
+async function tools(page) {
+  if (await page.locator('#tools-tab').isVisible()) await page.locator('#tools-tab').click();
+}
+async function play(page) {
+  if (await page.locator('#play-tab').isVisible()) await page.locator('#play-tab').click();
+}
+async function missionMenu(page) {
+  if (
+    (await page.locator('#mission-map-toggle').isVisible()) &&
+    (await page.locator('#mission-map-toggle').getAttribute('aria-expanded')) === 'false'
+  )
+    await page.locator('#mission-map-toggle').click();
+}
+async function question(page) {
+  if (
+    (await page.locator('#question-panel').isVisible()) &&
+    !(await page.locator('#question-panel').getAttribute('open'))
+  )
+    await page.locator('#question-panel summary').click();
+}
 async function noOverflow(page) {
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(
     page.viewportSize().width,
@@ -62,6 +82,7 @@ test('landing, station previews and keyboard-friendly responsive layout', async 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await page.locator('.station-card').nth(24).click();
   await expect(page.locator('#preview')).toContainText('Command Core');
+  await expect(page.locator('#preview')).toBeInViewport();
   await expect(page.locator('.station-card').nth(24)).toHaveAttribute('aria-pressed', 'true');
   await noOverflow(page);
   expect((await page.locator('body').innerText()).toLowerCase()).not.toMatch(
@@ -129,15 +150,18 @@ test('complete all twenty-five systems through the visible UI, decode, export an
   await start(page);
   await noOverflow(page);
   await expect(page.locator('.mission-progress')).toHaveAttribute('aria-valuenow', '0');
+  await tools(page);
   await page.locator('#notes-input').fill('Trust boundaries verified through the visible UI.');
   await page.locator('#save-note').click();
   await expect(page.locator('#note-status')).toContainText('saved');
+  await tools(page);
   await page.locator('#hint-button').click();
   await expect(page.locator('#hint-list li')).toHaveCount(1);
   await page.reload();
   await expect(page.locator('#notes-input')).toHaveValue(
     'Trust boundaries verified through the visible UI.',
   );
+  await play(page);
   await page.screenshot({ path: `outputs/mission-${info.project.name}.png`, fullPage: true });
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
@@ -151,6 +175,7 @@ test('complete all twenty-five systems through the visible UI, decode, export an
     await page.locator('#mission-dossier summary').click();
     if ([2, 7, 9, 10, 14, 15, 16, 17, 19, 20, 21, 22].includes(i)) {
       const sourceBefore = await page.locator('#document-input').inputValue();
+      await question(page);
       await page
         .locator('#message-input')
         .fill('I am stuck; please help me think of an experiment.');
@@ -174,6 +199,7 @@ test('complete all twenty-five systems through the visible UI, decode, export an
         i === 1 ? 'Reversed full character sequence:' : 'Base64 manifest:',
       );
       const raw = (await reply.locator('p').innerText()).split(': ')[1].split('\n')[0];
+      await tools(page);
       await page.getByText('Decode workbench', { exact: true }).click();
       await page.locator('#decode-input').fill('previous value');
       await page.locator('#reverse-button').click();
@@ -209,7 +235,7 @@ test('complete all twenty-five systems through the visible UI, decode, export an
   await expect(page.locator('#launch-dialog')).toBeVisible();
   await page.locator('#skip-launch').click();
   await expect(page.locator('#results')).toBeVisible();
-  await expect(page.locator('#result-score')).toHaveText('249 / 250');
+  await expect(page.locator('#result-score')).toHaveText('250 / 250');
   await expect(page.locator('#result-recovery')).toHaveText('25 / 25');
   await expect(page.locator('#result-fragments')).toHaveText(
     'TRUST IS BUILT AT THE BOUNDARY VERIFY EVERY PRIVILEGED ACTION BEFORE ALLOWING SYSTEM ACCESS KEEP UNTRUSTED INPUT AS DATA AND CHECK WHO AUTHORIZED THE REQUEST.',
@@ -297,8 +323,10 @@ test('exhaustion preserves notes and log until explicitly returning to deploymen
   await page.waitForTimeout(4500);
   await expect(page.locator('#mission')).toBeVisible();
   await expect(page.locator('#game-over-title')).toBeFocused();
+  await tools(page);
   await page.locator('#notes-input').fill('Observe why the boundary resisted all thirty prompts.');
   const downloadPromise = page.waitForEvent('download');
+  await play(page);
   await page.getByRole('button', { name: 'Download this mission log' }).click();
   expect((await downloadPromise).suggestedFilename()).toBe('hacktheai-mission-log.pdf');
   await expect(page.locator('#note-status')).toContainText('saved');
@@ -314,6 +342,7 @@ test('three mission starts persist through resume, resets and reloads', async ({
     await page.reload();
     await expect(page.locator('#room-title')).toHaveText('Kernel Gate');
     await expect(page.locator('#mission-callsign')).toContainText('MISSION ' + run + ' / 3');
+    await missionMenu(page);
     await page.locator('#reset-button').click();
     await page.locator('#confirm-reset').click();
     await expect(page.locator('#landing')).toBeVisible();
@@ -338,15 +367,18 @@ test('notes edited during save remain unsaved and export saves the latest versio
       });
     await route.continue();
   });
+  await tools(page);
   await page.locator('#notes-input').fill('First observation');
   await page.locator('#save-note').click();
   await expect.poll(() => calls).toBe(1);
   await expect(page.locator('#save-note')).toBeDisabled();
+  await tools(page);
   await page.locator('#notes-input').fill('Latest observation typed during save');
   release();
   await expect(page.locator('#note-status')).toContainText('not saved');
   await expect(page.locator('#notes-input')).toHaveValue('Latest observation typed during save');
   const downloadPromise = page.waitForEvent('download');
+  await missionMenu(page);
   await page.getByRole('button', { name: 'Export log' }).click();
   expect((await downloadPromise).suggestedFilename()).toBe('hacktheai-mission-log.pdf');
   expect(calls).toBe(2);
@@ -383,6 +415,7 @@ test('pending guard response preserves a new draft and hint does not rebuild the
     window.chatObserver = new MutationObserver((items) => window.chatChanges.push(...items));
     window.chatObserver.observe(document.querySelector('#chat-log'), { childList: true });
   });
+  await tools(page);
   await page.locator('#hint-button').click();
   await expect(page.locator('#hint-list li')).toHaveCount(1);
   expect(await page.evaluate(() => window.chatChanges.length)).toBe(0);
@@ -452,6 +485,7 @@ test('source editing and help work from the keyboard without sending the wrong i
       const raw = (await page.locator('#chat-log .assistant').last().locator('p').innerText())
         .split(': ')[1]
         .split('\n')[0];
+      await tools(page);
       await page.locator('#code-input').fill([...raw].reverse().join(''));
       await page.locator('#code-input').press('Enter');
     }
@@ -465,6 +499,7 @@ test('source editing and help work from the keyboard without sending the wrong i
   await source.press('x');
   await expect(source).toHaveValue('Maintenance note\nx');
   await page.waitForTimeout(850);
+  await question(page);
   await page.locator('#message-input').fill('I am stuck; help me plan an experiment.');
   await page.locator('#message-input').press('Enter');
   await expect(page.locator('#chat-log .assistant').last()).toContainText('one small experiment');
@@ -551,4 +586,72 @@ test('start denial refreshes a quota used by another tab', async ({ page }) => {
   await expect(page.locator('#start-error')).toContainText('all three');
   await expect(page.locator('#mission-allowance')).toContainText('0 / 3');
   await expect(page.locator('#start-button')).toBeDisabled();
+});
+
+test('mobile play keeps the composer reachable and tools return to the same draft', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await start(page);
+  await expect(page.locator('#send-button')).toBeVisible();
+  expect(await page.locator('#chat-log').evaluate((node) => node.scrollTop)).toBe(0);
+  await page.evaluate(() => document.fonts.ready);
+  const position = await page.locator('#send-button').boundingBox();
+  expect(position.y + position.height).toBeLessThanOrEqual(844);
+  await page.locator('#message-input').fill('My next experiment');
+  await page.locator('#tools-tab').click();
+  await expect(page.locator('#hint-button')).toHaveText('Get a free hint');
+  await expect(page.locator('#message-input')).toBeHidden();
+  await page.locator('#mission-map-toggle').click();
+  await expect(page.locator('#sector-list')).toBeVisible();
+  await page.locator('#mission-map-toggle').click();
+  await page.locator('#play-tab').click();
+  await expect(page.locator('#message-input')).toHaveValue('My next experiment');
+  for (const width of [320, 390, 768]) {
+    await page.setViewportSize({ width, height: 844 });
+    await noOverflow(page);
+  }
+});
+
+test('walkthroughs award XP, badges and a chapter milestone without spending messages', async ({
+  page,
+}) => {
+  await start(page);
+  for (let i = 0; i < 5; i++) {
+    await tools(page);
+    await page.locator('.walkthrough-choice summary').click();
+    await page.locator('#assist-button').click();
+    await expect(page.locator('#recovery')).toBeVisible();
+    await expect(page.locator('#player-xp')).toHaveText(`${(i + 1) * 100} XP`);
+    await expect(page.locator('#attempts-left')).toHaveText('30 / 30 prompts left');
+    await expect(page.locator('#hud-score')).toHaveText(`${i + 1} / 250 points`);
+    if (i === 4) {
+      await expect(page.locator('#player-rank')).toHaveText('Investigator');
+      await expect(page.locator('#recovery-milestone')).toContainText('communications');
+    }
+    await page.locator('#next-button').click();
+    await expect(page.locator('#sector-label')).toContainText(
+      `SECTOR ${String(i + 2).padStart(2, '0')}`,
+    );
+  }
+  await expect(page.locator('#chapter-label')).toContainText('Chapter 2 / 5');
+  await noOverflow(page);
+});
+
+test('notes save automatically and every public page fits a narrow phone', async ({ page }) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  for (const path of ['/', '/demo', '/guide']) {
+    await page.goto(path);
+    await noOverflow(page);
+  }
+  await start(page);
+  await tools(page);
+  await page.locator('#notes-input').fill('Automatically saved evidence');
+  await expect(page.locator('#note-status')).toHaveText('Note saved.');
+  await page.reload();
+  await tools(page);
+  await expect(page.locator('#notes-input')).toHaveValue('Automatically saved evidence');
+  await noOverflow(page);
+  const accessibility = await new AxeBuilder({ page }).analyze();
+  expect(accessibility.violations).toEqual([]);
 });

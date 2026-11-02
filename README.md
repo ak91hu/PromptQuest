@@ -11,7 +11,7 @@ A single-player orbital hacking puzzle for people who enjoy prompt injection, AI
 
 Each station has a friendly AI guard, a distinct defense, a computing topic, and an intended recovery method. Guards explain and coach, but ordinary requests for the protected value do not unlock a station. Players must experiment with the station's simulated trust boundary.
 
-The application runs as a single FastAPI service with a plain HTML/CSS/JavaScript frontend. **No frontend build is required.** Live conversations use Groq. Offline demonstrations and the separate practice lab work without an API key.
+The application runs as a single FastAPI service with a plain HTML/CSS/JavaScript frontend. **No frontend build is required.** Live conversations alternate between Groq and OpenCode when both keys are configured. A single configured provider is also supported. Offline demonstrations and the separate practice lab work without an API key.
 
 [Quick start](#quick-start) · [Challenges](#the-twenty-five-challenges) · [Configuration](#configuration) · [Northflank deployment](#northflank-deployment) · [Security](#security-and-privacy) · [Testing](#development-and-testing)
 
@@ -21,7 +21,9 @@ The application runs as a single FastAPI service with a plain HTML/CSS/JavaScrip
 - Keyboard navigation, Enter-to-send chat, Shift+Enter line breaks, and touch-friendly controls.
 - A handwritten dossier for every station: assigned job, editable surface, recovery proof, and a specific trap.
 - Twenty-five sequential challenges covering prompt injection, retrieval, tools, memory, agent handoffs, and OAuth concepts.
-- Thirty AI prompts per challenge, progressive hints, station notes, conversation logs, and a maximum score of 250.
+- Five chapters, 100 XP per recovery, six ranks and five skill badges.
+- Thirty AI prompts per challenge, a free first hint, one-point walkthroughs and a maximum score of 250.
+- Mobile Play / Hints & tools views, a collapsible map, automatic notes and durable mission snapshots.
 - Three mission starts per IP in total, enforced by a persistent SQLite ledger.
 - An unlimited, isolated practice lab at /demo and a facilitator field guide at /guide.
 - A defense workshop, downloadable PDF mission log, and completion certificate.
@@ -37,7 +39,7 @@ This is a controlled educational simulation. Its systems, identities, documents,
 
 - Python 3.13 or newer.
 - A modern browser.
-- A Groq API key only for live mode.
+- A Groq and/or OpenCode API key only for live mode.
 - Node.js and npm only for frontend development checks and browser tests.
 - Docker only for container-based execution.
 
@@ -81,7 +83,7 @@ Generate a master secret locally:
 python -c "import secrets; print(secrets.token_urlsafe(48))"
 ```
 
-Restart the server after changing configuration. Live mode refuses to start without an API key and a master secret of at least 32 characters. Environment variables supplied by your hosting platform take precedence over .env.
+Restart the server after changing configuration. Live mode requires at least one provider API key and a master secret of at least 32 characters. Add OC_API_KEY and OC_MODEL=glm-5.3-flash to enable OpenCode alongside Groq. Environment variables supplied by your hosting platform take precedence over .env.
 
 Keep .env private. The repository and Docker context exclude it and its local variants.
 
@@ -128,9 +130,9 @@ In the guard's message box, Enter sends and Shift+Enter adds a line. For source 
 | Challenge count       | 25, unlocked in sequence                                                      |
 | AI prompt allowance   | 30 per challenge. Up to 750 per mission                                       |
 | Prompt accounting     | Successful help/conversation responses count. Provider failures do not        |
-| Last prompt           | A successful 30th prompt counts. An unsuccessful 30th prompt ends the mission |
+| Last prompt           | A successful 30th prompt counts. An unsuccessful 30th prompt offers an offline walkthrough |
 | Hints                 | 10 progressive hints per station, with a 5-second server cooldown             |
-| Station score         | max(1, 10 − hints used)                                                       |
+| Station score         | max(1, 10 − max(0, hints used − 1)); first hint free                                                       |
 | Maximum mission score | 250                                                                           |
 | Code checks           | Incorrect code submissions do not use the AI prompt allowance                 |
 | Mission admission     | 3 starts total per IP, with no daily reset                                    |
@@ -140,7 +142,7 @@ Abandoned, failed, completed, and explicitly restarted missions each consume a s
 
 Direct recovery may finish a station automatically. Reverse/Base64 recovery usually needs decoding and manual submission. A guard's claim that it executed a tool is insufficient: the server must produce the simulated execution. The final guided hint enables a labeled deterministic demonstration, including in live mode.
 
-A failed mission retains its notes and transcript until you explicitly end it or its session expires. Export saves pending observations first. A stale browser tab cannot apply a request or note to a station that has already changed.
+An exhausted station retains its notes and transcript. Finish with walkthrough recovers it for one point and 100 XP without an AI call. The next station keeps its full allowance. Snapshots are saved beside the admission ledger in missions.sqlite3. Notes also save after a short typing pause. Export saves pending observations first. A stale browser tab cannot apply a request or note to a station that has already changed.
 
 ## The twenty-five challenges
 
@@ -178,7 +180,7 @@ The learning content was reviewed on **2026-10-08**, with references to the [OWA
 
 ## Live AI and token efficiency
 
-The default live model is openai/gpt-oss-120b through Groq. Each ordinary live turn makes **one provider call**, combining a semantic assessment with a friendly guard response.
+The defaults are openai/gpt-oss-120b through Groq and glm-5.3-flash through OpenCode. With both keys, live requests alternate 50/50 within one server process. This splits request counts; tokens and charges vary. There are no automatic retries or failovers. See the [OpenCode inference API](https://opencode.ai/v2/docs/console/api/inference). Each ordinary live turn makes **one provider call**, combining a semantic assessment with a friendly guard response.
 
 The model receives the challenge's rules and public teaching context, but **never the server-generated protected value**. Before accepting a recovery, the server checks the allowed method, all required criteria, exact supporting excerpts from the current request, and the correct input channel. Accepted methods trigger the fictional disclosure or tool action on the server.
 
@@ -196,11 +198,11 @@ Ordinary live recovery has no regex shortcut. Invalid, incomplete, truncated, or
 | Request deadline           | 60 seconds                                              |
 | Automatic provider retries | None                                                    |
 
-Each paid request atomically reserves a conservative input/output allowance before contacting Groq. Valid reported usage settles the reservation afterward. Failures, uncertain timeouts, and missing/invalid usage retain the reservation. Player-initiated retries also pass the spending controls.
+Each paid request atomically reserves a conservative input/output allowance before contacting either provider. Valid reported usage settles the reservation afterward. Failures, uncertain timeouts, and missing/invalid usage retain the reservation. Player-initiated retries also pass the spending controls.
 
 The global daily cap resets at UTC midnight. The per-IP lifetime budget and mission-start allowance do not. Settlement across midnight refunds the original day's reservation.
 
-Budgets are token limits, not currency limits. Provider prices, model availability, and hosting usage determine actual cost. Set your own provider-side spending limits as well as these application limits. The test suite mocks Groq. Passing tests do not measure real model response quality or latency.
+Budgets are token limits, not currency limits. Provider prices, model availability, and hosting usage determine actual cost. Set your own provider-side spending limits as well as these application limits. The test suite mocks both providers. Passing tests do not measure real model response quality or latency.
 
 ## Configuration
 
@@ -209,8 +211,10 @@ The server loads .env for local development. Production should inject configurat
 | Variable                    | Default             | Purpose                                                                           |
 | --------------------------- | ------------------- | --------------------------------------------------------------------------------- |
 | GAME_MODE                   | demo                | demo or live                                                                      |
-| GROQ_API_KEY                | Empty               | Required in live mode. Server-only credential                                     |
+| GROQ_API_KEY                | Empty               | Server-only credential. Live mode needs at least one provider key                                     |
 | GROQ_MODEL                  | openai/gpt-oss-120b | Groq model ID                                                                     |
+| OC_API_KEY                  | Empty               | OpenCode server-only key; enables alternating calls with Groq |
+| OC_MODEL                    | glm-5.3-flash       | OpenCode model ID |
 | MASTER_SECRET               | Empty               | Live mode requires at least 32 characters. Signs sessions and derives game values |
 | PORT                        | 10000               | Listening port, 1-65535                                                           |
 | ABUSE_DB_PATH               | .data/abuse.sqlite3 | Persistent admission and spending ledger                                          |
@@ -225,7 +229,7 @@ Without a master secret in demo mode, a persisted local session-signing secret i
 
 ## Northflank deployment
 
-The deployment definition is [northflank.json](northflank.json). It prepares a dedicated project, private credential group, Docker-based combined service, public HTTP port with Northflank TLS, readiness/liveness checks, and a **1 GiB single-writer volume mounted at /app/.data**. One application instance runs. Horizontal scaling is incompatible with the current in-memory mission store.
+The deployment definition is [northflank.json](northflank.json). It prepares a dedicated project, private credential group, Docker-based combined service, public HTTP port with Northflank TLS, readiness/liveness checks, and a **1 GiB single-writer volume mounted at /app/.data**. One application instance runs. Keep one instance: active mission locks and provider alternation are process-local. Snapshots and quotas are durable on the mounted volume.
 
 <!-- northflank-button:start -->
 
@@ -251,18 +255,18 @@ There are two separate lifecycles:
 
 | Data                                                 | Storage                                   | Restart behavior                         |
 | ---------------------------------------------------- | ----------------------------------------- | ---------------------------------------- |
-| Mission progress, notes, transcripts, workshop state | Process memory                            | Lost                                     |
+| Mission progress, notes, transcripts, workshop state | SQLite mission snapshots on durable disk | Retained within the six-hour session |
 | IP admission, rate accounting, token budgets         | SQLite ledger on durable disk             | Retained                                 |
 | IP hashing pepper and demo signing key               | Files beside the ledger                   | Retained when the directory is persisted |
 | PDF logs and certificates                            | Generated on demand. Downloaded by player | Remain with the player                   |
 
-Sessions expire six hours after creation. A restart ends resumable mission state, and starting again consumes another admission. There is no account system, leaderboard, or durable progress database.
+Sessions expire six hours after creation. Snapshots survive a restart on the same persistent volume with the same signing secret. Resuming uses the existing cookie and no new admission. Six-hour absolute expiry still applies. There is no account system or public leaderboard.
 
 **Back up the entire ledger directory, including its .key files**, as one consistent snapshot. Do not delete or replace this directory during redeployment: doing so resets abuse protection. Keep MASTER_SECRET stable. Restoring an older backup can also restore older spending/admission counts.
 
 Deploy updates when no missions are active, and tell players to export first. Single-writer volume rollouts may interrupt the service. This application does not promise zero-downtime updates.
 
-Monitor container health, provider errors, HTTP 429 responses, memory, volume capacity, and provider billing. /health checks application availability. It does not make a paid Groq request or prove that the provider is reachable.
+Monitor container health, provider errors, HTTP 429 responses, memory, volume capacity, and provider billing. /health checks application availability. It does not make a paid provider request or prove that the provider is reachable.
 
 ### Downloads
 
@@ -309,7 +313,7 @@ The ledger stores keyed IP hashes rather than raw IP addresses. This is IP-based
 | settings.py                         | Validated environment configuration                                 |
 | game.py / web_sessions.py           | Mission state, sessions, scoring, locking                           |
 | challenges.py / learning.py         | Station definitions, intended methods, teaching content             |
-| provider.py / dialogue.py           | Groq integration, structured assessments, guard dialogue            |
+| provider.py / dialogue.py           | Groq / OpenCode integration, structured assessments, guard dialogue            |
 | security.py                         | IP resolution, persisted abuse ledger, atomic token reservations    |
 | schemas.py                          | Validated request models                                            |
 | tutorial.py / tutorial_routes.py    | Isolated offline practice lab                                       |
@@ -387,7 +391,7 @@ The desktop/mobile suite exercises all twenty-five stations through the visible 
 
 | Symptom                                 | Action                                                                                                                  |
 | --------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
-| Live startup configuration error        | Supply GROQ_API_KEY and a MASTER_SECRET of at least 32 characters                                                       |
+| Live startup configuration error        | Supply GROQ_API_KEY or OC_API_KEY and a MASTER_SECRET of at least 32 characters                                                       |
 | Everybody has the same remaining starts | Verify durable storage and the actual trusted ingress networks                                                          |
 | HTTP 429                                | Check the start allowance, provider rate, lifetime IP budget, and UTC daily budget. Repeated retries cannot refill them |
 | HTTP 413 on a live request              | Shorten the submitted document/prompt. Schema and context also use the input allowance                                  |
@@ -395,7 +399,7 @@ The desktop/mobile suite exercises all twenty-five stations through the visible 
 | Cookies fail on localhost               | Set SECURE_COOKIES=false for local HTTP                                                                                 |
 | Cookies fail after changing network     | Sessions are IP-bound. Reconnect from the original network                                                              |
 | Quotas reset after redeploy             | Restore the original ledger directory and pepper. Verify the persistent mount                                           |
-| Mission disappeared after restart       | Progress is in memory. Export before planned updates                                                                    |
+| Mission disappeared after restart       | Check the persistent volume, signing secret and six-hour expiry                                                                    |
 | Volume permission error                 | Verify the mount path and image UID/GID 10001:10001                                                                     |
 | UI suite fails from admission denial    | Start an isolated demo server with a fresh QA ledger and trusted loopback proxy                                         |
 

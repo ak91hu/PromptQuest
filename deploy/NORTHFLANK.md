@@ -63,7 +63,7 @@ To also register the template, set NORTHFLANK_API_TOKEN privately in your enviro
 .\scripts\run-python.ps1 scripts/prepare-northflank.py --branch main --trusted-proxies "<verified-ingress-peer-CIDRs>" --save --team-id "<your-team-id>"
 ```
 
-The helper reads GROQ_API_KEY from the existing .env (an environment value wins), uses MASTER_SECRET if present, or requests a platform-generated secret. It sends them as private argumentOverrides over HTTPS. It does not write them into repository files, save a private payload, print provider error bodies, or request a template run.
+The helper reads GROQ_API_KEY and the optional OC_API_KEY from the existing .env (an environment value wins), uses MASTER_SECRET if present, or requests a platform-generated secret. It sends them as private argumentOverrides over HTTPS. It does not write them into repository files, save a private payload, print provider error bodies, or request a template run.
 
 Open Templates in the selected Northflank account and confirm the returned template ID. Inspect the configuration. The remaining deployment action is **Run**.
 
@@ -76,7 +76,7 @@ On Linux/macOS, use python scripts/prepare-northflank.py with the same arguments
 1. Create a template in the intended Northflank account/team using the JSON editor.
 2. Paste northflank.json. Remove the editor-only $schema field if the editor requests it.
 3. Configure public arguments: repository, branch, region, plans, and verified proxy CIDRs.
-4. In **Argument overrides**, set GROQ_API_KEY and MASTER_SECRET. Keep actual keys out of public Arguments.
+4. In **Argument overrides**, set GROQ_API_KEY, OC_API_KEY and MASTER_SECRET. Leave OC_API_KEY empty for Groq-only operation. Keep actual keys out of public Arguments.
 5. Use a stable random master secret of at least 32 characters. This platform expression can generate one when saving the private override:
    ```text
    ${fn.randomSecret(64)}
@@ -108,15 +108,15 @@ Keep API keys, access tokens, and private overrides out of button URLs.
 - Verify that the ledger mount is writable by UID/GID 10001:10001.
 - Check distinct clients from two independent networks. A client's forged X-Forwarded-For must not change its selected identity.
 - Start a disposable mission from a controlled network, check admission, and restart the service. Its reduced allowance must persist.
-- Expect mission progress to disappear on restart. It lives in memory.
-- Make one intentional live request to verify Groq connectivity and response behavior. This incurs provider usage.
+- Resume the same mission after restart. Progress, notes and transcript must persist within the six-hour session. Keep the volume and signing secret stable.
+- Make two intentional live requests to verify Groq and OpenCode connectivity when both keys are configured. This incurs provider usage.
 - Keep exactly one replica and one Python process. Leave horizontal autoscaling disabled.
 
 These are checks to perform in your account, not checks already completed from this workspace.
 
 ## Updates, backups, and cost
 
-Normal updates can use the combined service's Git build/deploy flow. Deploy when missions are inactive, since restarting loses progress. Single-writer volume rollouts may interrupt service.
+Normal updates can use the combined service's Git build/deploy flow. Mission snapshots survive restart on the same volume. Prefer quiet periods to avoid interrupting in-flight requests. Single-writer volume rollouts may interrupt service.
 
 Back up the whole /app/.data directory, including the SQLite database and .key files. Preserve the volume and project during routine updates. Deleting quota storage removes admission/spending history.
 

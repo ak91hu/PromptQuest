@@ -51,6 +51,7 @@
     "static/style.css",
     "tests/http.test.mjs",
     "tests/test_deployment.py",
+    "tests/test_gameplay.py",
     "tests/test_guards.py",
     "tests/test_mission.py",
     "tests/test_publication.py",

@@ -17,6 +17,10 @@ services:
         value: live
       - key: GROQ_API_KEY
         sync: false
+      - key: OC_API_KEY
+        sync: false
+      - key: OC_MODEL
+        value: glm-5.3-flash
       - key: MASTER_SECRET
         generateValue: true
       - key: GROQ_MODEL

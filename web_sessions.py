@@ -48,4 +48,7 @@ async def locked_session(request: Request, store: Store):
     async with session.lock:
         if store.get(request.cookies.get(GAME_COOKIE)) is not session:
             raise HTTPException(401, error)
-        yield session
+        try:
+            yield session
+        finally:
+            store.save(session)

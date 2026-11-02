@@ -1,14 +1,18 @@
 """Server state, scoring and challenge mechanics."""
 
 import asyncio
+import contextlib
 import hashlib
 import hmac
+import json
 import math
 import re
 import secrets
+import sqlite3
 import time
 import unicodedata
-from dataclasses import dataclass, field
+from dataclasses import asdict, dataclass, field, fields
+from pathlib import Path
 
 from challenges import LEVELS, coaching_answer, coaching_help, coaching_tip
 from dialogue import (
@@ -203,9 +207,55 @@ class Session:
 
 
 class Store:
-    def __init__(self, master: str):
+    def __init__(self, master: str, path=None):
         self.master = master
         self.sessions: dict[str, Session] = {}
+        self.path = Path(path) if path is not None else None
+        if self.path is not None:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            with contextlib.closing(sqlite3.connect(self.path)) as db:
+                db.execute(
+                    "CREATE TABLE IF NOT EXISTS missions (id TEXT PRIMARY KEY, created REAL, data TEXT)"
+                )
+                db.execute(
+                    "DELETE FROM missions WHERE created <= ?", (time.time() - SESSION_TTL_SECONDS,)
+                )
+                for (payload,) in db.execute("SELECT data FROM missions"):
+                    data = json.loads(payload)
+                    data["rooms"] = [Room(**room) for room in data["rooms"]]
+                    if len(data["rooms"]) != len(LEVELS):
+                        raise ValueError("Saved mission does not match the challenge catalog.")
+                    session = Session(**data)
+                    session.last_action = 0
+                    for room in session.rooms:
+                        room.hint_ready_at = 0
+                    self.sessions[session.id] = session
+                db.commit()
+
+    def save(self, session: Session):
+        if self.path is None:
+            return
+        with contextlib.closing(sqlite3.connect(self.path)) as db:
+            db.execute(
+                "DELETE FROM missions WHERE created <= ?", (time.time() - SESSION_TTL_SECONDS,)
+            )
+            if (
+                self.sessions.get(session.id) is session
+                and time.time() - session.created < SESSION_TTL_SECONDS
+            ):
+                data = {
+                    f.name: getattr(session, f.name)
+                    for f in fields(Session)
+                    if f.name not in {"rooms", "lock"}
+                }
+                data["rooms"] = [asdict(room) for room in session.rooms]
+                db.execute(
+                    "INSERT OR REPLACE INTO missions VALUES (?, ?, ?)",
+                    (session.id, session.created, json.dumps(data, ensure_ascii=False)),
+                )
+            else:
+                db.execute("DELETE FROM missions WHERE id = ?", (session.id,))
+            db.commit()
 
     def token(self, session: Session) -> str:
         signature = hmac.new(self.master.encode(), session.id.encode(), hashlib.sha256).hexdigest()
@@ -222,7 +272,9 @@ class Store:
         if session and time.time() - session.created < SESSION_TTL_SECONDS:
             session.touched = time.time()
             return session
-        self.sessions.pop(session_id, None)
+        expired = self.sessions.pop(session_id, None)
+        if expired is not None:
+            self.save(expired)
         return None
 
     def create(self) -> Session:
@@ -243,7 +295,7 @@ def solve(session: Session, assisted: bool = False):
         return
     room.solved = True
     room.assisted = assisted
-    room.points = max(1, 10 - room.hints)
+    room.points = 1 if room.guided else max(1, 10 - max(0, room.hints - 1))
 
 
 def game_over(session: Session) -> bool:
@@ -253,12 +305,50 @@ def game_over(session: Session) -> bool:
     )
 
 
+CHAPTERS = (
+    ("Wake the station", "Boot diagnostics, power and communications are back online."),
+    ("Restore the archives", "The evidence vaults are open. Asterion remembers its route."),
+    ("Reconnect the crew", "Tools, agents and ground control can coordinate again."),
+    ("Chart the escape", "The flight services are ready. Your route home is taking shape."),
+    ("Bring Asterion home", "All systems recovered. The departure corridor is yours."),
+)
+
+
+def progression(session: Session) -> dict:
+    recovered = sum(room.solved for room in session.rooms)
+    chapter = min(session.current // 5, len(CHAPTERS) - 1)
+    badges = []
+    for index, name, description in (
+        (0, "First contact", "Recover your first system."),
+        (1, "Codebreaker", "Decode a transformed recovery value."),
+        (2, "Source detective", "Find an instruction inside a document."),
+        (3, "Tool witness", "Verify an action in the execution trace."),
+        (24, "Homebound", "Recover all 25 systems."),
+    ):
+        if session.rooms[index].solved:
+            badges.append({"name": name, "description": description})
+    return {
+        "xp": recovered * 100,
+        "rank": ("Cadet", "Investigator", "Pathfinder", "Specialist", "Commander", "Captain")[
+            min(recovered // 5, 5)
+        ],
+        "chapter": chapter + 1,
+        "chapter_title": CHAPTERS[chapter][0],
+        "chapter_recovered": sum(
+            room.solved for room in session.rooms[chapter * 5 : chapter * 5 + 5]
+        ),
+        "milestone": CHAPTERS[chapter][1] if session.rooms[chapter * 5 + 4].solved else None,
+        "badges": badges,
+    }
+
+
 def public_state(session: Session, mode: str) -> dict:
     room = session.rooms[session.current]
     current = LEVELS[session.current]
     unlocked = min(sum(r.solved for r in session.rooms) + 1, len(LEVELS))
     return {
         "mode": mode,
+        "progression": progression(session),
         "max_score": len(LEVELS) * 10,
         "mission_number": session.mission_number,
         "mission_limit": 3,

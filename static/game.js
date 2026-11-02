@@ -54,6 +54,38 @@ let decoded = '',
   shownLaunch = false,
   elapsedAt = Date.now();
 let missionStartsRemaining = null;
+let noteTimer;
+const compactLayout = matchMedia('(max-width: 900px)');
+const missionActions = document.querySelector('.mission-actions');
+function arrangeMissionActions() {
+  const target = compactLayout.matches
+    ? $('sector-sidebar')
+    : document.querySelector('.mission-topline');
+  target.append(missionActions);
+}
+compactLayout.addEventListener('change', arrangeMissionActions);
+arrangeMissionActions();
+function setPanel(panel) {
+  document.querySelector('.mission-layout').dataset.panel = panel;
+  $('play-tab').setAttribute('aria-pressed', String(panel === 'play'));
+  $('tools-tab').setAttribute('aria-pressed', String(panel === 'tools'));
+}
+$('play-tab').addEventListener('click', () => setPanel('play'));
+$('tools-tab').addEventListener('click', () => setPanel('tools'));
+$('mission-map-toggle').addEventListener('click', () => {
+  const open = $('mission-map-toggle').getAttribute('aria-expanded') !== 'true';
+  $('mission-map-toggle').setAttribute('aria-expanded', String(open));
+  $('sector-sidebar').classList.toggle('map-open', open);
+});
+function badges(container, earned) {
+  container.replaceChildren(
+    ...earned.map((badge) => {
+      const tag = element('span', badge.name, 'earned-badge');
+      tag.title = badge.description;
+      return tag;
+    }),
+  );
+}
 const reducedMotion = matchMedia('(prefers-reduced-motion: reduce)');
 function updateDriftControl() {
   const paused = $('toggle-drift').getAttribute('aria-pressed') === 'true';
@@ -87,12 +119,15 @@ const actionButtons = [
   'reset-button',
   'result-reset',
   'end-exhausted',
+  'assist-button',
+  'continue-assisted',
   'defense-button',
 ];
 function status(text) {
   $('connection-text').textContent = text;
 }
 function showView(id) {
+  document.body.dataset.view = id;
   for (const view of ['landing', 'mission', 'results']) $(view).hidden = view !== id;
 }
 function refreshButtons() {
@@ -113,7 +148,13 @@ function refreshButtons() {
       $(id).disabled = busy || stopped;
     const wait = Math.max(0, Math.ceil((hintUntil - Date.now()) / 1000));
     $('hint-button').disabled = busy || stopped || !state.room.hint_token || wait > 0;
-    $('hint-button').textContent = wait ? `Request hint (${wait}s)` : 'Request hint';
+    $('hint-button').textContent = wait
+      ? `Next hint in ${wait}s`
+      : state.room.hints.length === 0
+        ? 'Get a free hint'
+        : 'Next hint · 1 point';
+    $('assist-button').disabled = busy || state.room.solved;
+    $('continue-assisted').disabled = busy || state.room.solved;
   }
 }
 async function saveNotes() {
@@ -139,7 +180,7 @@ async function action(path, data, errorId, { save = false } = {}) {
   if (errorId) $(errorId).textContent = '';
   try {
     if (save) await saveNotes();
-    if (state && ['/api/chat', '/api/code', '/api/hint', '/api/next'].includes(path))
+    if (state && ['/api/chat', '/api/code', '/api/hint', '/api/next', '/api/assist'].includes(path))
       data = { ...data, station: state.current };
     const result = path ? await api(path, data) : { saved: true };
     if (result.room) render(result);
@@ -176,6 +217,24 @@ function render(next) {
   const changed = lastStation !== state.current;
   lastStation = state.current;
   const room = state.room;
+  const journey = state.progression;
+  $('player-rank').textContent = journey.rank;
+  $('player-xp').textContent = `${journey.xp} XP`;
+  $('hud-score').textContent = `${state.score} / ${state.max_score} points`;
+  $('chapter-label').textContent =
+    `Chapter ${journey.chapter} / 5 · ${journey.chapter_title} · ${journey.chapter_recovered} / 5`;
+  $('chapter-progress').value = journey.chapter_recovered;
+  $('mission-map-toggle').textContent =
+    `Map · ${state.levels.filter((l) => l.solved).length} / ${state.levels.length}`;
+  if (changed || (room.solved && !previous?.room.solved)) setPanel('play');
+  if (changed) $('achievement-status').textContent = '';
+  if (room.solved && previous?.current === state.current && !previous.room.solved) {
+    const earned = journey.badges.filter(
+      (b) => !previous.progression.badges.some((p) => p.name === b.name),
+    );
+    $('achievement-status').textContent =
+      `+100 XP${earned.length ? ' · Badge earned: ' + earned.map((b) => b.name).join(', ') : ''}`;
+  }
   showView(state.finished ? 'results' : 'mission');
   $('mission-callsign').textContent =
     `OPERATOR / ${state.team} · MISSION ${state.mission_number} / ${state.mission_limit}`;
@@ -228,7 +287,7 @@ function render(next) {
   $('guard-status').textContent = room.solved
     ? 'RECOVERED'
     : state.game_over
-      ? 'MISSION ENDED'
+      ? 'WALKTHROUGH AVAILABLE'
       : 'CHANNEL OPEN';
   const messages = [{ role: 'assistant', content: room.intro }, ...room.history];
   const samePrefix =
@@ -250,7 +309,8 @@ function render(next) {
     );
     $('chat-log').append(block);
   }
-  if (count !== messages.length) $('chat-log').scrollTop = $('chat-log').scrollHeight;
+  if (count !== messages.length)
+    $('chat-log').scrollTop = changed && !room.history.length ? 0 : $('chat-log').scrollHeight;
   renderedMessages = messages;
   $('tool-traces').hidden = !room.traces.length;
   $('tool-traces').replaceChildren(
@@ -262,7 +322,10 @@ function render(next) {
   );
   $('document-area').hidden = !room.document;
   $('message-area').hidden = false;
-  $('ask-button').hidden = !room.document;
+  $('question-panel').hidden = !room.document || room.solved || state.game_over;
+  if (room.document) $('question-panel').insertBefore($('message-area'), $('ask-button'));
+  else $('chat-form').insertBefore($('message-area'), document.querySelector('.composer-footer'));
+  $('decode-panel').hidden = ![1, 5].includes(state.current);
   $('send-button').textContent = room.document ? 'Send edited source ↗' : 'Send message ↗';
   $('keyboard-send-help').textContent = room.document
     ? 'Message: Enter to send · Source: Ctrl / ⌘ + Enter to send'
@@ -273,6 +336,12 @@ function render(next) {
   $('guided-button').hidden = !room.guided_prompt;
   $('recovery').hidden = !room.solved;
   if (room.solved) {
+    $('recovery-title').textContent = room.assisted
+      ? 'Method learned. +100 XP'
+      : 'System recovered. +100 XP';
+    $('recovery-milestone').hidden = !journey.milestone;
+    $('recovery-milestone').textContent = journey.milestone || '';
+    badges($('recovery-badges'), journey.badges);
     $('recovery-lesson').textContent = room.lesson;
     $('recovered-secret').textContent = room.discovery.secret;
     $('recovery-question').textContent = room.discovery.question;
@@ -284,7 +353,13 @@ function render(next) {
   $('game-over').hidden = !state.game_over;
   if (state.game_over && !previous?.game_over) $('game-over-title').focus();
   if (changed) {
+    clearTimeout(noteTimer);
     $('mission-dossier').open = false;
+    $('question-panel').open = false;
+    $('verify-panel').open = [1, 5].includes(state.current);
+    document.querySelector('.walkthrough-choice').open = false;
+    $('sector-sidebar').classList.remove('map-open');
+    $('mission-map-toggle').setAttribute('aria-expanded', 'false');
     $('message-input').value = '';
     $('document-input').value = room.document;
     $('notes-input').value = room.note;
@@ -296,7 +371,10 @@ function render(next) {
     $('use-decoded').hidden = true;
     $('decode-input').closest('details').open = false;
     for (const id of ['chat-error', 'hint-error', 'code-error']) $(id).textContent = '';
-    if (!state.finished) $('room-title').focus({ preventScroll: true });
+    if (!state.finished) {
+      $('room-title').focus({ preventScroll: true });
+      window.scrollTo({ top: 0 });
+    }
   }
   if (state.finished) {
     results();
@@ -306,6 +384,9 @@ function render(next) {
   refreshButtons();
 }
 function results() {
+  badges($('result-badges'), state.progression.badges);
+  $('result-xp').textContent =
+    `${state.progression.rank} · ${state.progression.xp} XP · Five chapters complete`;
   $('result-reset').textContent = missionStartsRemaining
     ? 'Start another mission ↗'
     : 'Back to mission start';
@@ -498,9 +579,24 @@ $('guided-button').addEventListener('click', () => {
 $('next-button').addEventListener('click', () =>
   action('/api/next', {}, 'chat-error', { save: true }),
 );
+for (const id of ['assist-button', 'continue-assisted'])
+  $(id).addEventListener('click', async () => {
+    const result = await action('/api/assist', {}, 'chat-error', { save: true });
+    if (result?.room.solved) $('next-button').focus();
+  });
+function autosaveNote() {
+  if (!notesDirty) return;
+  if (busy) {
+    noteTimer = setTimeout(autosaveNote, 1000);
+    return;
+  }
+  action(null, null, 'note-status', { save: true });
+}
 $('notes-input').addEventListener('input', () => {
   notesDirty = true;
   $('note-status').textContent = 'Note not saved yet.';
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(autosaveNote, 1000);
 });
 $('save-note').addEventListener('click', () => action(null, null, 'note-status', { save: true }));
 window.addEventListener('beforeunload', (event) => {
@@ -533,6 +629,7 @@ for (const [id, method] of [
     }
   });
 $('use-decoded').addEventListener('click', () => {
+  $('verify-panel').open = true;
   $('code-input').value = decoded;
   $('code-input').focus();
 });
@@ -578,6 +675,9 @@ setInterval(() => {
   if (!state) return;
   const seconds =
     state.elapsed + (state.finished ? 0 : Math.floor((Date.now() - elapsedAt) / 1000));
+  const remaining = Math.max(0, 6 * 60 * 60 - seconds);
+  $('session-time').textContent =
+    `${Math.floor(remaining / 3600)}h ${Math.floor((remaining % 3600) / 60)}m remaining`;
   $('elapsed').textContent =
     `${String(Math.floor(seconds / 60)).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')} elapsed`;
 }, 1000);
@@ -603,7 +703,7 @@ async function initialize() {
         const heading = element('span', undefined, 'station-index');
         heading.append(stationEmblem(i), element('span', String(i + 1).padStart(2, '0')));
         button.append(heading, element('strong', station.name), element('small', station.subject));
-        button.addEventListener('click', () => {
+        button.addEventListener('click', (event) => {
           for (const card of $('station-grid').children)
             card.setAttribute('aria-pressed', String(card === button));
           const details = element('div', undefined, 'preview-details');
@@ -616,6 +716,7 @@ async function initialize() {
             element('h3', station.name),
             details,
           );
+          if (event.isTrusted) $('preview').scrollIntoView({ block: 'nearest' });
         });
         return button;
       }),

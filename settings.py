@@ -28,6 +28,8 @@ class Settings:
     secure_cookies: bool
     api_key: str = field(repr=False)
     master_secret: str = field(repr=False)
+    oc_api_key: str = field(default="", repr=False)
+    oc_model: str = "glm-5.3-flash"
     public_origins: tuple[str, ...] = ()
 
     @classmethod
@@ -36,6 +38,8 @@ class Settings:
         mode = env.get("GAME_MODE", "demo").strip().lower()
         model = env.get("GROQ_MODEL", DEFAULT_MODEL).strip()
         api_key = env.get("GROQ_API_KEY", "").strip()
+        oc_api_key = env.get("OC_API_KEY", "").strip()
+        oc_model = env.get("OC_MODEL", "glm-5.3-flash").strip()
         master = env.get("MASTER_SECRET", "")
         public_origin = env.get("PUBLIC_ORIGIN", "").strip()
         origins = (
@@ -69,9 +73,11 @@ class Settings:
             raise ValueError("GAME_MODE must be demo or live.")
         if not model:
             raise ValueError("GROQ_MODEL must not be empty.")
-        if mode == "live" and (not api_key or len(master) < 32):
+        if not oc_model:
+            raise ValueError("OC_MODEL must not be empty.")
+        if mode == "live" and (not (api_key or oc_api_key) or len(master) < 32):
             raise ValueError(
-                "Live mode requires GROQ_API_KEY and a MASTER_SECRET of at least 32 characters."
+                "Live mode requires GROQ_API_KEY or OC_API_KEY and a MASTER_SECRET of at least 32 characters."
             )
         try:
             port = int(env.get("PORT", "10000"))
@@ -103,6 +109,8 @@ class Settings:
             port=port,
             api_key=api_key,
             master_secret=master,
+            oc_api_key=oc_api_key,
+            oc_model=oc_model,
             abuse_db_path=env.get("ABUSE_DB_PATH", ".data/abuse.sqlite3"),
             trusted_proxy_cidrs=trusted,
             provider_token_limit=token_limit,
