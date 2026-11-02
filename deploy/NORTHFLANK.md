@@ -15,7 +15,7 @@ This guide prepares **ak91hu/PromptQuest** for a saved Northflank template. Savi
 | Application instances   | 1                                                           |
 | Public port             | HTTP 10000, Northflank-generated HTTPS domain               |
 | Health checks           | Readiness and liveness, /health on port 10000               |
-| Persistent storage      | 1 GiB NVMe, ReadWriteOnce, mounted at /app/.data            |
+| Persistent storage      | 6 GiB NVMe, ReadWriteOnce, mounted at /app/.data            |
 | AI                      | Live mode, Groq openai/gpt-oss-120b                         |
 | API/signing credentials | Private argument overrides feeding a secret group           |
 | Cookie security         | Secure, HttpOnly, SameSite=Strict                           |

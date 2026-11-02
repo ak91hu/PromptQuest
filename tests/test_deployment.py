@@ -31,6 +31,7 @@ class NorthflankPreparationTests(unittest.TestCase):
         inner = self.template["spec"]["spec"]["steps"][1]["spec"]["steps"]
         self.assertEqual(inner[2]["spec"]["attachedObjects"][0]["id"],
                          "$" + "{refs.service.id}")
+        self.assertGreaterEqual(inner[2]["spec"]["spec"]["storageSize"], 6144)
         for node in (inner[1], inner[3]):
             env = node["spec"]["runtimeEnvironment"]
             self.assertEqual(env["PROVIDER_DAILY_TOKEN_LIMIT"],

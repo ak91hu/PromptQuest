@@ -166,7 +166,7 @@
                   ],
                   "spec": {
                     "storageClassName": "nvme",
-                    "storageSize": 1024,
+                    "storageSize": 6144,
                     "accessMode": "ReadWriteOnce"
                   },
                   "attachedObjects": [

@@ -58,6 +58,7 @@ def validate(template, *, ready=False):
         raise ValueError("Start one instance only after storage attachment.")
     if (volume.get("updateMode") != "create"
             or volume["spec"]["spec"]["accessMode"] != "ReadWriteOnce"
+            or volume["spec"]["spec"]["storageSize"] < 6144
             or volume["spec"]["mounts"] != [
                 {"containerMountPath": "/app/.data", "volumeMountPath": ""}
             ]):

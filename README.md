@@ -229,7 +229,7 @@ Without a master secret in demo mode, a persisted local session-signing secret i
 
 ## Northflank deployment
 
-The deployment definition is [northflank.json](northflank.json). It prepares a dedicated project, private credential group, Docker-based combined service, public HTTP port with Northflank TLS, readiness/liveness checks, and a **1 GiB single-writer volume mounted at /app/.data**. One application instance runs. Keep one instance: active mission locks and provider alternation are process-local. Snapshots and quotas are durable on the mounted volume.
+The deployment definition is [northflank.json](northflank.json). It prepares a dedicated project, private credential group, Docker-based combined service, public HTTP port with Northflank TLS, readiness/liveness checks, and a **6 GiB single-writer volume mounted at /app/.data**. One application instance runs. Keep one instance: active mission locks and provider alternation are process-local. Snapshots and quotas are durable on the mounted volume.
 
 <!-- northflank-button:start -->
 
