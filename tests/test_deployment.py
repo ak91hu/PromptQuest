@@ -33,6 +33,9 @@ class NorthflankPreparationTests(unittest.TestCase):
                          "$" + "{refs.service.id}")
         self.assertGreaterEqual(inner[2]["spec"]["spec"]["storageSize"], 6144)
         for node in (inner[1], inner[3]):
+            for probe in node["spec"]["healthChecks"]:
+                if probe["type"] != "readinessProbe":
+                    self.assertNotIn("successThreshold", probe)
             env = node["spec"]["runtimeEnvironment"]
             self.assertEqual(env["PROVIDER_DAILY_TOKEN_LIMIT"],
                              "$" + "{args.PROVIDER_DAILY_TOKEN_LIMIT}")
